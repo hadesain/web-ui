@@ -19,19 +19,12 @@ import 'package:unittest/unittest.dart';
 import 'package:web_ui/dwc.dart' as dwc;
 import 'package:web_ui/testing/render_test.dart';
 
-import 'analyzer_test.dart' as analyzer_test;
 import 'css_test.dart' as css_test;
 import 'compiler_test.dart' as compiler_test;
-import 'emitter_test.dart' as emitter_test;
 import 'html5_utils_test.dart' as html5_utils_test;
-import 'html_cleaner_test.dart' as html_cleaner_test;
-import 'linked_list_test.dart' as linked_list_test;
-import 'observe_test.dart' as observe_test;
-import 'observable_transform_test.dart' as observable_transform_test;
 import 'paths_test.dart' as paths_test;
 import 'refactor_test.dart' as refactor_test;
 import 'utils_test.dart' as utils_test;
-import 'watcher_test.dart' as watcher_test;
 
 main() {
   var args = new Options().arguments;
@@ -45,27 +38,30 @@ main() {
     }
   }
 
-  addGroup('analyzer_test.dart', analyzer_test.main);
   addGroup('compiler_test.dart', compiler_test.main);
   addGroup('css_test.dart', css_test.main);
-  addGroup('emitter_test.dart', emitter_test.main);
   addGroup('html5_utils_test.dart', html5_utils_test.main);
-  addGroup('html_cleaner_test.dart', html_cleaner_test.main);
-  addGroup('linked_list_test.dart', linked_list_test.main);
-  addGroup('observe_test.dart', observe_test.main);
-  addGroup('observable_transform_test.dart', observable_transform_test.main);
   addGroup('paths_test.dart', paths_test.main);
   addGroup('refactor_test.dart', refactor_test.main);
   addGroup('utils_test.dart', utils_test.main);
-  addGroup('watcher_test.dart', watcher_test.main);
+
+  // TODO(jmessery): consider restoring these where applicable.
+  // We'll probably want to use fancy-syntax support.
+  //renderTests('data/input', 'data/input', 'data/expected', 'data/out',
+      // TODO(jmesserly): make these configurable
+  //    ['--no-js', '--no-shadowdom']..addAll(args));
 
   // Note: if you're adding more render test suites, make sure to update run.sh
   // as well for convenient baseline diff/updating.
-  renderTests('data/input', 'data/input', 'data/expected', 'data/out');
-  exampleTest('../example/component/news');
+
+  // TODO(jmesserly): figure out why this fails in content_shell but works in
+  // Dartium and Firefox when using the ShadowDOM polyfill.
+  exampleTest('../example/component/news', ['--no-shadowdom']..addAll(args));
+
   exampleTest('../example/todomvc');
 }
 
-void exampleTest(String path) {
-  renderTests(path, '$path/test', '$path/test/expected', '$path/test/out');
+void exampleTest(String path, [List args]) {
+  renderTests(path, '$path/test', '$path/test/expected', '$path/test/out',
+      args);
 }

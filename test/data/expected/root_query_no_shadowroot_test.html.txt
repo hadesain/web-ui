@@ -1,10 +1,15 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x50
-  RenderBlock {HTML} at (0,0) size 800x50
-    RenderBody {BODY} at (8,16) size 784x18
-      RenderBlock {DIV} at (0,0) size 784x18
-        RenderBlock {PRE} at (0,0) size 784x18
-          RenderText {#text} at (0,0) size 40x18
-            text run at (0,0) width 40: "PASS"
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  
+  <div is="x-test"><shadow-root>      <pre>PASS</pre>
+    </shadow-root></div>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="root_query_no_shadowroot_test.html_bootstrap.dart"></script></body></html>

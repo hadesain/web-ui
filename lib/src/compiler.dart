@@ -19,7 +19,6 @@ import 'dart_parser.dart';
 import 'emitters.dart';
 import 'file_system.dart';
 import 'files.dart';
-import 'html_cleaner.dart';
 import 'html_css_fixup.dart';
 import 'info.dart';
 import 'messages.dart';
@@ -63,13 +62,13 @@ class Compiler {
   FutureGroup _tasks;
   Set _processed;
 
-  bool _useObservers = false;
-
   /** Information about source [files] given their href. */
   final Map<String, FileInfo> info = new SplayTreeMap<String, FileInfo>();
   final _edits = new Map<DartCodeInfo, TextEditTransaction>();
 
- /** Creates a compiler with [options] using [fileSystem]. */
+  final GlobalInfo global = new GlobalInfo();
+
+  /** Creates a compiler with [options] using [fileSystem]. */
   Compiler(this.fileSystem, this.options, this._messages) {
     _mainPath = options.inputFile;
     var mainDir = path.dirname(_mainPath);
@@ -101,24 +100,19 @@ class Compiler {
       return new Future.value(null);
     }
     return _parseAndDiscover(_mainPath).then((_) {
-      // Pseudo-element names exposed in a component via a pseudo attribute.
-      // The name is only available from CSS (not Dart code) so they're mangled.
-      // The same pseudo-element in different components maps to the same
-      // mangled name (as the pseudo-element is scoped inside of the component).
-      var pseudoElements = new Map<String, String>();
-
-      _analyze(pseudoElements);
+      _analyze();
 
       // Analyze all CSS files.
       _time('Analyzed Style Sheets', '', () =>
-          analyzeCss(_pathMapper.packageRoot, files, info, pseudoElements,
-              _messages, warningsAsErrors: options.warningsAsErrors));
+          analyzeCss(_pathMapper.packageRoot, files, info,
+              global.pseudoElements, _messages,
+              warningsAsErrors: options.warningsAsErrors));
 
       // TODO(jmesserly): need to go through our errors, and figure out if some
       // of them should be warnings instead.
       if (_messages.hasErrors || options.analysisOnly) return;
       _transformDart();
-      _emit(pseudoElements);
+      _emit();
     });
   }
 
@@ -143,7 +137,7 @@ class Compiler {
     files.add(file);
 
     var fileInfo = _time('Analyzed definitions', inputUrl.url, () {
-      return analyzeDefinitions(inputUrl, file.document,
+      return analyzeDefinitions(global, inputUrl, file.document,
         _pathMapper.packageRoot, _messages, isEntryPoint: isEntryPoint);
     });
     info[inputUrl.resolvedPath] = fileInfo;
@@ -311,11 +305,7 @@ class Compiler {
     if (library.userCode == null) return;
 
     for (var directive in library.userCode.directives) {
-      if (_directiveUri(directive).startsWith('package:web_ui/observe')) {
-        _useObservers = true;
-      } else {
-        _loadFile(_getDirectiveUrlInfo(library, directive), _parseDartFile);
-      }
+      _loadFile(_getDirectiveUrlInfo(library, directive), _parseDartFile);
     }
   }
 
@@ -377,11 +367,10 @@ class Compiler {
 
     var transformed = [];
     for (var lib in libraries) {
-      var transaction = transformObservables(lib.userCode);
+      var transaction = transformObservables(lib.userCode, _messages);
       if (transaction != null) {
         _edits[lib.userCode] = transaction;
         if (transaction.hasEdits) {
-          _useObservers = true;
           transformed.add(lib);
         } else if (lib.htmlFile != null) {
           // All web components will be transformed too. Track that.
@@ -458,7 +447,7 @@ class Compiler {
           // and web_ui, resulting in a collision.
           // TODO(jmesserly): only generate this for libraries that need it.
           transaction.edit(pos, pos, "\nimport "
-              "'package:web_ui/observe/observable.dart' as __observe;\n");
+              "'package:mdv_observe/mdv_observe.dart' as __observe;\n");
         }
         _emitFileAndSourceMaps(lib, transaction.commit(), lib.dartCodeUrl);
       }
@@ -529,32 +518,31 @@ class Compiler {
   }
 
   /** Run the analyzer on every input html file. */
-  void _analyze(Map<String, String> pseudoElements) {
+  void _analyze() {
     var uniqueIds = new IntIterator();
     for (var file in files) {
       if (file.isHtml) {
         _time('Analyzed contents', file.path, () =>
-            analyzeFile(file, info, uniqueIds, pseudoElements, _messages));
+            analyzeFile(file, info, uniqueIds, global, _messages));
       }
     }
   }
 
   /** Emit the generated code corresponding to each input file. */
-  void _emit(Map<String, String> pseudoElements) {
+  void _emit() {
     for (var file in files) {
       if (file.isDart || file.isStyleSheet) continue;
       _time('Codegen', file.path, () {
         var fileInfo = info[file.path];
-        cleanHtmlNodes(fileInfo);
         fixupHtmlCss(fileInfo, options);
-        _emitComponents(fileInfo, pseudoElements);
+        _emitComponents(fileInfo);
       });
     }
 
     var entryPoint = files[0];
     assert(info[entryPoint.path].isEntryPoint);
     _emitMainDart(entryPoint);
-    _emitMainHtml(entryPoint, pseudoElements);
+    _emitMainHtml(entryPoint);
 
     assert(_unqiueOutputs());
   }
@@ -574,14 +562,14 @@ class Compiler {
   /** Emit the main .dart file. */
   void _emitMainDart(SourceFile file) {
     var fileInfo = info[file.path];
-    var printer = new EntryPointEmitter(fileInfo)
+    var printer = new EntryPointEmitter(fileInfo, global)
         .run(_pathMapper, _edits[fileInfo.userCode], options.rewriteUrls);
     _emitFileAndSourceMaps(fileInfo, printer, fileInfo.dartCodeUrl);
   }
 
   // TODO(jmesserly): refactor this out of Compiler.
   /** Generate an html file with the (trimmed down) main html page. */
-  void _emitMainHtml(SourceFile file, Map<String, String> pseudoElements) {
+  void _emitMainHtml(SourceFile file) {
     var fileInfo = info[file.path];
 
     var bootstrapName = '${path.basename(file.path)}_bootstrap.dart';
@@ -590,8 +578,7 @@ class Compiler {
     var bootstrapOutName = path.basename(bootstrapOutPath);
     output.add(new OutputFile(bootstrapOutPath, _bootstrapCode(
           _pathMapper.importUrlFor(new FileInfo(
-              new UrlInfo('', bootstrapPath, null)), fileInfo),
-          _useObservers)));
+              new UrlInfo('', bootstrapPath, null)), fileInfo))));
 
     var document = file.document;
     var hasCss = _emitAllCss();
@@ -683,7 +670,7 @@ class Compiler {
   }
 
   /** Emits the Dart code for all components in [fileInfo]. */
-  void _emitComponents(FileInfo fileInfo, Map<String, String> pseudoElements) {
+  void _emitComponents(FileInfo fileInfo) {
     for (var component in fileInfo.declaredComponents) {
       // TODO(terry): Handle one stylesheet per component see fixupHtmlCss.
       if (component.styleSheets.length > 1 && options.processCss) {
@@ -743,14 +730,12 @@ class Compiler {
  * The code that will be used to bootstrap the application, this is inlined in
  * the main.html.html output file.
  */
-String _bootstrapCode(String userMainImport, bool useObservers) => """
+String _bootstrapCode(String userMainImport) => """
 library bootstrap;
 
-import 'package:web_ui/watcher.dart' as watcher;
 import '$userMainImport' as userMain;
 
 main() {
-  watcher.useObservers = $useObservers;
   userMain.main();
   userMain.init_autogenerated();
 }

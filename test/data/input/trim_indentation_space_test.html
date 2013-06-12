@@ -95,14 +95,16 @@ BSD-style license that can be found in the LICENSE file.
   <script type="application/dart">
     import 'dart:html';
     import 'package:unittest/unittest.dart';
+    import 'common.dart';
+
     String value = 'x';
 
     main() {
       window.setImmediate(() {
-        var a = query('#a');
-        var b = query('#b');
-        var c = query('#c');
-        var d = query('#d');
+        var a = query('#a').shadowRoot;
+        var b = query('#b').shadowRoot;
+        var c = query('#c').shadowRoot;
+        var d = query('#d').shadowRoot;
 
         expect(a.nodes.length, 1);
         expect(b.nodes.length, 3);

@@ -1,174 +1,66 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x196
-  RenderBlock {HTML} at (0,0) size 800x196
-    RenderBody {BODY} at (8,8) size 784x180
-      RenderBlock {DIV} at (0,0) size 784x18
-        RenderText {#text} at (0,0) size 130x18
-          text run at (0,0) width 130: "expect: a b c"
-      RenderBlock {DIV} at (0,18) size 784x18
-        RenderText {#text} at (0,0) size 10x18
-          text run at (0,0) width 10: "a"
-        RenderText {#text} at (10,0) size 10x18
-          text run at (10,0) width 10: " "
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (20,0) size 10x18
-          text run at (20,0) width 10: "b"
-        RenderText {#text} at (30,0) size 10x18
-          text run at (30,0) width 10: " "
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (40,0) size 10x18
-          text run at (40,0) width 10: "c"
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-      RenderBlock {DIV} at (0,36) size 784x18
-        RenderText {#text} at (0,0) size 110x18
-          text run at (0,0) width 110: "expect: abc"
-      RenderBlock {DIV} at (0,54) size 784x18
-        RenderText {#text} at (0,0) size 10x18
-          text run at (0,0) width 10: "a"
-        RenderText {#text} at (10,0) size 10x18
-          text run at (10,0) width 10: "b"
-        RenderText {#text} at (20,0) size 10x18
-          text run at (20,0) width 10: "c"
-        RenderText {#text} at (0,0) size 0x0
-      RenderBlock {DIV} at (0,72) size 784x18
-        RenderText {#text} at (0,0) size 70x18
-          text run at (0,0) width 70: "expect:"
-      RenderBlock {DIV} at (0,90) size 784x36
-        RenderText {#text} at (0,0) size 780x36
-          text run at (0,0) width 780: "a [_( -) ( -) ][_( -) ( -) ] b [_( -) ( -) ][_( -) ( -) ] c [_( -) ( -) ][_( -"
-          text run at (0,18) width 80: ") ( -) ]"
-      RenderBlock {DIV} at (0,126) size 784x18
-        RenderText {#text} at (0,0) size 70x18
-          text run at (0,0) width 70: "actual:"
-      RenderBlock {DIV} at (0,144) size 784x36
-        RenderText {#text} at (0,0) size 10x18
-          text run at (0,0) width 10: "a"
-        RenderText {#text} at (10,0) size 10x18
-          text run at (10,0) width 10: " "
-        RenderText {#text} at (20,0) size 10x18
-          text run at (20,0) width 10: "["
-        RenderText {#text} at (30,0) size 10x18
-          text run at (30,0) width 10: "_"
-        RenderText {#text} at (40,0) size 20x18
-          text run at (40,0) width 20: "( "
-        RenderText {#text} at (60,0) size 10x18
-          text run at (60,0) width 10: "-"
-        RenderText {#text} at (70,0) size 20x18
-          text run at (70,0) width 20: ") "
-        RenderText {#text} at (90,0) size 20x18
-          text run at (90,0) width 20: "( "
-        RenderText {#text} at (110,0) size 10x18
-          text run at (110,0) width 10: "-"
-        RenderText {#text} at (120,0) size 20x18
-          text run at (120,0) width 20: ") "
-        RenderText {#text} at (140,0) size 10x18
-          text run at (140,0) width 10: "]"
-        RenderText {#text} at (150,0) size 10x18
-          text run at (150,0) width 10: "["
-        RenderText {#text} at (160,0) size 10x18
-          text run at (160,0) width 10: "_"
-        RenderText {#text} at (170,0) size 20x18
-          text run at (170,0) width 20: "( "
-        RenderText {#text} at (190,0) size 10x18
-          text run at (190,0) width 10: "-"
-        RenderText {#text} at (200,0) size 20x18
-          text run at (200,0) width 20: ") "
-        RenderText {#text} at (220,0) size 20x18
-          text run at (220,0) width 20: "( "
-        RenderText {#text} at (240,0) size 10x18
-          text run at (240,0) width 10: "-"
-        RenderText {#text} at (250,0) size 20x18
-          text run at (250,0) width 20: ") "
-        RenderText {#text} at (270,0) size 10x18
-          text run at (270,0) width 10: "]"
-        RenderText {#text} at (280,0) size 10x18
-          text run at (280,0) width 10: " "
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (290,0) size 10x18
-          text run at (290,0) width 10: "b"
-        RenderText {#text} at (300,0) size 10x18
-          text run at (300,0) width 10: " "
-        RenderText {#text} at (310,0) size 10x18
-          text run at (310,0) width 10: "["
-        RenderText {#text} at (320,0) size 10x18
-          text run at (320,0) width 10: "_"
-        RenderText {#text} at (330,0) size 20x18
-          text run at (330,0) width 20: "( "
-        RenderText {#text} at (350,0) size 10x18
-          text run at (350,0) width 10: "-"
-        RenderText {#text} at (360,0) size 20x18
-          text run at (360,0) width 20: ") "
-        RenderText {#text} at (380,0) size 20x18
-          text run at (380,0) width 20: "( "
-        RenderText {#text} at (400,0) size 10x18
-          text run at (400,0) width 10: "-"
-        RenderText {#text} at (410,0) size 20x18
-          text run at (410,0) width 20: ") "
-        RenderText {#text} at (430,0) size 10x18
-          text run at (430,0) width 10: "]"
-        RenderText {#text} at (440,0) size 10x18
-          text run at (440,0) width 10: "["
-        RenderText {#text} at (450,0) size 10x18
-          text run at (450,0) width 10: "_"
-        RenderText {#text} at (460,0) size 20x18
-          text run at (460,0) width 20: "( "
-        RenderText {#text} at (480,0) size 10x18
-          text run at (480,0) width 10: "-"
-        RenderText {#text} at (490,0) size 20x18
-          text run at (490,0) width 20: ") "
-        RenderText {#text} at (510,0) size 20x18
-          text run at (510,0) width 20: "( "
-        RenderText {#text} at (530,0) size 10x18
-          text run at (530,0) width 10: "-"
-        RenderText {#text} at (540,0) size 20x18
-          text run at (540,0) width 20: ") "
-        RenderText {#text} at (560,0) size 10x18
-          text run at (560,0) width 10: "]"
-        RenderText {#text} at (570,0) size 10x18
-          text run at (570,0) width 10: " "
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (580,0) size 10x18
-          text run at (580,0) width 10: "c"
-        RenderText {#text} at (590,0) size 10x18
-          text run at (590,0) width 10: " "
-        RenderText {#text} at (600,0) size 10x18
-          text run at (600,0) width 10: "["
-        RenderText {#text} at (610,0) size 10x18
-          text run at (610,0) width 10: "_"
-        RenderText {#text} at (620,0) size 20x18
-          text run at (620,0) width 20: "( "
-        RenderText {#text} at (640,0) size 10x18
-          text run at (640,0) width 10: "-"
-        RenderText {#text} at (650,0) size 20x18
-          text run at (650,0) width 20: ") "
-        RenderText {#text} at (670,0) size 20x18
-          text run at (670,0) width 20: "( "
-        RenderText {#text} at (690,0) size 10x18
-          text run at (690,0) width 10: "-"
-        RenderText {#text} at (700,0) size 20x18
-          text run at (700,0) width 20: ") "
-        RenderText {#text} at (720,0) size 10x18
-          text run at (720,0) width 10: "]"
-        RenderText {#text} at (730,0) size 10x18
-          text run at (730,0) width 10: "["
-        RenderText {#text} at (740,0) size 10x18
-          text run at (740,0) width 10: "_"
-        RenderText {#text} at (750,0) size 20x18
-          text run at (750,0) width 20: "( "
-        RenderText {#text} at (770,0) size 10x18
-          text run at (770,0) width 10: "-"
-        RenderText {#text} at (0,18) size 20x18
-          text run at (0,18) width 20: ") "
-        RenderText {#text} at (20,18) size 20x18
-          text run at (20,18) width 20: "( "
-        RenderText {#text} at (40,18) size 10x18
-          text run at (40,18) width 10: "-"
-        RenderText {#text} at (50,18) size 20x18
-          text run at (50,18) width 20: ") "
-        RenderText {#text} at (70,18) size 10x18
-          text run at (70,18) width 10: "]"
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <div>expect: a b c</div>
+  <div id="t1">
+    <template></template>
+      a
+    
+      b
+    
+      c
+    
+  </div>
+  <div>expect: abc</div>
+  <div id="t2">
+  <template indentation="remove"></template>abc
+  </div>
+  <div>expect:</div>
+  <div>a [_( -) ( -) ][_( -) ( -) ] b [_( -) ( -) ][_( -) ( -) ] c [_( -) ( -) ][_( -) ( -) ]</div>
+  <div>actual:</div>
+  <div id="t3">
+  <template></template>
+    a
+    <template indentation="remove"></template>[_<template indentation="preserve"></template>(
+        -)
+      (
+        -)
+      ][_<template indentation="preserve"></template>(
+        -)
+      (
+        -)
+      ]
+  
+    b
+    <template indentation="remove"></template>[_<template indentation="preserve"></template>(
+        -)
+      (
+        -)
+      ][_<template indentation="preserve"></template>(
+        -)
+      (
+        -)
+      ]
+  
+    c
+    <template indentation="remove"></template>[_<template indentation="preserve"></template>(
+        -)
+      (
+        -)
+      ][_<template indentation="preserve"></template>(
+        -)
+      (
+        -)
+      ]
+  
+  </div>
+  
+
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="trim_indentation_space2_test.html_bootstrap.dart"></script></body></html>

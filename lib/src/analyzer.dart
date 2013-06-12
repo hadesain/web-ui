@@ -30,11 +30,11 @@ import 'utils.dart';
  * Adds emitted error/warning messages to [messages], if [messages] is
  * supplied.
  */
-FileInfo analyzeDefinitions(UrlInfo inputUrl,
+FileInfo analyzeDefinitions(GlobalInfo global, UrlInfo inputUrl,
     Document document, String packageRoot,
     Messages messages, {bool isEntryPoint: false}) {
   var result = new FileInfo(inputUrl, isEntryPoint);
-  var loader = new _ElementLoader(result, packageRoot, messages);
+  var loader = new _ElementLoader(global, result, packageRoot, messages);
   loader.visit(document);
   return result;
 }
@@ -49,7 +49,8 @@ FileInfo analyzeDefinitions(UrlInfo inputUrl,
 FileInfo analyzeNodeForTesting(Node source, Messages messages,
     {String filepath: 'mock_testing_file.html'}) {
   var result = new FileInfo(new UrlInfo(filepath, filepath, null));
-  new _Analyzer(result, new IntIterator(), new Map(), messages).visit(source);
+  new _Analyzer(result, new IntIterator(), new GlobalInfo(), messages)
+      .visit(source);
   return result;
 }
 
@@ -60,10 +61,10 @@ FileInfo analyzeNodeForTesting(Node source, Messages messages,
  *  supplied.
  */
 void analyzeFile(SourceFile file, Map<String, FileInfo> info,
-                 Iterator<int> uniqueIds, Map<String, String> pseudoElements,
+                 Iterator<int> uniqueIds, GlobalInfo global,
                  Messages messages) {
   var fileInfo = info[file.path];
-  var analyzer = new _Analyzer(fileInfo, uniqueIds, pseudoElements, messages);
+  var analyzer = new _Analyzer(fileInfo, uniqueIds, global, messages);
   analyzer._normalize(fileInfo, info);
   analyzer.visit(file.document);
 }
@@ -73,10 +74,11 @@ void analyzeFile(SourceFile file, Map<String, FileInfo> info,
 class _Analyzer extends TreeVisitor {
   final FileInfo _fileInfo;
   LibraryInfo _currentInfo;
-  ElementInfo _parent;
   Iterator<int> _uniqueIds;
-  Map<String, String> _pseudoElements;
+  GlobalInfo _global;
   Messages _messages;
+
+  int _generatedClassNumber = 0;
 
   /**
    * Whether to keep indentation spaces. Break lines and indentation spaces
@@ -88,63 +90,24 @@ class _Analyzer extends TreeVisitor {
    */
   bool _keepIndentationSpaces = true;
 
-  /**
-   * Adds emitted error/warning messages to [_messages].
-   * [_messages] must not be null.
-   * Adds pseudo attribute value found on any HTML tag to [_pseudoElements].
-   * [_pseudoElements] must not be null.
-   */
-  _Analyzer(this._fileInfo, this._uniqueIds, this._pseudoElements,
-      this._messages) {
-    assert(this._pseudoElements != null);
-    assert(this._messages != null);
+  _Analyzer(this._fileInfo, this._uniqueIds, this._global, this._messages) {
     _currentInfo = _fileInfo;
   }
 
   void visitElement(Element node) {
-    var info = null;
     if (node.tagName == 'script') {
       // We already extracted script tags in previous phase.
       return;
     }
 
-    if (node.tagName == 'template'
-        || node.attributes.containsKey('template')
-        || node.attributes.containsKey('if')
-        || node.attributes.containsKey('instantiate')
-        || node.attributes.containsKey('iterate')
-        || node.attributes.containsKey('repeat')) {
-      // template tags, conditionals and iteration are handled specially.
-      info = _createTemplateInfo(node);
+    if (node.tagName == 'style') {
+      // We've already parsed the CSS.
+      // If this is a component remove the style node.
+      if (_currentInfo is ComponentInfo) node.remove();
+      return;
     }
 
-    // TODO(jmesserly): it would be nice not to create infos for text or
-    // elements that don't need data binding. Ideally, we would visit our
-    // child nodes and get their infos, and if any of them need data binding,
-    // we create an ElementInfo for ourselves and return it, otherwise we just
-    // return null.
-    if (info == null) {
-      // <element> tags are tracked in the file's declared components, so they
-      // don't need a parent.
-      var parent = node.tagName == 'element' ? null : _parent;
-      info = _createElementInfo(node, parent);
-    }
-
-    visitElementInfo(info);
-
-    if (_parent == null) {
-      _fileInfo.bodyInfo = info;
-    }
-  }
-
-  void visitElementInfo(ElementInfo info) {
-    var node = info.node;
-
-    if (node.tagName == 'body' || (_currentInfo is ComponentInfo
-          && (_currentInfo as ComponentInfo).template == node)) {
-      info.isRoot = true;
-      info.identifier = '__root';
-    }
+    node = _bindAndReplaceElement(node);
 
     var lastInfo = _currentInfo;
     if (node.tagName == 'element') {
@@ -156,18 +119,26 @@ class _Analyzer extends TreeVisitor {
       ComponentInfo component = _fileInfo.components[name];
       if (component == null) return;
 
-      // Associate ElementInfo of the <element> tag with its component.
-      component.elemInfo = info;
+      // Associate <element> tag with its component.
+      component.elementNode = node;
 
       _analyzeComponent(component);
 
       _currentInfo = component;
+
+      // Remove the <element> tag from the tree
+      node.remove();
     }
 
-    node.attributes.forEach((k, v) => visitAttribute(info, k, v));
+    node.attributes.forEach((name, value) {
+      if (name.startsWith('on')) {
+        _readEventHandler(node, name, value);
+      } else  if (name == 'pseudo' && _currentInfo is ComponentInfo) {
+        // Any component's custom pseudo-element(s) defined?
+        _processPseudoAttribute(node, value.split(' '));
+      }
+    });
 
-    var savedParent = _parent;
-    _parent = info;
     var keepSpaces = _keepIndentationSpaces;
     if (node.tagName == 'template' &&
         node.attributes.containsKey('indentation')) {
@@ -186,44 +157,10 @@ class _Analyzer extends TreeVisitor {
 
     _keepIndentationSpaces = keepSpaces;
     _currentInfo = lastInfo;
-    _parent = savedParent;
 
-    if (_needsIdentifier(info)) {
-      _ensureParentHasVariable(info);
-      if (info.identifier == null) {
-        _uniqueIds.moveNext();
-        info.identifier = toCamelCase('__e-${_uniqueIds.current}');
-      }
+    if (node.tagName == 'body' || node.parent == null) {
+      _fileInfo.body = node;
     }
-  }
-
-  /**
-   * If this [info] is not created in code, ensure that whichever parent element
-   * is created in code has been marked appropriately, so the parent is stored
-   * in a variable/field and we can access this element from it.
-   */
-  static void _ensureParentHasVariable(ElementInfo info) {
-    if (info.isRoot || info.createdInCode) return;
-
-    for (var p = info.parent; p != null; p = p.parent) {
-      if (p.createdInCode) {
-        p.descendantHasBinding = true;
-        return;
-      }
-    }
-  }
-
-  /**
-   * Whether code generators need to create a field to store a reference to this
-   * element. This is typically true whenever we need to access the element
-   * (e.g. to add event listeners, update values on data-bound watchers, etc).
-   */
-  static bool _needsIdentifier(ElementInfo info) {
-    if (info.isRoot) return false;
-
-    return info.childrenCreatedInCode || info.descendantHasBinding ||
-        info.component != null || info.attributes.length > 0 ||
-        info.values.length > 0 || info.events.length > 0;
   }
 
   void _analyzeComponent(ComponentInfo component) {
@@ -240,17 +177,13 @@ class _Analyzer extends TreeVisitor {
     component.findClassDeclaration(_messages);
   }
 
-  ElementInfo _createElementInfo(Element node, ElementInfo parent) {
+  Element _bindAndReplaceElement(Element node) {
     var component = _bindCustomElement(node);
     if (component != null && node.attributes['is'] == null) {
       // We need to ensure the correct DOM element is created in the tree.
       // Until we get document.register and the browser's HTML parser can do
       // the right thing for us, we switch to the is="tag-name" form.
 
-      // TODO(jmesserly): it's a shame we mutate the tree here instead of
-      // html_cleaner, but that would require mutating the node field of info,
-      // and risk references to the original node leaking into other objects,
-      // which seems worse.
       var newNode = new Element.tag(component.baseExtendsTag);
       newNode.attributes['is'] = node.tagName;
       node.attributes.forEach((k, v) {
@@ -261,7 +194,7 @@ class _Analyzer extends TreeVisitor {
       node = newNode;
     }
 
-    return new ElementInfo(node, parent, component);
+    return node;
   }
 
   ComponentSummary _bindCustomElement(Element node) {
@@ -290,166 +223,14 @@ class _Analyzer extends TreeVisitor {
     return null;
   }
 
-  TemplateInfo _createTemplateInfo(Element node) {
-    if (node.tagName != 'template' &&
-        !node.attributes.containsKey('template')) {
-      _messages.warning('template attribute is required when using if, '
-          'instantiate, repeat, or iterate attributes.',
-          node.sourceSpan);
-    }
-
-    var instantiate = node.attributes['instantiate'];
-    var condition = node.attributes['if'];
-    if (instantiate != null) {
-      if (instantiate.startsWith('if ')) {
-        if (condition != null) {
-          _messages.warning(
-              'another condition was already defined on this element.',
-              node.sourceSpan);
-        } else {
-          condition = instantiate.substring(3);
-        }
-      }
-    }
-
-    // TODO(jmesserly): deprecate iterate.
-    var iterate = node.attributes['iterate'];
-    var repeat = node.attributes['repeat'];
-    if (repeat == null) {
-      repeat = iterate;
-    } else if (iterate != null) {
-      _messages.warning('template cannot have both iterate and repeat. '
-          'iterate attribute will be ignored.', node.sourceSpan);
-      iterate = null;
-    }
-
-    // Note: we issue warnings instead of errors because the spirit of HTML and
-    // Dart is to be forgiving.
-    if (condition != null && repeat != null) {
-      _messages.warning('template cannot have both iteration and conditional '
-          'attributes', node.sourceSpan);
-      return null;
-    }
-
-    if (node.parent != null && node.parent.tagName == 'element' &&
-        (condition != null || repeat != null)) {
-
-      // TODO(jmesserly): would be cool if we could just refactor this, or offer
-      // a quick fix in the Editor.
-      var example = new Element.html('<element><template><template>');
-      node.parent.attributes.forEach((k, v) { example.attributes[k] = v; });
-      var nestedTemplate = example.nodes.first.nodes.first;
-      node.attributes.forEach((k, v) { nestedTemplate.attributes[k] = v; });
-
-      _messages.warning('the <template> of a custom element does not support '
-          '"if", "iterate" or "repeat". However, you can create another '
-          'template node that is a child node, for example:\n'
-          '${example.outerHtml}',
-          node.parent.sourceSpan);
-      return null;
-    }
-
-    if (condition != null) {
-      var result = new TemplateInfo(node, _parent, ifCondition: condition);
-      result.removeAttributes.add('if');
-      result.removeAttributes.add('instantiate');
-      if (node.tagName == 'template') {
-        return node.nodes.length > 0 ? result : null;
-      }
-
-      _createTemplateAttributePlaceholder(node, result);
-      return result;
-
-    } else if (repeat != null) {
-      var match = new RegExp(r"(.*) in (.*)").firstMatch(repeat);
-      if (match == null) {
-        _messages.warning('template iterate/repeat must be of the form: '
-            'repeat="variable in list", where "variable" is your variable name '
-            'and "list" is the list of items.',
-            node.sourceSpan);
-        return null;
-      }
-
-      if (node.nodes.length == 0) return null;
-      var result = new TemplateInfo(node, _parent, loopVariable: match[1],
-          loopItems: match[2], isRepeat: iterate == null);
-      result.removeAttributes.add('iterate');
-      result.removeAttributes.add('repeat');
-      if (node.tagName == 'template') {
-        return result;
-      }
-
-      if (!result.isRepeat) {
-        result.removeAttributes.add('template');
-        // TODO(jmesserly): deprecate this? I think you want "template repeat"
-        // most of the time, but "template iterate" seems useful sometimes.
-        // (Native <template> element parsing would make both obsolete, though.)
-        return result;
-      }
-
-      _createTemplateAttributePlaceholder(node, result);
-      return result;
-    }
-
-    return null;
-  }
-
-  // TODO(jmesserly): if and repeat in attributes require injecting a
-  // placeholder node, and a real node which is a clone. We should
-  // consider a design where we show/hide the node instead (with care
-  // taken not to evaluate hidden bindings). That is more along the lines
-  // of AngularJS, and would have a cleaner DOM. See issue #142.
-  void _createTemplateAttributePlaceholder(Element node, TemplateInfo result) {
-    result.removeAttributes.add('template');
-    var contentNode = node.clone();
-    node.attributes.clear();
-    contentNode.nodes.addAll(node.nodes);
-
-    // Create a new ElementInfo that is a child of "result" -- the
-    // placeholder node. This will become result.contentInfo.
-    visitElementInfo(_createElementInfo(contentNode, result));
-  }
-
-  void visitAttribute(ElementInfo info, String name, String value) {
-    if (name.startsWith('on')) {
-      _readEventHandler(info, name, value);
-      return;
-    } else if (name.startsWith('bind-')) {
-      // Strip leading "bind-"
-      var attrName = name.substring(5);
-      if (_readTwoWayBinding(info, attrName, value)) {
-        info.removeAttributes.add(name);
-      }
-      return;
-    }
-
-    AttributeInfo attrInfo;
-    if (name == 'style') {
-      attrInfo = _readStyleAttribute(info, value);
-    } else if (name == 'class') {
-      attrInfo = _readClassAttribute(info, value);
-    } else {
-      attrInfo = _readAttribute(info, name, value);
-    }
-
-    if (attrInfo != null) {
-      info.attributes[name] = attrInfo;
-    }
-
-    // Any component's custom pseudo-element(s) defined?
-    if (name == 'pseudo' && _currentInfo is ComponentInfo) {
-      _processPseudoAttribute(info.node, value.split(' '));
-    }
-  }
-
   void _processPseudoAttribute(Node node, List<String> values) {
     List mangledValues = [];
     for (var pseudoElement in values) {
-      if (_pseudoElements.containsKey(pseudoElement)) continue;
+      if (_global.pseudoElements.containsKey(pseudoElement)) continue;
 
       _uniqueIds.moveNext();
       var newValue = "${pseudoElement}_${_uniqueIds.current}";
-      _pseudoElements[pseudoElement] = newValue;
+      _global.pseudoElements[pseudoElement] = newValue;
       // Mangled name of pseudo-element.
       mangledValues.add(newValue);
 
@@ -471,15 +252,25 @@ class _Analyzer extends TreeVisitor {
    * Support for inline event handlers that take expressions.
    * For example: `on-double-click=myHandler($event, todo)`.
    */
-  void _readEventHandler(ElementInfo info, String name, String value) {
+  void _readEventHandler(Element node, String name, String value) {
     if (!name.startsWith('on-')) {
       // TODO(jmesserly): do we need an option to suppress this warning?
       _messages.warning('Event handler $name will be interpreted as an inline '
           'JavaScript event handler. Use the form '
           'on-event-name="handlerName(\$event)" if you want a Dart handler '
           'that will automatically update the UI based on model changes.',
-          info.node.sourceSpan);
+          node.sourceSpan);
       return;
+    }
+
+    // TODO(jmesserly): this a temporary hack until we can migrate event binding
+    // to a runtime solution. It's a very slow selector. Escaping is wrong too.
+    var selector = '[$name="$value"]';
+    if (_global.eventQuerySelectors.contains(selector)) {
+      var cls = node.attributes['class'];
+      var newClass = '__event${_generatedClassNumber++}';
+      node.attributes['class'] = cls == null ? newClass : '$cls $newClass';
+      selector = '$newClass$selector';
     }
 
     if (name == 'on-key-down' || name == 'on-key-up' ||
@@ -487,233 +278,8 @@ class _Analyzer extends TreeVisitor {
       value = '\$event = new autogenerated.KeyEvent(\$event); $value';
     }
 
-    _addEvent(info, toCamelCase(name), (elem) => value);
-    info.removeAttributes.add(name);
-  }
-
-  EventInfo _addEvent(ElementInfo info, String name, ActionDefinition action) {
-    var events = info.events.putIfAbsent(name, () => <EventInfo>[]);
-    var eventInfo = new EventInfo(name, action);
-    events.add(eventInfo);
-    return eventInfo;
-  }
-
-  // http://dev.w3.org/html5/spec/the-input-element.html#the-input-element
-  /** Support for two-way bindings. */
-  bool _readTwoWayBinding(ElementInfo info, String name, String value) {
-    var elem = info.node;
-    var binding = new BindingInfo.fromText(value);
-
-    // Find the HTML tag name.
-    var isInput = info.baseTagName == 'input';
-    var isTextArea = info.baseTagName == 'textarea';
-    var isSelect = info.baseTagName == 'select';
-    var inputType = elem.attributes['type'];
-
-    String eventStream;
-
-    // Special two-way binding logic for input elements.
-    if (isInput && name == 'checked') {
-      if (inputType == 'radio') {
-        if (!_isValidRadioButton(info)) return false;
-      } else if (inputType != 'checkbox') {
-        _messages.error('checked is only supported in HTML with type="radio" '
-            'or type="checked".', info.node.sourceSpan);
-        return false;
-      }
-
-      // Both 'click' and 'change' seem reliable on all the modern browsers.
-      eventStream = 'onChange';
-    } else if (isSelect && (name == 'selected-index' || name == 'value')) {
-      eventStream = 'onChange';
-    } else if (isInput && name == 'value' && inputType == 'radio') {
-      return _addRadioValueBinding(info, binding);
-    } else if (isInput && name == 'files' && inputType == 'file') {
-      eventStream = 'onChange';
-    } else if (isTextArea && name == 'value' || isInput &&
-        (name == 'value' || name == 'value-as-date' ||
-        name == 'value-as-number')) {
-
-      // Input event is fired more frequently than "change" on some browsers.
-      // We want to update the value for each keystroke.
-      eventStream = 'onInput';
-    } else if (info.component != null) {
-      // Assume we are binding a field on the component.
-      // TODO(jmesserly): validate this assumption about the user's code by
-      // using compile time mirrors.
-
-      _checkDuplicateAttribute(info, name);
-      info.attributes[name] = new AttributeInfo([binding],
-          customTwoWayBinding: true);
-      return true;
-
-    } else {
-      _messages.error('Unknown two-way binding attribute $name. Ignored.',
-          info.node.sourceSpan);
-      return false;
-    }
-
-    _checkDuplicateAttribute(info, name);
-
-    info.attributes[name] = new AttributeInfo([binding]);
-    _addEvent(info, eventStream,
-        (e) => '${binding.exp} = $e.${findDomField(info, name)}');
-    return true;
-  }
-
-  void _checkDuplicateAttribute(ElementInfo info, String name) {
-    if (info.node.attributes[name] != null) {
-      _messages.warning('Duplicate attribute $name. You should provide either '
-          'the two-way binding or the attribute itself. The attribute will be '
-          'ignored.', info.node.sourceSpan);
-      info.removeAttributes.add(name);
-    }
-  }
-
-  bool _isValidRadioButton(ElementInfo info) {
-    if (info.attributes['checked'] == null) return true;
-
-    _messages.error('Radio buttons cannot have both "checked" and "value" '
-        'two-way bindings. Either use checked:\n'
-        '  <input type="radio" bind-checked="myBooleanVar">\n'
-        'or value:\n'
-        '  <input type="radio" bind-value="myStringVar" value="theValue">',
-        info.node.sourceSpan);
-    return false;
-  }
-
-  /**
-   * Radio buttons use the "value" and "bind-value" fields.
-   * The "value" attribute is assigned to the binding expression when checked,
-   * and the checked field is updated if "value" matches the binding expression.
-   */
-  bool _addRadioValueBinding(ElementInfo info, BindingInfo binding) {
-    if (!_isValidRadioButton(info)) return false;
-
-    // TODO(jmesserly): should we read the element's "value" at runtime?
-    var radioValue = info.node.attributes['value'];
-    if (radioValue == null) {
-      _messages.error('Radio button bindings need "bind-value" and "value".'
-          'For example: '
-          '<input type="radio" bind-value="myStringVar" value="theValue">',
-          info.node.sourceSpan);
-      return false;
-    }
-
-    radioValue = escapeDartString(radioValue);
-    info.attributes['checked'] = new AttributeInfo(
-        [new BindingInfo("${binding.exp} == '$radioValue'", false)]);
-    _addEvent(info, 'onChange', (e) => "${binding.exp} = '$radioValue'");
-    return true;
-  }
-
-  /**
-   * Data binding support in attributes. Supports multiple bindings.
-   * This is can be used for any attribute, but a typical use case would be
-   * URLs, for example:
-   *
-   *       href="#{item.href}"
-   */
-  AttributeInfo _readAttribute(ElementInfo info, String name, String value) {
-    var parser = new BindingParser(value);
-    if (!parser.moveNext()) {
-      if (info.component == null || globalAttributes.contains(name) ||
-          name == 'is') {
-        return null;
-      }
-      return new AttributeInfo([], textContent: [parser.textContent]);
-    }
-
-    info.removeAttributes.add(name);
-    var bindings = <BindingInfo>[];
-    var content = <String>[];
-    parser.readAll(bindings, content);
-
-    // Use a simple attriubte binding if we can.
-    // This kind of binding works for non-String values.
-    if (bindings.length == 1 && content[0] == '' && content[1] == '') {
-      return new AttributeInfo(bindings);
-    }
-
-    // Otherwise do a text attribute that performs string interpolation.
-    return new AttributeInfo(bindings, textContent: content);
-  }
-
-  /**
-   * Special support to bind style properties of the forms:
-   *     style="{{mapValue}}"
-   *     style="property: {{value1}}; other-property: {{value2}}"
-   */
-  AttributeInfo _readStyleAttribute(ElementInfo info, String value) {
-    var parser = new BindingParser(value);
-    if (!parser.moveNext()) return null;
-
-    var bindings = <BindingInfo>[];
-    var content = <String>[];
-    parser.readAll(bindings, content);
-
-    // Use a style attribute binding if we can.
-    // This kind of binding works for map values.
-    if (bindings.length == 1 && content[0] == '' && content[1] == '') {
-      return new AttributeInfo(bindings, isStyle: true);
-    }
-
-    // Otherwise do a text attribute that performs string interpolation.
-    return new AttributeInfo(bindings, textContent: content);
-  }
-
-  /**
-   * Special support to bind each css class separately in attributes of the
-   * form:
-   *     class="{{class1}} class2 {{class3}} {{class4}}"
-   */
-  AttributeInfo _readClassAttribute(ElementInfo info, String value) {
-    var parser = new BindingParser(value);
-    if (!parser.moveNext()) return null;
-
-    var bindings = <BindingInfo>[];
-    var content = <String>[];
-    parser.readAll(bindings, content);
-
-    // Update class attributes to only have non-databound class names for
-    // attributes for the HTML.
-    info.node.attributes['class'] = content.join('');
-
-    return new AttributeInfo(bindings, isClass: true);
-  }
-
-  void visitText(Text text) {
-    var parser = new BindingParser(text.value);
-    if (!parser.moveNext()) {
-      if (!_keepIndentationSpaces) {
-        text.value = trimOrCompact(text.value);
-      }
-      if (text.value != '') new TextInfo(text, _parent);
-      return;
-    }
-
-    _parent.childrenCreatedInCode = true;
-
-    // We split [text] so that each binding has its own text node.
-    var node = text.parent;
-    do {
-      _addRawTextContent(parser.textContent);
-      var placeholder = new Text('');
-      _uniqueIds.moveNext();
-      var id = '__binding${_uniqueIds.current}';
-      new TextInfo(placeholder, _parent, parser.binding, id);
-    } while (parser.moveNext());
-
-    _addRawTextContent(parser.textContent);
-  }
-
-  void _addRawTextContent(String content) {
-    if (!_keepIndentationSpaces) {
-      content = trimOrCompact(content);
-    }
-    if (content != '') {
-      new TextInfo(new Text(content), _parent);
-    }
+    _global.eventQuerySelectors.add(selector);
+    _currentInfo.events.add(new EventInfo(toCamelCase(name), value, selector));
   }
 
   /**
@@ -798,6 +364,7 @@ class _Analyzer extends TreeVisitor {
 
 /** A visitor that finds `<link rel="import">` and `<element>` tags.  */
 class _ElementLoader extends TreeVisitor {
+  final GlobalInfo _global;
   final FileInfo _fileInfo;
   LibraryInfo _currentInfo;
   String _packageRoot;
@@ -808,8 +375,8 @@ class _ElementLoader extends TreeVisitor {
    * Adds emitted warning/error messages to [_messages]. [_messages]
    * must not be null.
    */
-  _ElementLoader(this._fileInfo, this._packageRoot, this._messages) {
-    assert(this._messages != null);
+  _ElementLoader(this._global, this._fileInfo, this._packageRoot,
+      this._messages) {
     _currentInfo = _fileInfo;
   }
 
@@ -895,18 +462,9 @@ class _ElementLoader extends TreeVisitor {
       extendsTag = 'span';
     }
 
-    var template = null;
-    if (templateNodes.length == 1) {
-      template = templateNodes.single;
-    } else {
-      _messages.error('an <element> should have exactly one <template> child',
-          node.sourceSpan);
-    }
-
-    var component = new ComponentInfo(node, _fileInfo, tagName, extendsTag,
-        template);
-
+    var component = new ComponentInfo(node, _fileInfo, tagName, extendsTag);
     _fileInfo.declaredComponents.add(component);
+    _addComponent(component);
 
     var lastInfo = _currentInfo;
     _currentInfo = component;
@@ -914,6 +472,25 @@ class _ElementLoader extends TreeVisitor {
     _currentInfo = lastInfo;
   }
 
+  /** Adds a component's tag name to the global list. */
+  void _addComponent(ComponentInfo component) {
+    var existing = _global.components[component.tagName];
+    if (existing != null) {
+      if (existing.hasConflict) {
+        // No need to report a second error for the same name.
+        return;
+      }
+
+      existing.hasConflict = true;
+
+      _messages.error('duplicate custom element definition for '
+          '"${component.tagName}".', existing.sourceSpan);
+      _messages.error('duplicate custom element definition for '
+          '"${component.tagName}" (second location).', component.sourceSpan);
+    } else {
+      _global.components[component.tagName] = component;
+    }
+  }
 
   void visitScriptElement(Element node) {
     var scriptType = node.attributes['type'];
@@ -1011,72 +588,6 @@ class _ElementLoader extends TreeVisitor {
   }
 }
 
-
-/**
- * Parses double-curly data bindings within a string, such as
- * `foo {{bar}} baz {{quux}}`.
- *
- * Note that a double curly always closes the binding expression, and nesting
- * is not supported. This seems like a reasonable assumption, given that these
- * will be specified for HTML, and they will require a Dart or JavaScript
- * parser to parse the expressions.
- */
-class BindingParser {
-  final String text;
-  int previousEnd;
-  int start;
-  int end = 0;
-
-  BindingParser(this.text);
-
-  int get length => text.length;
-
-  String get textContent {
-    if (start == null) throw new StateError('iteration not started');
-    return text.substring(previousEnd, start);
-  }
-
-  BindingInfo get binding {
-    if (start == null) throw new StateError('iteration not started');
-    if (end < 0) throw new StateError('no more bindings');
-    return new BindingInfo.fromText(text.substring(start + 2, end - 2));
-  }
-
-  bool moveNext() {
-    if (end < 0) return false;
-
-    previousEnd = end;
-    start = text.indexOf('{{', end);
-    if (start < 0) {
-      end = -1;
-      start = length;
-      return false;
-    }
-
-    end = text.indexOf('}}', start);
-    if (end < 0) {
-      start = length;
-      return false;
-    }
-    // For consistency, start and end both include the curly braces.
-    end += 2;
-    return true;
-  }
-
-  /**
-   * Parses all bindings and contents and store them in the provided arguments.
-   */
-  void readAll(List<BindingInfo> bindings, List<String> content) {
-    if (start == null) moveNext();
-    if (start < length) {
-      do {
-        bindings.add(binding);
-        content.add(textContent);
-      } while (moveNext());
-    }
-    content.add(textContent);
-  }
-}
 
 void analyzeCss(String packageRoot, List<SourceFile> files,
                 Map<String, FileInfo> info, Map<String, String> pseudoElements,

@@ -1,19 +1,19 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x34
-  RenderBlock {HTML} at (0,0) size 800x34
-    RenderBody {BODY} at (8,8) size 784x18
-      RenderText {#text} at (0,0) size 160x18
-        text run at (0,0) width 160: "expect 'hello': "
-      RenderInline {SPAN} at (0,0) size 50x18
-        RenderText {#text} at (0,0) size 0x0
-        RenderInline {SPAN} at (0,0) size 50x18
-          RenderText {#text} at (0,0) size 0x0
-          RenderInline {SPAN} at (0,0) size 50x18
-            RenderText {#text} at (160,0) size 50x18
-              text run at (160,0) width 50: "hello"
-          RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (0,0) size 0x0
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <link rel="import" href="../input/component_imports_component_c2a.html">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <!-- use component-a, which internally uses component-b defined in a separate
+  file -->
+  expect 'hello': <span is="x-component-a"><shadow-root>    <span is="x-component-b"><shadow-root>    <span>hello</span>
+  </shadow-root></span>
+  </shadow-root></span>
+  
+
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="component_imports_component2_test.html_bootstrap.dart"></script></body></html>

@@ -1,35 +1,24 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x84
-  RenderBlock {HTML} at (0,0) size 800x84
-    RenderBody {BODY} at (8,8) size 784x68
-      RenderTable {TABLE} at (0,0) size 44x68
-        RenderTableSection {TBODY} at (0,0) size 44x68
-          RenderTableRow {TR} at (0,2) size 44x20
-            RenderTableCell {TD} at (2,2) size 12x20 [r=0 c=0 rs=1 cs=1]
-              RenderText {#text} at (1,1) size 10x18
-                text run at (1,1) width 10: "1"
-            RenderTableCell {TD} at (16,2) size 12x20 [r=0 c=1 rs=1 cs=1]
-              RenderText {#text} at (1,1) size 10x18
-                text run at (1,1) width 10: "2"
-            RenderTableCell {TD} at (30,2) size 12x20 [r=0 c=2 rs=1 cs=1]
-              RenderText {#text} at (1,1) size 10x18
-                text run at (1,1) width 10: "3"
-          RenderTableRow {TR} at (0,24) size 44x20
-            RenderTableCell {TD} at (2,24) size 12x20 [r=1 c=0 rs=1 cs=1]
-              RenderText {#text} at (1,1) size 10x18
-                text run at (1,1) width 10: "4"
-            RenderTableCell {TD} at (16,24) size 12x20 [r=1 c=1 rs=1 cs=1]
-              RenderText {#text} at (1,1) size 10x18
-                text run at (1,1) width 10: "9"
-            RenderTableCell {TD} at (30,24) size 12x20 [r=1 c=2 rs=1 cs=1]
-              RenderText {#text} at (1,1) size 10x18
-                text run at (1,1) width 10: "5"
-          RenderTableRow {TR} at (0,46) size 44x20
-            RenderTableCell {TD} at (2,46) size 12x20 [r=2 c=0 rs=1 cs=1]
-              RenderText {#text} at (1,1) size 10x18
-                text run at (1,1) width 10: "2"
-            RenderTableCell {TD} at (16,46) size 12x20 [r=2 c=1 rs=1 cs=1]
-              RenderText {#text} at (1,1) size 10x18
-                text run at (1,1) width 10: "4"
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <!-- Tests that repeat and template attribute work. -->
+  <table>
+    <tbody id="test">
+      <tr style="display:none"></tr><tr template="" repeat="row in table">
+        <td style="display:none"></td><td template="" repeat="cell in row.where((c) =&gt; c != 0)">1</td><td template="" repeat="cell in row.where((c) =&gt; c != 0)">2</td><td template="" repeat="cell in row.where((c) =&gt; c != 0)">3</td>
+      </tr><tr template="" repeat="row in table">
+        <td style="display:none"></td><td template="" repeat="cell in row.where((c) =&gt; c != 0)">4</td><td template="" repeat="cell in row.where((c) =&gt; c != 0)">9</td><td template="" repeat="cell in row.where((c) =&gt; c != 0)">5</td>
+      </tr><tr template="" repeat="row in table">
+        <td style="display:none"></td><td template="" repeat="cell in row.where((c) =&gt; c != 0)">2</td><td template="" repeat="cell in row.where((c) =&gt; c != 0)">4</td>
+      </tr>
+    </tbody>
+  </table>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="repeat_attribute_test.html_bootstrap.dart"></script></body></html>

@@ -1,30 +1,18 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x124
-  RenderBlock {HTML} at (0,0) size 800x124
-    RenderBody {BODY} at (8,8) size 784x108
-      RenderBlock {DIV} at (0,0) size 784x18
-        RenderText {#text} at (0,0) size 420x18
-          text run at (0,0) width 420: "text to text (expect <span>text1</span>): "
-        RenderText {#text} at (420,0) size 180x18
-          text run at (420,0) width 180: "<span>text1</span>"
-      RenderBlock {DIV} at (0,18) size 784x36
-        RenderBlock (anonymous) at (0,0) size 784x18
-          RenderText {#text} at (0,0) size 430x18
-            text run at (0,0) width 430: "text to html (expect html1 in a real span):"
-        RenderBlock {DIV} at (0,18) size 784x18
-          RenderText {#text} at (0,0) size 50x18
-            text run at (0,0) width 50: "html1"
-      RenderBlock {DIV} at (0,54) size 784x18
-        RenderText {#text} at (0,0) size 420x18
-          text run at (0,0) width 420: "html to text (expect <span>text2</span>): "
-        RenderText {#text} at (420,0) size 180x18
-          text run at (420,0) width 180: "<span>text2</span>"
-      RenderBlock {DIV} at (0,72) size 784x36
-        RenderBlock (anonymous) at (0,0) size 784x18
-          RenderText {#text} at (0,0) size 430x18
-            text run at (0,0) width 430: "html to html (expect html2 in a real span):"
-        RenderBlock {DIV} at (0,18) size 784x18
-          RenderText {#text} at (0,0) size 50x18
-            text run at (0,0) width 50: "html2"
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <!-- Tests it is valid to switch text bindings by SafeHtml bindings and
+  viceversa. -->
+  <div>text to text (expect &lt;span&gt;text1&lt;/span&gt;): &lt;span&gt;text1&lt;/span&gt;</div>
+  <div>text to html (expect html1 in a real span): <div>html1</div></div>
+  <div>html to text (expect &lt;span&gt;text2&lt;/span&gt;): &lt;span&gt;text2&lt;/span&gt;</div>
+  <div>html to html (expect html2 in a real span): <div>html2</div></div>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="escape2_test.html_bootstrap.dart"></script></body></html>

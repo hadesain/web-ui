@@ -4,7 +4,7 @@
 
 // TODO(sigmund): move this library to a shared package? or make part of
 // dart:html?
-library safe_html;
+library web_ui.safe_html;
 
 /** Declares a string that is a well-formed HTML fragment. */
 class SafeHtml {

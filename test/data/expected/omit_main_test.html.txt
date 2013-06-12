@@ -1,16 +1,16 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x34
-  RenderBlock {HTML} at (0,0) size 800x34
-    RenderBody {BODY} at (8,8) size 784x18
-      RenderText {#text} at (0,0) size 260x18
-        text run at (0,0) width 260: "expect to see 'hi there': "
-      RenderInline {SPAN} at (0,0) size 20x18
-        RenderText {#text} at (260,0) size 20x18
-          text run at (260,0) width 20: "hi"
-      RenderText {#text} at (280,0) size 10x18
-        text run at (280,0) width 10: " "
-      RenderText {#text} at (290,0) size 50x18
-        text run at (290,0) width 50: "there"
-      RenderText {#text} at (0,0) size 0x0
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+  <!--
+    Use JS script tag just to indicate that the test is done running. Otherwise
+    DRT will time out.
+  -->
+  <script type="application/javascript">
+    window.setTimeout(function() { window.postMessage('done', '*'); }, 0);
+  </script>
+</head>
+<body><script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="omit_main_test.html_bootstrap.dart"></script></body></html>
+expect to see 'hi there':  there

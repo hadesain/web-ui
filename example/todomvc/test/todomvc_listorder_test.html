@@ -20,38 +20,39 @@ wrong order when using lists and ifs together.
   <link rel="stylesheet" href="../web/base.css">
   <script src="packages/web_ui/testing/testing.js"></script>
   <title>Dart • TodoMVC</title>
-</head><body>
+</head>
+<body>
   <todo-app></todo-app>
   <script type="application/dart">
 import 'dart:async';
 import 'dart:html';
+import 'package:mdv_observe/mdv_observe.dart';
 import 'package:unittest/unittest.dart';
 import 'package:web_ui/web_ui.dart';
-import 'package:web_ui/observe/html.dart';
 import '../web/model.dart';
 
 main() {
-  useShadowDom = false;
-
   Timer.run(() {
-    app.todos.add(new Todo('one (unchecked)'));
-    app.todos.add(new Todo('two (checked)')..done = true);
-    app.todos.add(new Todo('three (unchecked)'));
-    locationHash = '#/';
+    appModel.todos.add(new Todo('one (unchecked)'));
+    appModel.todos.add(new Todo('two (checked)')..done = true);
+    appModel.todos.add(new Todo('three (unchecked)'));
 
-    deliverChangesSync();
-    expect(queryAll('#todo-list li[is=todo-row]').length, 3);
+    var root = query('span[is=todo-app]').xtag.shadowRoot;
 
-    locationHash = '#/active';
-    deliverChangesSync();
-    expect(queryAll('#todo-list li[is=todo-row]').length, 2);
+    windowLocation.hash = '#/';
+    deliverChangeRecords();
+    expect(root.queryAll('#todo-list li[is=todo-row]').length, 3);
 
-    locationHash = '#/completed';
-    deliverChangesSync();
-    expect(queryAll('#todo-list li[is=todo-row]').length, 1);
+    windowLocation.hash = '#/active';
+    deliverChangeRecords();
+    expect(root.queryAll('#todo-list li[is=todo-row]').length, 2);
 
-    locationHash = '#/';
-    deliverChangesSync();
+    windowLocation.hash = '#/completed';
+    deliverChangeRecords();
+    expect(root.queryAll('#todo-list li[is=todo-row]').length, 1);
+
+    windowLocation.hash = '#/';
+    deliverChangeRecords();
     window.postMessage('done', '*');
   });
 }

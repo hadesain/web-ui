@@ -1,31 +1,20 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x70
-  RenderBlock {HTML} at (0,0) size 800x70
-    RenderBody {BODY} at (8,8) size 784x54
-      RenderBlock (anonymous) at (0,0) size 784x18
-        RenderText {#text} at (0,0) size 380x18
-          text run at (0,0) width 380: "You should see a message from B then A"
-        RenderInline {SPAN} at (0,0) size 0x0
-          RenderText {#text} at (0,0) size 0x0
-          RenderInline {SPAN} at (0,0) size 0x0
-            RenderText {#text} at (0,0) size 0x0
-            RenderText {#text} at (0,0) size 0x0
-      RenderBlock (anonymous) at (0,18) size 784x18
-        RenderBlock {DIV} at (0,0) size 784x18
-          RenderText {#text} at (0,0) size 120x18
-            text run at (0,0) width 120: "hello from B"
-      RenderBlock (anonymous) at (0,36) size 784x0
-        RenderInline {SPAN} at (0,0) size 0x0
-          RenderInline {SPAN} at (0,0) size 0x0
-          RenderText {#text} at (0,0) size 0x0
-      RenderBlock (anonymous) at (0,36) size 784x18
-        RenderBlock {DIV} at (0,0) size 784x18
-          RenderText {#text} at (0,0) size 120x18
-            text run at (0,0) width 120: "hello from A"
-      RenderBlock (anonymous) at (0,54) size 784x0
-        RenderInline {SPAN} at (0,0) size 0x0
-          RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <link rel="import" href="../input/component_unique_ids_component.html">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  You should see a message from B then A
+  
+  <span is="x-component-a"><shadow-root>      <span is="x-component-b"><shadow-root>      <template></template>
+      <div class="b" title="TitleB">hello from B</div>
+    </shadow-root></span>
+      <div class="a" title="TitleA">hello from A</div>
+    </shadow-root></span>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="component_unique_ids_test.html_bootstrap.dart"></script></body></html>

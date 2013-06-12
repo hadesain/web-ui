@@ -340,14 +340,14 @@ test_component_var() {
       'foo.css':  r'''@main_color: var(b);
                       @b: var(c);
                       @c: red;
-                      
+
                       @one: var(two);
                       @two: var(one);
-                      
+
                       @four: var(five);
                       @five: var(six);
                       @six: var(four);
-                      
+
                       @def-1: var(def-2);
                       @def-2: var(def-3);
                       @def-3: var(def-2);''',
@@ -512,20 +512,20 @@ test_pseudo_element() {
         'out/index.html',
       ]));
       expect(compiler.output[0].contents.contains(
-          '<div pseudo="x-foo_2">'
+          '<div pseudo="x-foo_0">'
             '<div>Test</div>'
           '</div>'
-          '<div pseudo="x-foo1_3 x-foo2_4">'
+          '<div pseudo="x-foo1_1 x-foo2_2">'
           '<div>Test</div>'
           '</div>'), true);
       expect(compiler.output[5].contents.contains(
-          '<style>.test > *[pseudo="x-foo_2"] {\n'
+          '<style>.test > *[pseudo="x-foo_0"] {\n'
             '  background-color: #f00;\n'
           '}\n'
-          '.test > *[pseudo="x-foo1_3"] {\n'
+          '.test > *[pseudo="x-foo1_1"] {\n'
           '  color: #00f;\n'
           '}\n'
-          '.test > *[pseudo="x-foo2_4"] {\n'
+          '.test > *[pseudo="x-foo2_2"] {\n'
           '  color: #008000;\n'
           '}'
           '</style>'), true);

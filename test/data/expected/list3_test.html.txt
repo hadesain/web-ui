@@ -1,28 +1,20 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x34
-  RenderBlock {HTML} at (0,0) size 800x34
-    RenderBody {BODY} at (8,8) size 784x18
-      RenderText {#text} at (0,0) size 350x18
-        text run at (0,0) width 350: "expect: (-a-) (-?-) (-c-), actual: "
-      RenderText {#text} at (350,0) size 20x18
-        text run at (350,0) width 20: "(-"
-      RenderText {#text} at (370,0) size 10x18
-        text run at (370,0) width 10: "a"
-      RenderText {#text} at (380,0) size 30x18
-        text run at (380,0) width 30: "-) "
-      RenderText {#text} at (410,0) size 20x18
-        text run at (410,0) width 20: "(-"
-      RenderText {#text} at (430,0) size 10x18
-        text run at (430,0) width 10: "?"
-      RenderText {#text} at (440,0) size 30x18
-        text run at (440,0) width 30: "-) "
-      RenderText {#text} at (470,0) size 20x18
-        text run at (470,0) width 20: "(-"
-      RenderText {#text} at (490,0) size 10x18
-        text run at (490,0) width 10: "c"
-      RenderText {#text} at (500,0) size 20x18
-        text run at (500,0) width 20: "-)"
-      RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (0,0) size 0x0
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  expect: (-a-) (-?-) (-c-), actual:
+  <template></template>
+    (-a-)
+  
+    (-?-)
+  
+    (-c-)
+  
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="list3_test.html_bootstrap.dart"></script></body></html>

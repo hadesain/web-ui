@@ -23,6 +23,25 @@ import 'summary.dart';
 import 'utils.dart';
 
 /**
+ * Information that is global. Roughly corresponds to `window` and `document`.
+ */
+class GlobalInfo {
+  /**
+   * Pseudo-element names exposed in a component via a pseudo attribute.
+   * The name is only available from CSS (not Dart code) so they're mangled.
+   * The same pseudo-element in different components maps to the same
+   * mangled name (as the pseudo-element is scoped inside of the component).
+   */
+  final Map<String, String> pseudoElements = <String, String>{};
+
+  /** All components declared in the application. */
+  final Map<String, ComponentInfo> components = new SplayTreeMap();
+
+  /** UI events are discovered at runtime via query selectors. */
+  final Set<String> eventQuerySelectors = new Set<String>();
+}
+
+/**
  * Information for any library-like input. We consider each HTML file a library,
  * and each component declaration a library as well. Hence we use this as a base
  * class for both [FileInfo] and [ComponentInfo]. Both HTML files and components
@@ -86,6 +105,9 @@ abstract class LibraryInfo extends Hashable implements LibrarySummary {
   final Map<ComponentSummary, bool> usedComponents =
       new LinkedHashMap<ComponentSummary, bool>();
 
+  /** Collected information for UI events on the corresponding element. */
+  final List<EventInfo> events = <EventInfo>[];
+
   /**
    * The actual code, either inlined or from an external file, or `null` if none
    * was defined.
@@ -135,16 +157,16 @@ class FileInfo extends LibraryInfo implements HtmlFileSummary {
   /** Files imported with `<link rel="stylesheet">` */
   final List<UrlInfo> styleSheetHrefs = <UrlInfo>[];
 
-  /** Root is associated with the body info. */
-  ElementInfo bodyInfo;
+  /** Root is associated with the body node. */
+  Element body;
 
   FileInfo(this.inputUrl, [this.isEntryPoint = false]);
 
   /**
-   * Query for an ElementInfo matching the provided [tag], starting from the
-   * [bodyInfo].
+   * Query for an [Element] matching the provided [tag], starting from the
+   * [body].
    */
-  ElementInfo query(String tag) => new _QueryInfo(tag).visit(bodyInfo);
+  Element query(String tag) => body.query(tag);
 }
 
 
@@ -177,8 +199,8 @@ class ComponentInfo extends LibraryInfo implements ComponentSummary {
   ClassDeclaration get classDeclaration => _classDeclaration;
   ClassDeclaration _classDeclaration;
 
-  /** Component's ElementInfo at the element tag. */
-  ElementInfo elemInfo;
+  /** Component's <element> element. */
+  Element elementNode;
 
   // TODO(terry): Remove once we stop mangling CSS selectors.
   /** CSS selectors scoped. */
@@ -186,9 +208,6 @@ class ComponentInfo extends LibraryInfo implements ComponentSummary {
 
   /** The declaring `<element>` tag. */
   final Node element;
-
-  /** The component's `<template>` tag, if any. */
-  final Node template;
 
   /** File where this component was defined. */
   UrlInfo get dartCodeUrl => externalFile != null
@@ -201,7 +220,7 @@ class ComponentInfo extends LibraryInfo implements ComponentSummary {
   bool hasConflict = false;
 
   ComponentInfo(this.element, this.declaringFile, this.tagName,
-      this.extendsTag, this.template);
+      this.extendsTag);
 
   /**
    * Gets the HTML tag extended by the base of the component hierarchy.
@@ -261,325 +280,18 @@ class ComponentInfo extends LibraryInfo implements ComponentSummary {
       '${inlinedCode != null ? "inline" : "from ${dartCodeUrl.resolvedPath}"}>';
 }
 
-/** Base tree visitor for the Analyzer infos. */
-class InfoVisitor {
-  visit(info) {
-    if (info == null) return;
-    if (info is TemplateInfo) {
-      return visitTemplateInfo(info);
-    } else if (info is ElementInfo) {
-      return visitElementInfo(info);
-    } else if (info is TextInfo) {
-      return visitTextInfo(info);
-    } else if (info is ComponentInfo) {
-      return visitComponentInfo(info);
-    } else if (info is FileInfo) {
-      return visitFileInfo(info);
-    } else {
-      throw new UnsupportedError('Unknown info type: $info');
-    }
-  }
-
-  visitChildren(ElementInfo info) {
-    for (var child in info.children) visit(child);
-  }
-
-  visitFileInfo(FileInfo info) {
-    visit(info.bodyInfo);
-    info.declaredComponents.forEach(visit);
-  }
-
-  visitTemplateInfo(TemplateInfo info) => visitElementInfo(info);
-
-  visitElementInfo(ElementInfo info) => visitChildren(info);
-
-  visitTextInfo(TextInfo info) {}
-
-  visitComponentInfo(ComponentInfo info) => visit(info.elemInfo);
-}
-
-/** Common base class for [ElementInfo] and [TextInfo]. */
-abstract class NodeInfo<T extends Node> {
-
-  /** DOM node associated with this NodeInfo. */
-  final T node;
-
-  /** Info for the nearest enclosing element, iterator, or conditional. */
-  final ElementInfo parent;
-
-  /**
-   * The name used to refer to this node in Dart code.
-   * Depending on the context, this can be a variable or a field.
-   */
-  String identifier;
-
-  /**
-   * Whether the node represented by this info will be constructed from code.
-   * If true, its identifier is initialized programatically, otherwise, its
-   * identifier is initialized using a query.
-   * The compiler currently creates in code text nodes with data-bindings,
-   * siblings of text nodes with data-bindings, and immediate children of loops
-   * and conditionals.
-   */
-  bool get createdInCode => parent != null && parent.childrenCreatedInCode;
-
-  NodeInfo(this.node, this.parent, [this.identifier]) {
-    if (parent != null) parent.children.add(this);
-  }
-}
-
-/** Information extracted for each node in a template. */
-class ElementInfo extends NodeInfo<Element> {
-  // TODO(jmesserly): make childen work like DOM children collection, so that
-  // adding/removing a node updates the parent pointer.
-  final List<NodeInfo> children = [];
-
-  /**
-   * If this element is a web component instantiation (e.g. `<x-foo>`), this
-   * will be set to information about the component, otherwise it will be null.
-   */
-  final ComponentSummary component;
-
-  /** Whether any child of this node is created in code. */
-  bool childrenCreatedInCode = false;
-
-  /** Whether this node represents "body" or the shadow root of a component. */
-  bool isRoot = false;
-
-  /**
-   * True if this element needs to be stored in a variable (or field) because
-   * we'll access a descendant (child, grandchild, etc) needs a variable.
-   * In that case, we'll access the descendant starting from this element using
-   * a path. This will only be set if this element is [createdInCode].
-   */
-  bool descendantHasBinding = false;
-
-  // Note: we're using sorted maps so items are enumerated in a consistent order
-  // between runs, resulting in less "diff" in the generated code.
-  // TODO(jmesserly): An alternative approach would be to use LinkedHashMap to
-  // preserve the order of the input, but we'd need to be careful about our tree
-  // traversal order.
-  /** Collected information for attributes, if any. */
-  final Map<String, AttributeInfo> attributes =
-      new SplayTreeMap<String, AttributeInfo>();
-
-  /** Collected information for UI events on the corresponding element. */
-  final Map<String, List<EventInfo>> events =
-      new SplayTreeMap<String, List<EventInfo>>();
-
-  /**
-   * Collected information about `data-value="name:value"` expressions.
-   * Note: this feature is deprecated and should be removed after grace period.
-   */
-  final Map<String, String> values = new SplayTreeMap<String, String>();
-
-  // TODO(jmesserly): we could keep this local to the analyzer.
-  /** Attribute names to remove in cleanup phase. */
-  final Set<String> removeAttributes = new Set<String>();
-
-  /** Whether the template element has `iterate="... in ...". */
-  bool get hasLoop => false;
-
-  /** Whether the template element has an `if="..."` conditional. */
-  bool get hasCondition => false;
-
-  bool get isTemplateElement => false;
-
-  /**
-   * For a builtin HTML element this returns the [node.tagName], otherwise it
-   * returns [component.baseExtendsTag]. This is useful when looking up which
-   * DOM property this element supports.
-   */
-  String get baseTagName =>
-      component != null ? component.baseExtendsTag : node.tagName;
-
-  ElementInfo(Element node, ElementInfo parent, [this.component])
-      : super(node, parent);
-
-  String toString() => '#<ElementInfo '
-      'identifier: $identifier, '
-      'childrenCreatedInCode: $childrenCreatedInCode, '
-      'component: $component, '
-      'descendantHasBinding: $descendantHasBinding, '
-      'hasLoop: $hasLoop, '
-      'hasCondition: $hasCondition, '
-      'attributes: $attributes, '
-      'events: $events>';
-}
-
-/**
- * Information for a single text node created programatically. We create a
- * [TextInfo] for data bindings that occur in content nodes, and for each
- * text node that is created programatically in code. Note that the analyzer
- * splits HTML text nodes, so that each data-binding has its own node (and
- * [TextInfo]).
- */
-class TextInfo extends NodeInfo<Text> {
-  /** The data-bound Dart expression. */
-  final BindingInfo binding;
-
-  TextInfo(Text node, ElementInfo parent, [this.binding, String identifier])
-      : super(node, parent, identifier);
-}
-
-/** Information extracted for each attribute in an element. */
-class AttributeInfo {
-
-  /**
-   * Whether this is a `class` attribute. In which case more than one binding
-   * is allowed (one per class).
-   */
-  final bool isClass;
-
-  /**
-   * Whether this is a 'data-style' attribute.
-   */
-  final bool isStyle;
-
-  /** All bound values that would be monitored for changes. */
-  final List<BindingInfo> bindings;
-
-  /**
-   * A two-way binding that needs a watcher. This is used in cases where we
-   * don't have an event.
-   */
-  final bool customTwoWayBinding;
-
-  /**
-   * For a text attribute this contains the text content. This is used by most
-   * attributes and represents the value that will be assigned to them. If this
-   * has been assigned then [isText] will be true.
-   *
-   * The entries in this list correspond to the entries in [bindings], and this
-   * will always have one more item than bindings. For example:
-   *
-   *     href="t0 {{b1}} t1 {{b2}} t2"
-   *
-   * Here textContent would be `["t0 ", " t1 ", " t2"]` and bindings would be
-   * `["b1", "b2"]`.
-   */
-  final List<String> textContent;
-
-  AttributeInfo(this.bindings, {this.isStyle: false, this.isClass: false,
-      this.textContent, this.customTwoWayBinding: false}) {
-
-    assert(isText || isClass || bindings.length == 1);
-    assert(isText || bindings.length > 0);
-    assert(!isText || textContent.length == bindings.length + 1);
-    assert((isText ? 1 : 0) + (isClass ? 1 : 0) + (isStyle ? 1 : 0) <= 1);
-  }
-
-  /**
-   * A value that will be monitored for changes. All attributes have a single
-   * bound value unless [isClass] or [isText] is true.
-   */
-  String get boundValue => bindings[0].exp;
-
-  /** Whether the binding should be evaluated only once. */
-  bool get isBindingFinal => bindings[0].isFinal;
-
-  /** True if this attribute binding expression should be assigned directly. */
-  bool get isSimple => !isClass && !isStyle && !isText;
-
-  /**
-   * True if this attribute value should be concatenated as a string.
-   * This is true whenever [textContent] is non-null.
-   */
-  bool get isText => textContent != null;
-
-  String toString() => '#<AttributeInfo '
-      'isClass: $isClass, values: ${bindings.join("")}>';
-}
-
-/** Information associated with a binding. */
-class BindingInfo {
-  /** The expression used in the binding. */
-  final String exp;
-
-  /** Whether the expression is treated as final (evaluated a single time). */
-  final bool isFinal;
-
-  BindingInfo(this.exp, this.isFinal);
-
-  factory BindingInfo.fromText(text) {
-    var pipeIndex = text.lastIndexOf('|');
-    if (pipeIndex != -1 && text.substring(pipeIndex + 1).trim() == 'final') {
-      return new BindingInfo(text.substring(0, pipeIndex).trim(), true);
-    } else {
-      return new BindingInfo(text, false);
-    }
-  }
-
-  String toString() => '#<BindingInfo exp: $exp, isFinal: $isFinal>';
-}
-
 /** Information extracted for each declared event in an element. */
 class EventInfo {
   /** Event stream name for attributes representing actions. */
   final String streamName;
 
-  /** Action associated for event listener attributes. */
-  final ActionDefinition action;
+  /** The event handler text. */
+  final String handlerCode;
 
-  /** Generated field name, if any, associated with this event. */
-  String listenerField;
+  /** The way to find this node. */
+  final String querySelector;
 
-  EventInfo(this.streamName, this.action);
-
-  String toString() => '#<EventInfo streamName: $streamName, action: $action>';
-}
-
-class TemplateInfo extends ElementInfo {
-  /**
-   * The expression that is used in `<template if="cond"> conditionals, or null
-   * if this there is no `if="..."` attribute.
-   */
-  final String ifCondition;
-
-  /**
-   * If this is a `<template iterate="item in items">`, this is the variable
-   * declared on loop iterations, e.g. `item`. This will be null if it is not
-   * a `<template iterate="...">`.
-   */
-  final String loopVariable;
-
-  /**
-   * If this is a `<template iterate="item in items">`, this is the expression
-   * to get the items to iterate over, e.g. `items`. This will be null if it is
-   * not a `<template iterate="...">`.
-   */
-  final String loopItems;
-
-  /**
-   * If [hasLoop] is true, this indicates if the attribute was "repeat" instead
-   * of "iterate".
-   *
-   * For template elements, the two are equivalent, but for template attributes
-   * repeat causes that node to repeat in place, instead of iterating its
-   * children.
-   */
-  final bool isRepeat;
-
-  TemplateInfo(Node node, ElementInfo parent,
-      {this.ifCondition, this.loopVariable, this.loopItems, this.isRepeat})
-      : super(node, parent) {
-    childrenCreatedInCode = hasCondition || hasLoop;
-  }
-
-  /**
-   * True when [node] is a '<template>' tag. False when [node] is any other
-   * element type and the template information is attached as an attribute.
-   */
-  bool get isTemplateElement => node.tagName == 'template';
-
-  bool get hasCondition => ifCondition != null;
-
-  bool get hasLoop => loopVariable != null;
-
-  String toString() => '#<TemplateInfo ${super.toString()}'
-      'ifCondition: $ifCondition, '
-      'loopVariable: $ifCondition, '
-      'loopItems: $ifCondition>';
+  EventInfo(this.streamName, this.handlerCode, this.querySelector);
 }
 
 /**
@@ -591,32 +303,6 @@ class TemplateInfo extends ElementInfo {
  */
 typedef String ActionDefinition(String elementVarName);
 
-
-/**
- * Find ElementInfo that associated with a particular DOM node.
- * Used by `ElementInfo.query(tagName)`.
- */
-class _QueryInfo extends InfoVisitor {
-  final String _tagName;
-
-  _QueryInfo(this._tagName);
-
-  visitElementInfo(ElementInfo info) {
-    if (info.node.tagName == _tagName) {
-      return info;
-    }
-
-    return super.visitElementInfo(info);
-  }
-
-  visitChildren(ElementInfo info) {
-    for (var child in info.children) {
-      var result = visit(child);
-      if (result != null) return result;
-    }
-    return null;
-  }
-}
 
 /**
  * Information extracted about a URL that refers to another file. This is

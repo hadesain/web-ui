@@ -27,7 +27,10 @@ BSD-style license that can be found in the LICENSE file.
     </script>
   </element>
   <form>
-  <!-- TODO(jmesserly): if fix #82 we can use <x-my-input> tags. -->
+  <!--
+  TODO(jmesserly): calling createShadowRoot on an InputElement appears to
+  be broken in native Shadow DOM. For now this test is failing.
+  -->
   <input is="my-input" name="a" type="radio" value="Foo" bind-value="name">
   Foo!
   <input is="my-input" name="a" type="radio" value="Bar" bind-value="name">
@@ -45,7 +48,6 @@ BSD-style license that can be found in the LICENSE file.
     final bar = queryAll('input')[1];
 
     main() {
-      useShadowDom = false;
 
       expect(foo.checked, false, reason: 'watchers not run yet.');
       expect(bar.checked, false, reason: 'watchers not run yet.');

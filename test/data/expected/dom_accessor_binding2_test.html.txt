@@ -1,15 +1,13 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x54
-  RenderBlock {HTML} at (0,0) size 800x54
-    RenderBody {BODY} at (8,8) size 784x38
-      RenderBlock {INPUT} at (4,3) size 13x13
-      RenderText {#text} at (20,2) size 10x18
-        text run at (20,2) width 10: " "
-      RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (30,2) size 450x18
-        text run at (30,2) width 450: "expected input.checked to be false, got false"
-      RenderText {#text} at (480,2) size 760x36
-        text run at (480,2) width 280: "expected input.checked to be"
-        text run at (0,20) width 140: "true, got true"
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <input type="checkbox">
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="dom_accessor_binding2_test.html_bootstrap.dart"></script>expected input.checked to be false, got falseexpected input.checked to be true, got true</body></html>

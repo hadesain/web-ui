@@ -33,7 +33,7 @@ ElementInfo analyzeElement(Element elem, Messages messages) {
 FileInfo analyzeDefinitionsInTree(Document doc, Messages messages,
     {String packageRoot: 'packages'}) {
 
-  return analyzeDefinitions(new UrlInfo('', '', null),
+  return analyzeDefinitions(new GlobalInfo(), new UrlInfo('', '', null),
       doc, packageRoot, messages);
 }
 
@@ -58,9 +58,10 @@ Map<String, FileInfo> analyzeFiles(List<SourceFile> files,
   var result = new Map<String, FileInfo>();
 
   // analyze definitions
+  var global = new GlobalInfo();
   for (var file in files) {
     var path = file.path;
-    result[path] = analyzeDefinitions(new UrlInfo(path, path, null),
+    result[path] = analyzeDefinitions(global, new UrlInfo(path, path, null),
         file.document, packageRoot, messages);
   }
 

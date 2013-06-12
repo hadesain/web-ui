@@ -1,47 +1,26 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x246
-  RenderBlock {HTML} at (0,0) size 800x246
-    RenderBody {BODY} at (8,8) size 784x222
-      RenderBlock (anonymous) at (0,0) size 784x18
-        RenderText {#text} at (0,0) size 520x18
-          text run at (0,0) width 520: "You should see counting numbers from \"one\" to \"six\":"
-        RenderText {#text} at (0,0) size 0x0
-      RenderBlock {P} at (0,34) size 784x18
-        RenderText {#text} at (0,0) size 30x18
-          text run at (0,0) width 30: "one"
-      RenderBlock (anonymous) at (0,68) size 784x0
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-      RenderBlock {P} at (0,68) size 784x18
-        RenderText {#text} at (0,0) size 30x18
-          text run at (0,0) width 30: "two"
-      RenderBlock (anonymous) at (0,102) size 784x0
-        RenderText {#text} at (0,0) size 0x0
-      RenderBlock {P} at (0,102) size 784x18
-        RenderText {#text} at (0,0) size 50x18
-          text run at (0,0) width 50: "three"
-      RenderBlock (anonymous) at (0,136) size 784x0
-        RenderText {#text} at (0,0) size 0x0
-      RenderBlock {P} at (0,136) size 784x18
-        RenderText {#text} at (0,0) size 40x18
-          text run at (0,0) width 40: "four"
-      RenderBlock (anonymous) at (0,170) size 784x0
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-      RenderBlock {P} at (0,170) size 784x18
-        RenderText {#text} at (0,0) size 40x18
-          text run at (0,0) width 40: "five"
-      RenderBlock (anonymous) at (0,204) size 784x0
-        RenderText {#text} at (0,0) size 0x0
-      RenderBlock {P} at (0,204) size 784x18
-        RenderText {#text} at (0,0) size 30x18
-          text run at (0,0) width 30: "six"
-      RenderBlock (anonymous) at (0,238) size 784x0
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  You should see counting numbers from "one" to "six":
+  <template></template>
+    <p>one</p>
+    <template></template>
+    <p>two</p>
+    <p style="display:none"></p><p template="" if="true">three</p>
+    <template></template><p>four</p>
+  
+  <!-- This intentionally has no data binding. -->
+  <template></template>
+    <p>five</p>
+    <p>six</p>
+  
+  <template></template>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="if_children_test.html_bootstrap.dart"></script></body></html>

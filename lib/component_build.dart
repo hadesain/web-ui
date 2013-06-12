@@ -112,7 +112,7 @@ Future<List<dwc.CompilerResult>> build(List<String> arguments,
 String _outDir(String file) => path.join(path.dirname(file), 'out');
 
 /** Tell whether [filePath] is a generated file. */
-bool _isGeneratedFile(String filePath, List<Directory> outputOnlyDirs) {
+bool _isGeneratedFile(String filePath, List<String> outputOnlyDirs) {
   var dirPrefix = path.dirname(filePath);
   for (var outDir in outputOnlyDirs) {
     if (dirPrefix.startsWith(outDir)) return true;

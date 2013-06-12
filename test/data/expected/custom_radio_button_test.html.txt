@@ -1,22 +1,10 @@
+CONSOLE MESSAGE: line 71: FAIL
+CONSOLE MESSAGE: Exception: Error: HierarchyRequestError: DOM Exception 3
+CONSOLE MESSAGE: line 71: FAIL
+CONSOLE MESSAGE: Exception: Expected: <true>
+     But: was <false>.
+bar picked.
+
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x78
-  RenderBlock {HTML} at (0,0) size 800x78
-    RenderBody {BODY} at (8,8) size 784x54
-      RenderBlock {FORM} at (0,0) size 784x20
-        RenderBlock {INPUT} at (5,3) size 13x13
-        RenderText {#text} at (21,2) size 60x18
-          text run at (21,2) width 10: " "
-          text run at (31,2) width 50: "Foo! "
-        RenderBlock {INPUT} at (86,3) size 13x13
-        RenderText {#text} at (102,2) size 50x18
-          text run at (102,2) width 10: " "
-          text run at (112,2) width 40: "Bar!"
-      RenderBlock {PRE} at (0,36) size 784x18
-        RenderText {#text} at (0,0) size 110x18
-          text run at (0,0) width 110: "You picked "
-        RenderText {#text} at (110,0) size 30x18
-          text run at (110,0) width 30: "Bar"
-        RenderText {#text} at (140,0) size 290x18
-          text run at (140,0) width 290: ". Final value should be 'Bar'"
+ Foo!   Bar!
+You picked . Final value should be 'Bar'

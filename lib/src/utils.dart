@@ -5,9 +5,8 @@
 library web_ui.src.utils;
 
 import 'dart:async';
-
 import 'package:pathos/path.dart' show Builder;
-
+export 'utils_observe.dart' show toCamelCase;
 
 /**
  * An instance of the pathos library builder. We could just use the default
@@ -19,24 +18,6 @@ Builder path = new Builder();
 /** Convert a OS specific path into a url. */
 String pathToUrl(String relPath) =>
   (path.separator == '/') ? relPath : path.split(relPath).join('/');
-
-/**
- * Converts a string name with hyphens into an identifier, by removing hyphens
- * and capitalizing the following letter. Optionally [startUppercase] to
- * captialize the first letter.
- */
-String toCamelCase(String hyphenedName, {bool startUppercase: false}) {
-  var segments = hyphenedName.split('-');
-  int start = startUppercase ? 0 : 1;
-  for (int i = start; i < segments.length; i++) {
-    var segment = segments[i];
-    if (segment.length > 0) {
-      // Character between 'a'..'z' mapped to 'A'..'Z'
-      segments[i] = '${segment[0].toUpperCase()}${segment.substring(1)}';
-    }
-  }
-  return segments.join('');
-}
 
 /**
  * Invokes [callback], logs how long it took to execute in ms, and returns

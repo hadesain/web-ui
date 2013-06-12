@@ -1,25 +1,23 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x222
-  RenderBlock {HTML} at (0,0) size 800x222
-    RenderBody {BODY} at (8,16) size 784x190
-      RenderBlock {DIV} at (0,0) size 784x190
-        RenderBlock {P} at (0,0) size 784x18
-          RenderText {#text} at (0,0) size 530x18
-            text run at (0,0) width 530: "Here are the lifecycle methods that have been called:"
-        RenderBlock {PRE} at (0,34) size 784x54
-          RenderText {#text} at (0,0) size 130x54
-            text run at (0,0) width 0: " "
-            text run at (0,18) width 120: "Base.created"
-            text run at (120,18) width 0: " "
-            text run at (0,36) width 130: "Base.inserted"
-        RenderBlock {P} at (0,104) size 784x18
-          RenderText {#text} at (0,0) size 430x18
-            text run at (0,0) width 430: "You should see Base created, Base inserted."
-        RenderBlock {P} at (0,138) size 784x18
-          RenderText {#text} at (0,0) size 370x18
-            text run at (0,0) width 370: "Also, here is a message from Derived:"
-        RenderBlock {P} at (0,172) size 784x18
-          RenderText {#text} at (0,0) size 490x18
-            text run at (0,0) width 490: "Hello, I am a Derived element with no script tag!"
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  
+  
+  <div is="x-derived"><shadow-root>      <shadow><older-shadow-root>      <p>Here are the lifecycle methods that have been called:</p>
+      <pre>
+Base.created
+Base.inserted</pre>
+      <p>You should see Base created, Base inserted.</p>
+      <p>Also, here is a message from Derived:</p>
+    </older-shadow-root></shadow>
+      <p>Hello, I am a Derived element with no script tag!</p>
+    </shadow-root></div>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="component_inherit_noscript_test.html_bootstrap.dart"></script></body></html>

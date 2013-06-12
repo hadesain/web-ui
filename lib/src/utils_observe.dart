@@ -14,6 +14,24 @@ hash3(x, y, z) => hash2(hash2(x, y), z);
 
 hash4(w, x, y, z) => hash2(hash2(w, x), hash2(y, z));
 
+/**
+ * Converts a string name with hyphens into an identifier, by removing hyphens
+ * and capitalizing the following letter. Optionally [startUppercase] to
+ * captialize the first letter.
+ */
+String toCamelCase(String hyphenedName, {bool startUppercase: false}) {
+  var segments = hyphenedName.split('-');
+  int start = startUppercase ? 0 : 1;
+  for (int i = start; i < segments.length; i++) {
+    var segment = segments[i];
+    if (segment.length > 0) {
+      // Character between 'a'..'z' mapped to 'A'..'Z'
+      segments[i] = '${segment[0].toUpperCase()}${segment.substring(1)}';
+    }
+  }
+  return segments.join('');
+}
+
 // TODO(jmesserly): replace with something in dart:async, as long as it is based
 // on window.setImmediate/mutation observers/postMessage and not setTimeout(0)
 // Maybe we can use Future.value? We need it to be fast (next microtask)

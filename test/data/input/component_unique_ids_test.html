@@ -25,12 +25,12 @@ BSD-style license that can be found in the LICENSE file.
     import 'dart:html';
     import 'package:web_ui/web_ui.dart';
     import 'package:unittest/unittest.dart';
+    import 'common.dart';
     main() {
-      useShadowDom = false; // need to query inside components
       Timer.run(() {
         // Make sure we don't get confused and data-bind the wrong thing.
-        expect(query('.a').title, 'TitleA');
-        expect(query('.b').title, 'TitleB');
+        expect(queryInShadow('.a').title, 'TitleA');
+        expect(queryInShadow('.b').title, 'TitleB');
 
         window.postMessage('done', '*');
       });
@@ -38,4 +38,3 @@ BSD-style license that can be found in the LICENSE file.
   </script>
 </body>
 </html>
-

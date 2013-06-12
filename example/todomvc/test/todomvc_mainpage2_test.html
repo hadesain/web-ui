@@ -21,13 +21,14 @@ single item is present in the todo list.
   <script type="application/dart">
 import 'dart:async';
 import 'dart:html';
+import 'package:mdv_observe/mdv_observe.dart';
 import 'package:web_ui/web_ui.dart';
 import '../web/model.dart';
 
 main() {
   Timer.run(() {
-    app.todos.add(new Todo('hola'));
-    deliverChangesSync();
+    appModel.todos.add(new Todo('hola'));
+    deliverChangeRecords();
     window.postMessage('done', '*');
   });
 }

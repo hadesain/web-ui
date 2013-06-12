@@ -40,7 +40,6 @@ import 'todomvc_common.dart';
 final addTodo = todomvc_main.addTodo;
 
 main() {
-  useShadowDom = false;
   todomvc_main.main();
   Timer.run(() {
       var bench = new TodoMvcBenchmark();

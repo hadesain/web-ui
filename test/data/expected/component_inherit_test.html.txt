@@ -1,24 +1,23 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x174
-  RenderBlock {HTML} at (0,0) size 800x174
-    RenderBody {BODY} at (8,8) size 784x158
-      RenderBlock {DIV} at (0,0) size 784x158
-        RenderBlock {DIV} at (0,0) size 784x18
-          RenderText {#text} at (0,0) size 530x18
-            text run at (0,0) width 530: "Here are the lifecycle methods that have been called:"
-        RenderBlock {PRE} at (0,34) size 784x90
-          RenderText {#text} at (0,0) size 160x90
-            text run at (0,0) width 0: " "
-            text run at (0,18) width 120: "Base.created"
-            text run at (120,18) width 0: " "
-            text run at (0,36) width 150: "Derived.created"
-            text run at (150,36) width 0: " "
-            text run at (0,54) width 130: "Base.inserted"
-            text run at (130,54) width 0: " "
-            text run at (0,72) width 160: "Derived.inserted"
-        RenderBlock {DIV} at (0,140) size 784x18
-          RenderText {#text} at (0,0) size 770x18
-            text run at (0,0) width 460: "You should see Base created, Derived created, "
-            text run at (460,0) width 310: "Base inserted, Derived inserted"
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  
+  
+  <div is="x-derived"><shadow-root><shadow><older-shadow-root>      <div>Here are the lifecycle methods that have been called:</div>
+      <pre>
+Base.created
+Derived.created
+Base.inserted
+Derived.inserted</pre>
+      <div>You should see Base created, Derived created,
+           Base inserted, Derived inserted</div>
+    </older-shadow-root></shadow></shadow-root></div>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="component_inherit_test.html_bootstrap.dart"></script></body></html>

@@ -1,24 +1,26 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x208
-  RenderBlock {HTML} at (0,0) size 800x209
-    RenderBody {BODY} at (8,16) size 784x171
-      RenderBlock {P} at (0,0) size 784x18
-        RenderText {#text} at (0,0) size 350x18
-          text run at (0,0) width 350: "This tests data binding of heading."
-      RenderBlock {H4} at (0,39) size 784x19
-        RenderText {#text} at (0,0) size 40x18
-          text run at (0,0) width 40: "PASS"
-      RenderBlock {P} at (0,78) size 784x19
-        RenderText {#text} at (0,0) size 340x18
-          text run at (0,0) width 340: "This tests data binding of strong."
-      RenderBlock (anonymous) at (0,112) size 784x20
-        RenderInline {STRONG} at (0,0) size 40x18
-          RenderText {#text} at (0,1) size 40x18
-            text run at (0,1) width 40: "PASS"
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-      RenderBlock {H4} at (0,152) size 784x19
-        RenderText {#text} at (0,0) size 320x18
-          text run at (0,0) width 320: "You should see two \"PASS\" above."
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <!--
+  Regresion test for #222 and #254. This used to try to call
+  new HeadingElement() and new Element() from generated Dart code, but that
+  constructor doesn't exist.
+  -->
+  <p>This tests data binding of heading.</p>
+  <template></template>
+    <h4>PASS</h4>
+  
+  <p>This tests data binding of strong.</p>
+  <template></template>
+    <strong>PASS</strong>
+  
+  <h4>You should see two "PASS" above.</h4>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="element_ctor_test.html_bootstrap.dart"></script></body></html>

@@ -49,7 +49,7 @@ void fixupHtmlCss(FileInfo fileInfo, CompilerOptions options) {
       var knownCss = new IdClassVisitor()..visitTree(styleSheet);
       // Prefix all id and class refs in CSS selectors and HTML attributes.
       new _ScopedStyleRenamer(knownCss, prefix, options.debugCss)
-          .visit(component);
+          .visit(component.elementNode);
     }
   }
 }
@@ -117,11 +117,8 @@ String createCssSelectorsExpression(ComponentInfo info, bool cssPolyfill) {
  *
  * We do this by renaming all element class and id attributes to be globally
  * unique to a component.
- *
- * This phase runs after the analyzer and html_cleaner; at that point it's a
- * tree of Infos.  We need to walk element Infos but mangle the HTML elements.
  */
-class _ScopedStyleRenamer extends InfoVisitor {
+class _ScopedStyleRenamer extends TreeVisitor {
   final bool _debugCss;
 
   /** Set of classes and ids defined for this component. */
@@ -132,12 +129,12 @@ class _ScopedStyleRenamer extends InfoVisitor {
 
   _ScopedStyleRenamer(this._knownCss, this._prefix, this._debugCss);
 
-  void visitElementInfo(ElementInfo info) {
+  void visitElement(Element node) {
     // Walk the HTML elements mangling any references to id or class attributes.
-    _mangleClassAttribute(info.node, _knownCss.classes, _prefix);
-    _mangleIdAttribute(info.node, _knownCss.ids, _prefix);
+    _mangleClassAttribute(node, _knownCss.classes, _prefix);
+    _mangleIdAttribute(node, _knownCss.ids, _prefix);
 
-    super.visitElementInfo(info);
+    super.visitElement(node);
   }
 
   /**

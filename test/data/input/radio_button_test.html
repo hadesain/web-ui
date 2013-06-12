@@ -27,7 +27,6 @@ BSD-style license that can be found in the LICENSE file.
     final bar = queryAll('input')[1];
 
     main() {
-      useShadowDom = false;
 
       expect(foo.checked, false, reason: 'watchers not run yet.');
       expect(bar.checked, false, reason: 'watchers not run yet.');

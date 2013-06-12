@@ -1,28 +1,18 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x34
-  RenderBlock {HTML} at (0,0) size 800x34
-    RenderBody {BODY} at (8,8) size 784x18
-      RenderText {#text} at (0,0) size 180x18
-        text run at (0,0) width 180: "Expect \"1 2 3 4\": "
-      RenderInline {SPAN} at (0,0) size 10x18
-        RenderText {#text} at (180,0) size 10x18
-          text run at (180,0) width 10: "1"
-      RenderText {#text} at (190,0) size 10x18
-        text run at (190,0) width 10: " "
-      RenderInline {SPAN} at (0,0) size 10x18
-        RenderText {#text} at (200,0) size 10x18
-          text run at (200,0) width 10: "2"
-      RenderText {#text} at (210,0) size 10x18
-        text run at (210,0) width 10: " "
-      RenderInline {SPAN} at (0,0) size 10x18
-        RenderText {#text} at (220,0) size 10x18
-          text run at (220,0) width 10: "3"
-      RenderText {#text} at (230,0) size 10x18
-        text run at (230,0) width 10: " "
-      RenderInline {SPAN} at (0,0) size 10x18
-        RenderText {#text} at (240,0) size 10x18
-          text run at (240,0) width 10: "4"
-      RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (0,0) size 0x0
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  
+  Expect "1 2 3 4":
+  <span is="x-foo"><shadow-root>1</shadow-root></span>
+  <span is="x-foo" my-attribute="2"><shadow-root>2</shadow-root></span>
+  <span is="x-foo" my-attribute="3"><shadow-root>3</shadow-root></span>
+  <span is="x-foo"><shadow-root>4</shadow-root></span>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="constant_argument_test.html_bootstrap.dart"></script></body></html>

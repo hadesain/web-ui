@@ -1,28 +1,21 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x186
-  RenderBlock {HTML} at (0,0) size 800x186
-    RenderBody {BODY} at (8,16) size 784x154
-      RenderBlock {P} at (0,0) size 784x18
-        RenderText {#text} at (0,0) size 370x18
-          text run at (0,0) width 370: "The href of these links should match:"
-      RenderBlock (anonymous) at (0,34) size 784x18
-        RenderInline {A} at (0,0) size 100x18 [color=#0000EE]
-          RenderText {#text} at (0,0) size 100x18
-            text run at (0,0) width 100: "first link"
-        RenderText {#text} at (100,0) size 10x18
-          text run at (100,0) width 10: " "
-        RenderInline {A} at (0,0) size 110x18 [color=#0000EE]
-          RenderText {#text} at (110,0) size 110x18
-            text run at (110,0) width 110: "second link"
-        RenderText {#text} at (0,0) size 0x0
-      RenderBlock {P} at (0,68) size 784x18
-        RenderText {#text} at (0,0) size 270x18
-          text run at (0,0) width 270: "Here are the hrefs as text:"
-      RenderBlock {PRE} at (0,102) size 784x18
-        RenderText {#text} at (0,0) size 510x18
-          text run at (0,0) width 510: "#The \"quick\" \\brown $fox jumps over the 'lazy' dog."
-      RenderBlock {PRE} at (0,136) size 784x18
-        RenderText {#text} at (0,0) size 510x18
-          text run at (0,0) width 510: "#The \"quick\" \\brown $fox jumps over the 'lazy' dog."
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <p>The href of these links should match:</p>
+  <a href="../input/#The &quot;quick&quot; \brown $fox jumps over the 'lazy' dog.">
+  first link</a>
+  <a href="#The &quot;quick&quot; \brown $fox jumps over the 'lazy' dog.">
+  second link</a>
+  <p>Here are the hrefs as text:</p>
+  <!-- Use data binding to display our data binding. We must go deeper. -->
+  <pre>#The "quick" \brown $fox jumps over the 'lazy' dog.</pre>
+  <pre>#The "quick" \brown $fox jumps over the 'lazy' dog.</pre>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="attr_multiple_bindings_test.html_bootstrap.dart"></script></body></html>

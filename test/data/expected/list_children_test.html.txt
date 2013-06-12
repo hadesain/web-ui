@@ -1,70 +1,33 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x94
-  RenderBlock {HTML} at (0,0) size 800x94
-    RenderBody {BODY} at (8,8) size 784x70
-      RenderBlock (anonymous) at (0,0) size 784x18
-        RenderText {#text} at (0,0) size 650x18
-          text run at (0,0) width 650: "You should see the list items \"a\" and \"b\" repeated 3 times each. "
-        RenderText {#text} at (0,0) size 0x0
-        RenderInline {SPAN} at (0,0) size 10x18
-          RenderText {#text} at (650,0) size 10x18
-            text run at (650,0) width 10: "a"
-        RenderText {#text} at (660,0) size 10x18
-          text run at (660,0) width 10: " "
-        RenderInline {SPAN} at (0,0) size 10x18
-          RenderText {#text} at (670,0) size 10x18
-            text run at (670,0) width 10: "a"
-        RenderText {#text} at (680,0) size 10x18
-          text run at (680,0) width 10: " "
-        RenderText {#text} at (0,0) size 0x0
-        RenderInline {SPAN} at (0,0) size 10x18
-          RenderText {#text} at (690,0) size 10x18
-            text run at (690,0) width 10: "a"
-        RenderText {#text} at (700,0) size 10x18
-          text run at (700,0) width 10: " "
-        RenderText {#text} at (0,0) size 0x0
-        RenderInline {SPAN} at (0,0) size 10x18
-          RenderText {#text} at (710,0) size 10x18
-            text run at (710,0) width 10: "b"
-        RenderText {#text} at (720,0) size 10x18
-          text run at (720,0) width 10: " "
-        RenderInline {SPAN} at (0,0) size 10x18
-          RenderText {#text} at (730,0) size 10x18
-            text run at (730,0) width 10: "b"
-        RenderText {#text} at (740,0) size 10x18
-          text run at (740,0) width 10: " "
-        RenderText {#text} at (0,0) size 0x0
-        RenderInline {SPAN} at (0,0) size 10x18
-          RenderText {#text} at (750,0) size 10x18
-            text run at (750,0) width 10: "b"
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-      RenderBlock {P} at (0,34) size 784x36
-        RenderText {#text} at (0,0) size 770x36
-          text run at (0,0) width 450: "Now you should see: \"abc\" \"def\" \"abc\" \"def\". "
-          text run at (450,0) width 320: "This tests what happens when the"
-          text run at (0,18) width 450: "\"iterate\" does not have data binding inside. "
-        RenderText {#text} at (0,0) size 0x0
-        RenderInline {SPAN} at (0,0) size 30x18
-          RenderText {#text} at (450,18) size 30x18
-            text run at (450,18) width 30: "abc"
-        RenderText {#text} at (480,18) size 10x18
-          text run at (480,18) width 10: " "
-        RenderInline {SPAN} at (0,0) size 30x18
-          RenderText {#text} at (490,18) size 30x18
-            text run at (490,18) width 30: "def"
-        RenderText {#text} at (520,18) size 10x18
-          text run at (520,18) width 10: " "
-        RenderText {#text} at (0,0) size 0x0
-        RenderInline {SPAN} at (0,0) size 30x18
-          RenderText {#text} at (530,18) size 30x18
-            text run at (530,18) width 30: "abc"
-        RenderText {#text} at (560,18) size 10x18
-          text run at (560,18) width 10: " "
-        RenderInline {SPAN} at (0,0) size 30x18
-          RenderText {#text} at (570,18) size 30x18
-            text run at (570,18) width 30: "def"
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  You should see the list items "a" and "b" repeated 3 times each.
+  <template></template>
+    <span>a</span>
+    <template></template><span>a</span>
+    <span style="display:none"></span>
+    <span>a</span>
+  
+    <span>b</span>
+    <template></template><span>b</span>
+    <span style="display:none"></span>
+    <span>b</span>
+  
+  <p>Now you should see: "abc" "def" "abc" "def".
+  This tests what happens when the "iterate" does not have data binding inside.
+  <template></template>
+    <span>abc</span>
+    <span>def</span>
+  
+    <span>abc</span>
+    <span>def</span>
+  
+  
+
+
+</p><script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="list_children_test.html_bootstrap.dart"></script></body></html>

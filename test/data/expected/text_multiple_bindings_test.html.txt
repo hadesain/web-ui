@@ -1,30 +1,17 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x154
-  RenderBlock {HTML} at (0,0) size 800x154
-    RenderBody {BODY} at (8,16) size 784x122
-      RenderBlock {P} at (0,0) size 784x18
-        RenderText {#text} at (0,0) size 330x18
-          text run at (0,0) width 330: "These two sentences should match:"
-      RenderBlock {PRE} at (0,34) size 784x36
-        RenderText {#text} at (0,0) size 290x36
-          text run at (0,0) width 290: "The \"quick\" \\brown $fox jumps"
-          text run at (290,0) width 0: " "
-          text run at (0,18) width 220: "  over the 'lazy' dog."
-      RenderBlock {PRE} at (0,86) size 784x36
-        RenderText {#text} at (0,0) size 240x18
-          text run at (0,0) width 240: "The \"quick\" \\brown $fox "
-        RenderText {#text} at (240,0) size 50x18
-          text run at (240,0) width 50: "jumps"
-        RenderText {#text} at (290,0) size 290x36
-          text run at (290,0) width 0: " "
-          text run at (0,18) width 70: "  over "
-        RenderText {#text} at (70,18) size 30x18
-          text run at (70,18) width 30: "the"
-        RenderText {#text} at (100,18) size 80x18
-          text run at (100,18) width 80: " 'lazy' "
-        RenderText {#text} at (180,18) size 30x18
-          text run at (180,18) width 30: "dog"
-        RenderText {#text} at (210,18) size 10x18
-          text run at (210,18) width 10: "."
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <p>These two sentences should match:</p>
+  <pre>The "quick" \brown $fox jumps
+  over the 'lazy' dog.</pre>
+  <pre>The "quick" \brown $fox jumps
+  over the 'lazy' dog.</pre>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="text_multiple_bindings_test.html_bootstrap.dart"></script></body></html>

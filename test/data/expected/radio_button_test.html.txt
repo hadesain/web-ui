@@ -1,20 +1,17 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x78
-  RenderBlock {HTML} at (0,0) size 800x78
-    RenderBody {BODY} at (8,8) size 784x54
-      RenderBlock {FORM} at (0,0) size 784x20
-        RenderBlock {INPUT} at (5,3) size 13x13
-        RenderText {#text} at (21,2) size 50x18
-          text run at (21,2) width 50: "Foo! "
-        RenderBlock {INPUT} at (76,3) size 13x13
-        RenderText {#text} at (92,2) size 40x18
-          text run at (92,2) width 40: "Bar!"
-      RenderBlock {PRE} at (0,36) size 784x18
-        RenderText {#text} at (0,0) size 110x18
-          text run at (0,0) width 110: "You picked "
-        RenderText {#text} at (110,0) size 30x18
-          text run at (110,0) width 30: "Bar"
-        RenderText {#text} at (140,0) size 290x18
-          text run at (140,0) width 290: ". Final value should be 'Bar'"
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <form>
+  <input name="a" type="radio" value="Foo">Foo!
+  <input name="a" type="radio" value="Bar">Bar!
+  </form>
+  <pre>You picked Bar. Final value should be 'Bar'</pre>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="radio_button_test.html_bootstrap.dart"></script></body></html>

@@ -1,17 +1,15 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x52
-  RenderBlock {HTML} at (0,0) size 800x52
-    RenderBody {BODY} at (8,8) size 784x36
-      RenderBlock {DIV} at (0,0) size 784x18
-        RenderText {#text} at (0,0) size 450x18
-          text run at (0,0) width 450: "binding as text (expect <span>hello</span>): "
-        RenderText {#text} at (450,0) size 180x18
-          text run at (450,0) width 180: "<span>hello</span>"
-      RenderBlock {DIV} at (0,18) size 784x18
-        RenderText {#text} at (0,0) size 550x18
-          text run at (0,0) width 550: "binding as SafeHtml (expect hello inside a real span): "
-        RenderInline {SPAN} at (0,0) size 50x18
-          RenderText {#text} at (550,0) size 50x18
-            text run at (550,0) width 50: "hello"
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <!-- Tests that you can inject HTML using SafeHtml. -->
+  <div>binding as text (expect &lt;span&gt;hello&lt;/span&gt;): &lt;span&gt;hello&lt;/span&gt;</div>
+  <div>binding as SafeHtml (expect hello inside a real span): <span>hello</span></div>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="escape_test.html_bootstrap.dart"></script></body></html>

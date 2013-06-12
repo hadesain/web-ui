@@ -1,41 +1,40 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x91
-  RenderBlock {HTML} at (0,0) size 800x91
-    RenderBody {BODY} at (8,8) size 784x75
-      RenderBlock (anonymous) at (0,0) size 784x0
-        RenderInline {SPAN} at (0,0) size 0x0
-          RenderText {#text} at (0,0) size 0x0
-      RenderBlock (anonymous) at (0,0) size 784x18
-        RenderBlock {DIV} at (0,0) size 784x18 [color=#FFFF00] [bgcolor=#FF0000]
-          RenderBlock {DIV} at (0,0) size 784x18
-            RenderText {#text} at (0,0) size 40x18
-              text run at (0,0) width 40: "Test"
-      RenderBlock (anonymous) at (0,18) size 784x0
-        RenderInline {SPAN} at (0,0) size 0x0
-          RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-        RenderInline {SPAN} at (0,0) size 0x0
-          RenderText {#text} at (0,0) size 0x0
-      RenderBlock (anonymous) at (0,18) size 784x18
-        RenderBlock {DIV} at (0,0) size 784x18 [bgcolor=#808080]
-          RenderBlock {DIV} at (0,0) size 784x18
-            RenderText {#text} at (0,0) size 40x18
-              text run at (0,0) width 40: "Test"
-      RenderBlock (anonymous) at (0,36) size 784x0
-        RenderInline {SPAN} at (0,0) size 0x0
-          RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-        RenderInline {SPAN} at (0,0) size 0x0
-          RenderText {#text} at (0,0) size 0x0
-      RenderBlock (anonymous) at (0,36) size 784x39
-        RenderBlock {DIV} at (0,0) size 784x39 [bgcolor=#808080]
-          RenderBlock {DIV} at (0,0) size 784x39 [color=#008000] [bgcolor=#0000FF]
-            RenderText {#text} at (0,0) size 88x39
-              text run at (0,0) width 88: "Test"
-      RenderBlock (anonymous) at (0,75) size 784x0
-        RenderInline {SPAN} at (0,0) size 0x0
-          RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
+<html lang="en"><head><style>template { display: none; }</style><link rel="stylesheet" type="text/css" href="css_pseudo_test.html.css">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <link rel="import" href="component_css_pseudo.html">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+  <title>CSS Custom Pseudo-Element Test</title>
+</head>
+<body>
+  <style>.test-1 > *[pseudo="x-background_3"] {
+  background-color: #f00;
+  color: #ff0;
+  font-weight: bold;
+}
+.test-2 > *[pseudo="x-background_3"] > * {
+  background-color: #00f;
+  color: #008000;
+  font-size: 36px !important;
+}</style>
+
+  <span is="x-comp-pseudo" class="test-1"><shadow-root>        
+        <div class="x-comp-pseudo_main" pseudo="x-background_3">
+          <div>Test</div>
+        </div>
+      </shadow-root></span>
+  <span is="x-comp-pseudo"><shadow-root>        
+        <div class="x-comp-pseudo_main" pseudo="x-background_3">
+          <div>Test</div>
+        </div>
+      </shadow-root></span>
+  <span is="x-comp-pseudo" class="test-2"><shadow-root>        
+        <div class="x-comp-pseudo_main" pseudo="x-background_3">
+          <div>Test</div>
+        </div>
+      </shadow-root></span>
+
+  
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="css_pseudo_test.html_bootstrap.dart"></script></body></html>

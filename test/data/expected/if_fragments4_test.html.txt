@@ -1,16 +1,17 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x34
-  RenderBlock {HTML} at (0,0) size 800x34
-    RenderBody {BODY} at (8,8) size 784x18
-      RenderText {#text} at (0,0) size 320x18
-        text run at (0,0) width 320: "Expect: Go here: cool_link.html "
-      RenderText {#text} at (320,0) size 90x18
-        text run at (320,0) width 90: "Go here: "
-      RenderInline {SPAN} at (0,0) size 140x18
-        RenderText {#text} at (410,0) size 140x18
-          text run at (410,0) width 140: "cool_link.html"
-      RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (0,0) size 0x0
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <!-- Tests that we can have document fragmwents inside iteration. -->
+  Expect: Go here: cool_link.html
+  <template></template>
+    Go here: <span>cool_link.html</span>
+  
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="if_fragments4_test.html_bootstrap.dart"></script></body></html>

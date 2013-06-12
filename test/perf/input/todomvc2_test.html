@@ -34,7 +34,6 @@ import 'perf_common.dart';
 import 'todomvc_common.dart';
 
 main() {
-  useShadowDom = false;
   todomvc_main.main();
   Timer.run(() {
     var bench = new TodoMvcBenchmark();

@@ -1,16 +1,38 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x134
-  RenderBlock {HTML} at (0,0) size 800x134
-    RenderBody {BODY} at (8,8) size 784x118
-      RenderBlock {DIV} at (0,0) size 784x50 [color=#0000FF]
-        RenderText {#text} at (0,0) size 600x18
-          text run at (0,0) width 600: "this div will have blue (0000ff) font color and 50px height."
-      RenderBlock {DIV} at (0,50) size 400x50
-        RenderText {#text} at (0,0) size 390x36
-          text run at (0,0) width 390: "this div will have blue 400px width and"
-          text run at (0,18) width 120: "50px height."
-      RenderBlock {DIV} at (0,100) size 784x18 [bgcolor=#008000]
-        RenderText {#text} at (0,0) size 610x18
-          text run at (0,0) width 610: "this div will have green (008000) bgcolor and monospace font."
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+  <style>.uno {
+  width: 400px;
+}
+.dos {
+  color: #00f;
+}
+.tres {
+  height: 50px;
+}
+.cuatro {
+  background-color: #008000;
+}
+.cinco {
+  font-family: monospace;
+}</style>
+</head>
+<body>
+<!-- test that you can set several class attributes with lists and strings with
+spaces. -->
+  <div id="test1" class="dos tres">
+  this div will have blue (0000ff) font color and 50px height.
+  </div>
+  <div id="test2" class="uno tres">
+  this div will have blue 400px width and 50px height.
+  </div>
+  <div id="test3" class="cuatro cinco">
+  this div will have green (008000) bgcolor and monospace font.
+  </div>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="css_classes_binding_test.html_bootstrap.dart"></script></body></html>

@@ -1,17 +1,19 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x34
-  RenderBlock {HTML} at (0,0) size 800x34
-    RenderBody {BODY} at (8,8) size 784x18
-      RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (0,0) size 0x0
-      RenderInline {SPAN} at (0,0) size 200x18
-        RenderText {#text} at (0,0) size 0x0
-        RenderInline {SPAN} at (0,0) size 200x18
-          RenderText {#text} at (0,0) size 200x18
-            text run at (0,0) width 200: "yay! test is passing"
-        RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (0,0) size 0x0
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <link rel="import" href="../input/conditional4_component1.html">
+  <link rel="import" href="../input/conditional4_component2.html">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <template></template>
+  <template></template>
+    <span is="x-pass"><shadow-root>    <span>yay! test is passing</span>
+  </shadow-root></span>
+  
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="conditional4_test.html_bootstrap.dart"></script></body></html>

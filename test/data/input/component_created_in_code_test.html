@@ -37,7 +37,7 @@ BSD-style license that can be found in the LICENSE file.
         // "lifecycle" methods get called. We are working to make this be
         // automatic too.
         var lifecycleCaller = new ComponentItem(hello)..create();
-        document.body.nodes.add(hello.host);
+        document.body.append(hello.host);
         lifecycleCaller.insert();
         window.postMessage('done', '*');
       });

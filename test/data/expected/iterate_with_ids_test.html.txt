@@ -1,39 +1,16 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x160
-  RenderBlock {HTML} at (0,0) size 800x160
-    RenderBody {BODY} at (8,8) size 784x144
-      RenderBlock (anonymous) at (0,0) size 784x18
-        RenderText {#text} at (0,0) size 440x18
-          text run at (0,0) width 440: "Tests that we can iterate items and use IDs:"
-      RenderBlock {DIV} at (0,18) size 784x18
-        RenderText {#text} at (0,0) size 10x18
-          text run at (0,0) width 10: "a"
-      RenderBlock {DIV} at (0,36) size 784x18
-        RenderText {#text} at (0,0) size 10x18
-          text run at (0,0) width 10: "b"
-      RenderBlock {DIV} at (0,54) size 784x18
-        RenderText {#text} at (0,0) size 10x18
-          text run at (0,0) width 10: "c"
-      RenderBlock (anonymous) at (0,72) size 784x18
-        RenderText {#text} at (0,0) size 480x18
-          text run at (0,0) width 480: "Same thing, this time with indentation=\"remove\":"
-      RenderBlock {DIV} at (0,90) size 784x18
-        RenderText {#text} at (0,0) size 70x18
-          text run at (0,0) width 70: "indent_"
-        RenderText {#text} at (70,0) size 10x18
-          text run at (70,0) width 10: "a"
-      RenderBlock {DIV} at (0,108) size 784x18
-        RenderText {#text} at (0,0) size 70x18
-          text run at (0,0) width 70: "indent_"
-        RenderText {#text} at (70,0) size 10x18
-          text run at (70,0) width 10: "b"
-      RenderBlock {DIV} at (0,126) size 784x18
-        RenderText {#text} at (0,0) size 70x18
-          text run at (0,0) width 70: "indent_"
-        RenderText {#text} at (70,0) size 10x18
-          text run at (70,0) width 10: "c"
-      RenderBlock (anonymous) at (0,144) size 784x0
-        RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  Tests that we can iterate items and use IDs:
+  <template></template><div id="a">a</div><div id="b">b</div><div id="c">c</div>
+  Same thing, this time with indentation="remove":
+  <template indentation="remove"></template><div id="indent_a">indent_a</div><div id="indent_b">indent_b</div><div id="indent_c">indent_c</div>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="iterate_with_ids_test.html_bootstrap.dart"></script></body></html>

@@ -36,7 +36,6 @@ import 'package:unittest/unittest.dart';
 import 'perf_common.dart';
 
 main() {
-  useShadowDom = false;
   Timer.run(() {
     var bench = new BindingBenchmark();
     perfDone(bench.measure());

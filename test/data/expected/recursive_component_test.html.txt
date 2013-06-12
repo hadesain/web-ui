@@ -1,23 +1,26 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x110
-  RenderBlock {HTML} at (0,0) size 800x110
-    RenderBody {BODY} at (8,8) size 784x94
-      RenderBlock (anonymous) at (0,0) size 784x18
-        RenderText {#text} at (0,0) size 280x18
-          text run at (0,0) width 280: "Expect nested divs 0 then 1."
-      RenderBlock {DIV} at (0,18) size 784x76
-        RenderBlock (anonymous) at (10,10) size 764x18
-          RenderText {#text} at (0,0) size 10x18
-            text run at (0,0) width 10: "0"
-          RenderText {#text} at (0,0) size 0x0
-          RenderText {#text} at (0,0) size 0x0
-        RenderBlock {DIV} at (10,28) size 764x38
-          RenderText {#text} at (10,10) size 10x18
-            text run at (10,10) width 10: "1"
-          RenderText {#text} at (0,0) size 0x0
-          RenderText {#text} at (0,0) size 0x0
-        RenderBlock (anonymous) at (10,66) size 764x0
-          RenderText {#text} at (0,0) size 0x0
-          RenderText {#text} at (0,0) size 0x0
+<html lang="en"><head><style>template { display: none; }</style>
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+<style>div {
+  padding: 10px;
+}</style>
+</head>
+<body>
+  Expect nested divs 0 then 1.
+  
+  <div is="x-rec"><shadow-root>
+      0
+      <template></template>
+        <div is="x-rec"><shadow-root>
+      1
+      <template></template>
+    </shadow-root></div>
+      
+    </shadow-root></div>
+
+  
+
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="recursive_component_test.html_bootstrap.dart"></script></body></html>

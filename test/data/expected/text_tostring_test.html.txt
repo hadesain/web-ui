@@ -1,23 +1,15 @@
 Content-Type: text/plain
-layer at (0,0) size 800x600
-  RenderView at (0,0) size 800x600
-layer at (0,0) size 800x118
-  RenderBlock {HTML} at (0,0) size 800x118
-    RenderBody {BODY} at (8,16) size 784x86
-      RenderBlock {P} at (0,0) size 784x18
-        RenderText {#text} at (0,0) size 330x18
-          text run at (0,0) width 330: "These two sentences should match:"
-      RenderBlock {PRE} at (0,34) size 784x18
-        RenderText {#text} at (0,0) size 500x18
-          text run at (0,0) width 500: "The quick brown [fox, jumps] over the {lazy: dog}."
-      RenderBlock {PRE} at (0,68) size 784x18
-        RenderText {#text} at (0,0) size 160x18
-          text run at (0,0) width 160: "The quick brown "
-        RenderText {#text} at (160,0) size 120x18
-          text run at (160,0) width 120: "[fox, jumps]"
-        RenderText {#text} at (280,0) size 100x18
-          text run at (280,0) width 100: " over the "
-        RenderText {#text} at (380,0) size 110x18
-          text run at (380,0) width 110: "{lazy: dog}"
-        RenderText {#text} at (490,0) size 10x18
-          text run at (490,0) width 10: "."
+<html lang="en"><head><style>template { display: none; }</style>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="../input/packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <p>These two sentences should match:</p>
+  <pre id="expected">The quick brown [fox, jumps] over the {lazy: dog}.</pre>
+  <pre id="actual">The quick brown [fox, jumps] over the {lazy: dog}.</pre>
+  
+
+
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="application/dart" src="text_tostring_test.html_bootstrap.dart"></script></body></html>
