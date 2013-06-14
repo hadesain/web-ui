@@ -434,7 +434,7 @@ void transformMainHtml(Document document, FileInfo fileInfo,
   for (var tag in document.queryAll('link')) {
     var href = tag.attributes['href'];
     var rel = tag.attributes['rel'];
-    if (rel == 'component' || rel == 'components') {
+    if (rel == 'component' || rel == 'components' || rel == 'import') {
       tag.remove();
     } else if (href != null && rewriteUrls && !hasCss) {
       // Only rewrite URL if rewrite on and we're not CSS polyfilling.
@@ -451,9 +451,7 @@ void transformMainHtml(Document document, FileInfo fileInfo,
     var newCss = pathMapper.mangle(path.basename(filePath), '.css', true);
     var linkElem = new Element.html(
         '<link rel="stylesheet" type="text/css" href="$newCss">');
-    var head = document.head;
-    head.insertBefore(linkElem,
-        head.hasChildNodes() ? head.nodes.first : null);
+    document.head.insertBefore(linkElem, null);
   }
 
   var styles = document.queryAll('style');

@@ -40,15 +40,6 @@ import 'package:web_ui/web_ui.dart';
 main() {
 
   Timer.run(() {
-    // Set of components used.
-    var urls = queryAll('link')
-        .where((link) => link.attributes['rel'] == 'import')
-        .map((link) => link.attributes['href'])
-        .toSet();
-
-    expect(urls.length, 1);
-    expect(urls, contains('component_css_pseudo.html'));
-
     window.postMessage('done', '*');
    });
 }

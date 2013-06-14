@@ -2,7 +2,7 @@ name: web_ui
 author: "Web UI Authors <web-ui-dev@dartlang.org>"
 homepage: https://github.com/dart-lang/web-ui
 description: An easy way to build web apps in Dart.
-version: 0.4.11+1
+version: 0.4.11+2
 dependencies:
   args: ">=0.4.5"
   analyzer_experimental: ">=0.5.12"
