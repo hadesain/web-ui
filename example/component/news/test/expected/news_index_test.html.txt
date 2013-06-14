@@ -1,9 +1,9 @@
 Content-Type: text/plain
-<html><head><style>template { display: none; }</style><link rel="stylesheet" type="text/css" href="news_index_test.html.css">
+<html><head><style>template { display: none; }</style>
   <title>Simple Web Components Example</title>
-  <link rel="import" href="../web/news-component.html">
+  
   <script src="../../packages/web_ui/testing/testing.js"></script>
-</head>
+<link rel="stylesheet" type="text/css" href="news_index_test.html.css"></head>
 <body>
 <h1>Simple Web Components Example</h1>
 <ul is="x-news"><shadow-root>        

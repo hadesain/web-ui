@@ -1,5 +1,5 @@
 Content-Type: text/plain
-<html lang="en"><head><style>template { display: none; }</style><link rel="stylesheet" type="text/css" href="todomvc_listorder_test.html.css">
+<html lang="en"><head><style>template { display: none; }</style>
 <!--
 This test runs the TodoMVC app, adds a few elements, marks some as done, and
 switches from back and forth between "Active" and "All". This will make some
@@ -10,11 +10,11 @@ wrong order when using lists and ifs together.
 -->
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <link rel="import" href="../web/app.html">
+  
   <link rel="stylesheet" href="../web/base.css">
   <script src="../../packages/web_ui/testing/testing.js"></script>
   <title>Dart • TodoMVC</title>
-<style>template,
+<link rel="stylesheet" type="text/css" href="todomvc_listorder_test.html.css"><style>template,
 thead[template],
 tbody[template],
 tfoot[template],
