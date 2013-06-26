@@ -3,10 +3,9 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /**
- * This is a helper for run.sh. We try to run all of the Dart code in one
- * instance of the Dart VM to reduce warm-up time.
+ * Helper library to run tests in content_shell
  */
-library web_ui.testing.render_test;
+library web_ui.testing.end2end;
 
 import 'dart:io';
 import 'dart:math' show min;
@@ -15,35 +14,42 @@ import 'package:pathos/path.dart' as path;
 import 'package:unittest/unittest.dart';
 import 'package:web_ui/dwc.dart' as dwc;
 
+
+/**
+ * Compiles [testFile] with the web-ui compiler, and then runs the output as a
+ * unit test in content_shell.
+ */
+void endToEndTests(String inputDir, String outDir, {List<String> arguments}) {
+  _testHelper(new _TestOptions(inputDir, inputDir, null, outDir,
+        arguments: arguments));
+}
+
+/**
+ * Compiles [testFile] with the web-ui compiler, and then runs the output as a
+ * render test in content_shell.
+ */
 void renderTests(String baseDir, String inputDir, String expectedDir,
     String outDir, {List<String> arguments, String script, String pattern,
     bool deleteDir: true}) {
-  if (arguments == null) arguments = new Options().arguments;
-  if (script == null) script = new Options().script;
+  _testHelper(new _TestOptions(baseDir, inputDir, expectedDir, outDir,
+      arguments: arguments, script: script, pattern: pattern,
+      deleteDir: deleteDir));
+}
 
-  var args = _parseArgs(arguments, script);
-  if (args == null) exit(1);
+void _testHelper(_TestOptions options) {
+  expect(options, isNotNull);
 
-  var filePattern = new RegExp(pattern != null ? pattern
-      : (args.rest.length > 0 ? args.rest[0] : '.'));
-
-  var scriptDir = path.absolute(path.dirname(script));
-  baseDir = path.join(scriptDir, baseDir);
-  inputDir = path.join(scriptDir, inputDir);
-  expectedDir = path.join(scriptDir, expectedDir);
-  outDir = path.join(scriptDir, outDir);
-
-  var paths = new Directory(inputDir).listSync()
+  var paths = new Directory(options.inputDir).listSync()
       .where((f) => f is File).map((f) => f.path)
-      .where((p) => p.endsWith('_test.html') && filePattern.hasMatch(p));
+      .where((p) => p.endsWith('_test.html') && options.pattern.hasMatch(p));
 
   if (paths.isEmpty) return;
 
   // First clear the output folder. Otherwise we can miss bugs when we fail to
   // generate a file.
-  var dir = new Directory(outDir);
-  if (dir.existsSync() && deleteDir) {
-    print('Cleaning old output for ${path.normalize(outDir)}');
+  var dir = new Directory(options.outDir);
+  if (dir.existsSync() && options.deleteDir) {
+    print('Cleaning old output for ${path.normalize(options.outDir)}');
     dir.deleteSync(recursive: true);
   }
   dir.createSync();
@@ -51,8 +57,8 @@ void renderTests(String baseDir, String inputDir, String expectedDir,
   for (var filePath in paths) {
     var filename = path.basename(filePath);
     test('compile $filename', () {
-      var testArgs = ['-o', outDir, '--basedir', baseDir]
-          ..addAll(args.rest)
+      var testArgs = ['-o', options.outDir, '--basedir', options.baseDir]
+          ..addAll(options.compilerArgs)
           ..add(filePath);
       expect(dwc.run(testArgs, printTime: false).then((res) {
         expect(res.messages.length, 0, reason: res.messages.join('\n'));
@@ -65,8 +71,8 @@ void renderTests(String baseDir, String inputDir, String expectedDir,
   filenames.sort();
 
   // Get the path from "input" relative to "baseDir"
-  var relativeToBase = path.relative(inputDir, from: baseDir);
-  var finalOutDir = path.join(outDir, relativeToBase);
+  var relativeToBase = path.relative(options.inputDir, from: options.baseDir);
+  var finalOutDir = path.join(options.outDir, relativeToBase);
 
   runTests(String search) {
     var outs;
@@ -91,11 +97,15 @@ void renderTests(String baseDir, String inputDir, String expectedDir,
         expect(outs, isNotNull, reason:
           'Output not available, maybe content_shell failed to run.');
         var output = outs[j];
-        var outPath = path.join(outDir, '$filename.txt');
-        var expectedPath = path.join(expectedDir, '$filename.txt');
+        var outPath = path.join(options.outDir, '$filename.txt');
         new File(outPath).writeAsStringSync(output);
-        var expected = new File(expectedPath).readAsStringSync();
-        expect(output, expected, reason: 'unexpected output for <$filename>');
+        if (options.isRenderTest) {
+          var expectedPath = path.join(options.expectedDir, '$filename.txt');
+          var expected = new File(expectedPath).readAsStringSync();
+          expect(output, expected, reason: 'unexpected output for <$filename>');
+        } else {
+          expect(output, matches(new RegExp('All .* tests passed')));
+        }
       });
     }
   }
@@ -126,17 +136,64 @@ void renderTests(String baseDir, String inputDir, String expectedDir,
     }
   }
 
-  if (args['dart'] == true) {
+  if (options.runAsDart) {
     runTests('');
   }
-  if (args['js'] == true) {
+  if (options.runAsJs) {
     ensureCompileToJs();
     runTests('?js=1');
   }
-  if (args['shadowdom'] == true) {
+  if (options.forcePolyfillShadowDom) {
     ensureCompileToJs();
     runTests('?js=1&shadowdomjs=1');
   }
+}
+
+class _TestOptions {
+  final String baseDir;
+  final String inputDir;
+
+  final String expectedDir;
+  bool get isRenderTest => expectedDir != null;
+
+  final String outDir;
+  final bool deleteDir;
+
+  final bool runAsDart;
+  final bool runAsJs;
+  final bool forcePolyfillShadowDom;
+
+  final List<String> compilerArgs;
+  final RegExp pattern;
+
+  factory _TestOptions(String baseDir, String inputDir, String expectedDir,
+      String outDir, {List<String> arguments, String script, String pattern,
+      bool deleteDir: true}) {
+    if (arguments == null) arguments = new Options().arguments;
+    if (script == null) script = new Options().script;
+
+    var args = _parseArgs(arguments, script);
+    if (args == null) return null;
+    var compilerArgs = args.rest;
+    var filePattern = new RegExp(pattern != null ? pattern
+        : (compilerArgs.length > 0 ? compilerArgs.removeAt(0) : '.'));
+
+    var scriptDir = path.absolute(path.dirname(script));
+    baseDir = path.join(scriptDir, baseDir);
+    inputDir = path.join(scriptDir, inputDir);
+    outDir = path.join(scriptDir, outDir);
+    if (expectedDir != null) {
+      expectedDir = path.join(scriptDir, expectedDir);
+    }
+
+    return new _TestOptions._(baseDir, inputDir, expectedDir, outDir, deleteDir,
+        args['dart'] == true, args['js'] == true, args['shadowdom'] == true,
+        compilerArgs, filePattern);
+  }
+
+  _TestOptions._(this.baseDir, this.inputDir, this.expectedDir, this.outDir,
+      this.deleteDir, this.runAsDart, this.runAsJs,
+      this.forcePolyfillShadowDom, this.compilerArgs, this.pattern);
 }
 
 ArgResults _parseArgs(List<String> arguments, String script) {

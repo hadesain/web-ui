@@ -4,7 +4,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:io';
-import 'package:web_ui/testing/render_test.dart';
+import 'package:web_ui/testing/content_shell_test.dart';
 import 'package:unittest/compact_vm_config.dart';
 
 void main() {

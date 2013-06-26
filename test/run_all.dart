@@ -17,7 +17,7 @@ import 'package:pathos/path.dart' as path;
 import 'package:unittest/compact_vm_config.dart';
 import 'package:unittest/unittest.dart';
 import 'package:web_ui/dwc.dart' as dwc;
-import 'package:web_ui/testing/render_test.dart';
+import 'package:web_ui/testing/content_shell_test.dart';
 
 import 'css_test.dart' as css_test;
 import 'compiler_test.dart' as compiler_test;
@@ -48,6 +48,8 @@ main() {
   //renderTests('data/input', 'data/input', 'data/expected', 'data/out',
       // TODO(jmesserly): make these configurable
   //    ['--no-js', '--no-shadowdom']..addAll(args));
+
+  endToEndTests('data/unit/', 'data/out');
 
   // Note: if you're adding more render test suites, make sure to update run.sh
   // as well for convenient baseline diff/updating.
