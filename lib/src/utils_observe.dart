@@ -32,6 +32,16 @@ String toCamelCase(String hyphenedName, {bool startUppercase: false}) {
   return segments.join('');
 }
 
+String toHyphenedName(String word) {
+  var sb = new StringBuffer();
+  for (int i = 0; i < word.length; i++) {
+    var lower = word[i].toLowerCase();
+    if (word[i] != lower && i > 0) sb.write('-');
+    sb.write(lower);
+  }
+  return sb.toString();
+}
+
 // TODO(jmesserly): replace with something in dart:async, as long as it is based
 // on window.setImmediate/mutation observers/postMessage and not setTimeout(0)
 // Maybe we can use Future.value? We need it to be fast (next microtask)

@@ -6,7 +6,7 @@ library web_ui.src.utils;
 
 import 'dart:async';
 import 'package:pathos/path.dart' show Builder;
-export 'utils_observe.dart' show toCamelCase;
+export 'utils_observe.dart' show toCamelCase, toHyphenedName;
 
 /**
  * An instance of the pathos library builder. We could just use the default

@@ -54,6 +54,36 @@ main() {
     });
   }
 
+  group('toHyphenedName', () {
+    test('empty', () {
+      expect(toHyphenedName(''), '');
+    });
+
+    test('all lower case', () {
+      expect(toHyphenedName('a'), 'a');
+      expect(toHyphenedName('a-b'), 'a-b');
+      expect(toHyphenedName('aBc'), 'a-bc');
+      expect(toHyphenedName('abC'), 'ab-c');
+      expect(toHyphenedName('abc-d'), 'abc-d');
+      expect(toHyphenedName('long_word'), 'long_word');
+    });
+
+    test('capitalized letters in the middle/end', () {
+      expect(toHyphenedName('aB'), 'a-b');
+      expect(toHyphenedName('longWord'), 'long-word');
+    });
+
+    test('leading capital letters', () {
+      expect(toHyphenedName('Hi'), 'hi');
+      expect(toHyphenedName('Hi-'), 'hi-');
+      expect(toHyphenedName('HiFriend'), 'hi-friend');
+    });
+
+    test('consecutive capital letters', () {
+      expect(toHyphenedName('aBC'), 'a-b-c');
+    });
+  });
+
   test('trimOrCompact', () {
     expect(trimOrCompact('[ b ]'), '[ b ]');
     expect(trimOrCompact('    [ x ]'), ' [ x ]');

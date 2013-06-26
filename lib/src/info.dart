@@ -36,9 +36,6 @@ class GlobalInfo {
 
   /** All components declared in the application. */
   final Map<String, ComponentInfo> components = new SplayTreeMap();
-
-  /** UI events are discovered at runtime via query selectors. */
-  final Set<String> eventQuerySelectors = new Set<String>();
 }
 
 /**
@@ -104,9 +101,6 @@ abstract class LibraryInfo extends Hashable implements LibrarySummary {
    */
   final Map<ComponentSummary, bool> usedComponents =
       new LinkedHashMap<ComponentSummary, bool>();
-
-  /** Collected information for UI events on the corresponding element. */
-  final List<EventInfo> events = <EventInfo>[];
 
   /**
    * The actual code, either inlined or from an external file, or `null` if none
@@ -283,29 +277,6 @@ class ComponentInfo extends LibraryInfo implements ComponentSummary {
   String toString() => '#<ComponentInfo $tagName '
       '${inlinedCode != null ? "inline" : "from ${dartCodeUrl.resolvedPath}"}>';
 }
-
-/** Information extracted for each declared event in an element. */
-class EventInfo {
-  /** Event stream name for attributes representing actions. */
-  final String streamName;
-
-  /** The event handler text. */
-  final String handlerCode;
-
-  /** The way to find this node. */
-  final String querySelector;
-
-  EventInfo(this.streamName, this.handlerCode, this.querySelector);
-}
-
-/**
- * Specifies the action to take on a particular event. Some actions need to read
- * attributes from the DOM element that has the event listener (e.g. two way
- * bindings do this). [elementVarName] stores a reference to this element.
- * It is generated outside of the analyzer (in the emitter), so it is passed
- * here as an argument.
- */
-typedef String ActionDefinition(String elementVarName);
 
 
 /**

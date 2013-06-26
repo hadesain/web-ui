@@ -13,13 +13,13 @@ BSD-style license that can be found in the LICENSE file.
     apply-author-styles>
   <template>
     <template bind if="{{notEditing}}">
-      <label class='edit-label' on-double-click="edit()">{{value}}</label>
+      <label class='edit-label' on-double-click="edit">{{value}}</label>
     </template>
     <template bind if="{{editing}}">
-      <form on-submit="update($event)">
+      <form on-submit="update">
         <input id="edit" class="edit editing"
-               on-blur="update($event)"
-               on-key-up="maybeCancel($event)">
+               on-blur="update"
+               on-key-up="maybeCancel">
       </form>
     </template>
   </template>

@@ -9,7 +9,7 @@ import 'package:observe/observe.dart';
 import 'package:web_ui/web_ui.dart';
 import 'model.dart';
 
-class TodoApp extends CustomElement with ObservableMixin {
+class TodoApp extends PolymerElement with ObservableMixin {
   @observable AppModel app;
 
   void created() {
@@ -24,4 +24,6 @@ class TodoApp extends CustomElement with ObservableMixin {
     app.todos.add(new Todo(input.value));
     input.value = '';
   }
+
+  void clear() => app.clearDone();
 }

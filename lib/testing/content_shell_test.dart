@@ -80,7 +80,8 @@ void _testHelper(_TestOptions options) {
     test('content_shell run $search', () {
       var args = ['--dump-render-tree'];
       args.addAll(filenames.map((name) => 'file://$finalOutDir/$name$search'));
-      expect(Process.run('content_shell', args).then((res) {
+      var env = {'DART_FLAGS': '--checked'};
+      expect(Process.run('content_shell', args, environment: env).then((res) {
         expect(res.exitCode, 0, reason: 'content_shell exit code: '
             '${res.exitCode}. Contents of stderr: \n${res.stderr}');
         outs = res.stdout.split('#EOF\n')
@@ -104,7 +105,9 @@ void _testHelper(_TestOptions options) {
           var expected = new File(expectedPath).readAsStringSync();
           expect(output, expected, reason: 'unexpected output for <$filename>');
         } else {
-          expect(output, matches(new RegExp('All .* tests passed')));
+          bool passes = matches(
+              new RegExp('All .* tests passed')).matches(output, {});
+          expect(passes, true, reason: 'unit test failed:\n$output');
         }
       });
     }

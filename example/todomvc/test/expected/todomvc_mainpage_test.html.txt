@@ -25,8 +25,8 @@ option[template] {
   <span is="todo-app"><shadow-root>  <section id="todoapp">
     <header id="header">
       <h1 class="title">todos</h1>
-      <form on-submit="addTodo($event)">
-        <input id="new-todo" placeholder="What needs to be done?" autofocus="" on-change="addTodo($event)">
+      <form on-submit="addTodo">
+        <input id="new-todo" placeholder="What needs to be done?" autofocus="" on-change="addTodo">
       </form>
     </header>
     <section id="main">
@@ -47,7 +47,7 @@ option[template] {
           <li> <a href="#/completed">Completed</a> </li>
         </ul>
         <template bind="" if="{{app.hasCompleteTodos}}">
-          <button id="clear-completed" on-click="app.clearDone()">
+          <button id="clear-completed" on-click="clear">
             Clear completed ({{app.doneCount}})
           </button>
         </template>

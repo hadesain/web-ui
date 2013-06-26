@@ -31,8 +31,8 @@ option[template] {
   <span is="todo-app"><shadow-root>  <section id="todoapp">
     <header id="header">
       <h1 class="title">todos</h1>
-      <form on-submit="addTodo($event)">
-        <input id="new-todo" placeholder="What needs to be done?" autofocus="" on-change="addTodo($event)">
+      <form on-submit="addTodo">
+        <input id="new-todo" placeholder="What needs to be done?" autofocus="" on-change="addTodo">
       </form>
     </header>
     <section id="main">
@@ -46,17 +46,17 @@ option[template] {
     <div class="todo-row_todo-item">
       <input class="todo-row_toggle" type="checkbox">
       <div is="editable-label" id="label" value="{{todo.task}}"><shadow-root>    <template bind="" if="{{notEditing}}">
-      <label class="edit-label" on-double-click="edit()">{{value}}</label>
+      <label class="edit-label" on-double-click="edit">{{value}}</label>
     </template>
-      <label class="edit-label" on-double-click="edit()">one (unchecked)</label>
+      <label class="edit-label" on-double-click="edit">one (unchecked)</label>
     
     <template bind="" if="{{editing}}">
-      <form on-submit="update($event)">
-        <input id="edit" class="edit editing" on-blur="update($event)" on-key-up="maybeCancel($event)">
+      <form on-submit="update">
+        <input id="edit" class="edit editing" on-blur="update" on-key-up="maybeCancel">
       </form>
     </template>
   </shadow-root></div>
-      <button class="todo-row_destroy" on-click="appModel.todos.remove(todo)"></button>
+      <button class="todo-row_destroy" on-click="removeTodo"></button>
     </div>
   </shadow-root></li>
         
@@ -64,17 +64,17 @@ option[template] {
     <div class="todo-row_todo-item todo-row_completed">
       <input class="todo-row_toggle" type="checkbox">
       <div is="editable-label" id="label" value="{{todo.task}}"><shadow-root>    <template bind="" if="{{notEditing}}">
-      <label class="edit-label" on-double-click="edit()">{{value}}</label>
+      <label class="edit-label" on-double-click="edit">{{value}}</label>
     </template>
-      <label class="edit-label" on-double-click="edit()">two (checked)</label>
+      <label class="edit-label" on-double-click="edit">two (checked)</label>
     
     <template bind="" if="{{editing}}">
-      <form on-submit="update($event)">
-        <input id="edit" class="edit editing" on-blur="update($event)" on-key-up="maybeCancel($event)">
+      <form on-submit="update">
+        <input id="edit" class="edit editing" on-blur="update" on-key-up="maybeCancel">
       </form>
     </template>
   </shadow-root></div>
-      <button class="todo-row_destroy" on-click="appModel.todos.remove(todo)"></button>
+      <button class="todo-row_destroy" on-click="removeTodo"></button>
     </div>
   </shadow-root></li>
           
@@ -82,17 +82,17 @@ option[template] {
     <div class="todo-row_todo-item">
       <input class="todo-row_toggle" type="checkbox">
       <div is="editable-label" id="label" value="{{todo.task}}"><shadow-root>    <template bind="" if="{{notEditing}}">
-      <label class="edit-label" on-double-click="edit()">{{value}}</label>
+      <label class="edit-label" on-double-click="edit">{{value}}</label>
     </template>
-      <label class="edit-label" on-double-click="edit()">three (unchecked)</label>
+      <label class="edit-label" on-double-click="edit">three (unchecked)</label>
     
     <template bind="" if="{{editing}}">
-      <form on-submit="update($event)">
-        <input id="edit" class="edit editing" on-blur="update($event)" on-key-up="maybeCancel($event)">
+      <form on-submit="update">
+        <input id="edit" class="edit editing" on-blur="update" on-key-up="maybeCancel">
       </form>
     </template>
   </shadow-root></div>
-      <button class="todo-row_destroy" on-click="appModel.todos.remove(todo)"></button>
+      <button class="todo-row_destroy" on-click="removeTodo"></button>
     </div>
   </shadow-root></li>
         
@@ -107,7 +107,7 @@ option[template] {
           <li> <a href="#/completed">Completed</a> </li>
         </ul>
         <template bind="" if="{{app.hasCompleteTodos}}">
-          <button id="clear-completed" on-click="app.clearDone()">
+          <button id="clear-completed" on-click="clear">
             Clear completed ({{app.doneCount}})
           </button>
         </template>
@@ -121,7 +121,7 @@ option[template] {
           <li> <a href="#/completed" class="">Completed</a> </li>
         </ul>
         <template bind="" if="{{app.hasCompleteTodos}}"></template>
-          <button id="clear-completed" on-click="app.clearDone()">
+          <button id="clear-completed" on-click="clear">
             Clear completed (1)
           </button>
         

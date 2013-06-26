@@ -114,6 +114,12 @@ abstract class CustomElement implements Element {
     return root;
   }
 
+  // TODO(sigmund): delete this. We should techincally only call this method
+  // on subclasses of polymer element. To delete this we either make this method
+  // private in PolymerElement, stop doing compilation, or add support for the
+  // polymer-element tag.
+  void shadowRootReady(ShadowRoot root, String elementName) {}
+
   getShadowRoot(String componentName) => _generatedRoots[componentName];
 
   /** Any CSS selector (class, id or element) defined name to mangled name. */
