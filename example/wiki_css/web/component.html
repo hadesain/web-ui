@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<!--
+ Copyright (c) 2013, the Dart project authors.  Please see the AUTHORS file
+ for details. All rights reserved. Use of this source code is governed by a
+ BSD-style license that can be found in the LICENSE file.
+-->
+<html lang="en">
+  <head><meta charset="utf-8"></head>
+  <body>
+    <element name="x-component" extends="span" constructor="Component" apply-author-styles>
+      <template>
+        <style scoped>
+/* Suggested selector code to uncomment reading the WIKI document "CSS @host".
+          @host {
+            * { padding-left: 200px; }
+          }
+*/
+          #id-1 { color: blue; }
+          div { display: inline; border: 1px dashed green; }
+        </style>
+        <div id="id-1"><content></content></div>
+      </template>
+    </element>
+  </body>
+</html>

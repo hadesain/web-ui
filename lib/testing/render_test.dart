@@ -16,8 +16,8 @@ import 'package:unittest/unittest.dart';
 import 'package:web_ui/dwc.dart' as dwc;
 
 void renderTests(String baseDir, String inputDir, String expectedDir,
-    String outDir, [List<String> arguments, String script, String pattern,
-    bool deleteDir = true]) {
+    String outDir, {List<String> arguments, String script, String pattern,
+    bool deleteDir: true}) {
   if (arguments == null) arguments = new Options().arguments;
   if (script == null) script = new Options().script;
 

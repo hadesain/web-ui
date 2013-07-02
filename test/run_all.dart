@@ -74,13 +74,14 @@ main() {
 
 void exampleTest(String path, [List<String> args]) {
   renderTests(path, '$path/test', '$path/test/expected', '$path/test/out',
-      args);
+      arguments: args);
 }
 
 void cssCompileMangleTest(String path, String pattern,
     [bool deleteDirectory = true]) {
   renderTests(path, path, '$path/expected', '$path/out',
-      ['--css-mangle'], null, pattern, deleteDirectory);
+      arguments: ['--css-mangle'], pattern: pattern,
+      deleteDir: deleteDirectory);
 }
 
 void cssCompilePolyFillTest(String path, String pattern, String cssReset,
@@ -89,13 +90,14 @@ void cssCompilePolyFillTest(String path, String pattern, String cssReset,
   if (cssReset != null) {
     args.addAll(['--css-reset', '${path}/${cssReset}']);
   }
-  renderTests(path, path, '$path/expected', '$path/out', args, null, pattern,
-      deleteDirectory);
+  renderTests(path, path, '$path/expected', '$path/out',
+      arguments: args, pattern: pattern, deleteDir: deleteDirectory);
 }
 
 void cssCompileShadowDOMTest(String path, String pattern,
     [bool deleteDirectory = true]) {
   var args = ['--no-css'];
-  renderTests(path, path, '$path/expected', '$path/out', args, null, pattern,
-      deleteDirectory);
+  renderTests(path, path, '$path/expected', '$path/out',
+      arguments: args, pattern: pattern,
+      deleteDir: deleteDirectory);
 }
