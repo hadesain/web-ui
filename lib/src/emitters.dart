@@ -191,7 +191,7 @@ String emitStyleSheet(StyleSheet ss, FileInfo file) =>
 /** Helper function to emit a component's style tag content. */
 String emitComponentStyleSheet(StyleSheet ss, String tagName,
                                CssPolyfillKind polyfillKind) =>
-  ((new ComponentCssEmitter(tagName, polyfillKind))
+  (new ComponentCssEmitter(tagName, polyfillKind)
       ..visitTree(ss, pretty: true)).toString();
 
 /** Generates the class corresponding to a single web component. */

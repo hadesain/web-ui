@@ -11,24 +11,6 @@ import 'package:web_ui/src/observable_transform.dart';
 main() {
   useCompactVMConfiguration();
 
-  group('do not add "with Observable"', () {
-    testClause('', '');
-    testClause('extends Base', 'extends Base');
-    testClause('extends Base<T>', 'extends Base<T>');
-    testClause('extends Base with Mixin',
-        'extends Base with Mixin');
-    testClause('extends Base with Mixin<T>',
-        'extends Base with Mixin<T>');
-    testClause('extends Base with Mixin, Mixin2',
-        'extends Base with Mixin, Mixin2');
-    testClause('implements Interface', 'implements Interface');
-    testClause('implements Interface<T>', 'implements Interface<T>');
-    testClause('extends Base implements Interface',
-        'extends Base implements Interface');
-    testClause('extends Base with Mixin implements Interface, Interface2',
-        'extends Base with Mixin implements Interface, Interface2');
-  });
-
   group('fixes contructor calls ', () {
     testInitializers('this.a', '(a) : __\$a = a');
     testInitializers('{this.a}', '({a}) : __\$a = a');
@@ -38,31 +20,6 @@ main() {
     testInitializers('[this.a, this.b]', '([a, b]) : __\$a = a, __\$b = b');
     testInitializers('this.a, [this.b]', '(a, [b]) : __\$a = a, __\$b = b');
     testInitializers('this.a, {this.b}', '(a, {b}) : __\$a = a, __\$b = b');
-  });
-}
-
-testClause(String clauses, String expected) {
-  test(clauses, () {
-
-    var className = 'MyClass';
-    if (clauses.contains('<T>')) className += '<T>';
-
-    var code = '''
-        class $className $clauses {
-          @observable var field;
-        }''';
-
-
-    var edit = transformObservables(parseDartCode('<test>', code, null),
-        new Messages.silent());
-    expect(edit, isNotNull);
-    var output = (edit.commit()..build('<test>')).text;
-
-    var classPos = output.indexOf(className) + className.length;
-    var actualClauses = output.substring(classPos, output.indexOf('{'))
-        .trim().replaceAll('  ', ' ');
-
-    expect(actualClauses, expected);
   });
 }
 
