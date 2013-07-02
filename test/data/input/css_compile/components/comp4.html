@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2013, the Dart project authors.  Please see the AUTHORS file
+for details. All rights reserved. Use of this source code is governed by a
+BSD-style license that can be found in the LICENSE file.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <element name="x-comp4" extends="span" constructor="Comp4" apply-author-styles>
+      <template>
+        <style scoped>
+          .a3 {
+            color: purple;
+            border: 3px solid purple;
+          }
+          .a3 blockquote {
+            color: Magenta ;
+          }
+        </style>
+        <div class="a3">
+          <blockquote cite="http://www.google.com">
+            <content></content>
+          </blockquote>
+        </div>
+      </template>
+    </element>
+  </body>
+</html>

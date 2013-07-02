@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2013, the Dart project authors.  Please see the AUTHORS file
+for details. All rights reserved. Use of this source code is governed by a
+BSD-style license that can be found in the LICENSE file.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <link rel="import" href="components/comp_apply_ul.html">
+  <link rel="import" href="components/comp_apply_li.html">
+  <link rel="import" href="components/comp_apply_li_2.html">
+  <title>CSS Compile-Time</title>
+</head>
+<body>
+  <style>
+    ul {
+      font-weight: bold;
+      color: red;
+      margin: 5px;
+     }
+  </style>
+
+  <x-comp-apply-ul>Header using x-comp-apply-li
+    <x-comp-apply-li>Item Green #1</x-comp-apply-li>
+    <x-comp-apply-li class=foo>Item Blue #2</x-comp-apply-li>
+    <x-comp-apply-li>Item Green #3</x-comp-apply-li>
+  </x-comp-apply-ul>
+
+  <x-comp-apply-ul>Header using x-comp-apply-li-2
+    <x-comp-apply-li-2>Odd Orange #1</x-comp-apply-li-2>
+    <x-comp-apply-li-2 class=foo>Even Orange #2 (class .foo)</x-comp-apply-li-2>
+    <x-comp-apply-li-2>Odd Orange #3</x-comp-apply-li-2>
+  </x-comp-apply-ul>
+
+  <script type="application/dart">
+import 'dart:async';
+import 'dart:html';
+import 'package:unittest/unittest.dart';
+import 'package:web_ui/web_ui.dart';
+
+main() {
+  useShadowDom = false;
+
+  Timer.run(() {
+    window.postMessage('done', '*');
+   });
+}
+  </script>
+</body>
+</html>

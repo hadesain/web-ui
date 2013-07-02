@@ -1,0 +1,104 @@
+Content-Type: text/plain
+layer at (0,0) size 785x754
+  RenderView at (0,0) size 785x600
+layer at (0,0) size 785x754
+  RenderBlock {HTML} at (0,0) size 785x754
+    RenderBody {BODY} at (8,21) size 769x725
+      RenderBlock {H1} at (0,0) size 769x37
+        RenderText {#text} at (0,0) size 278x36
+          text run at (0,0) width 278: "Apply Author Styles"
+      RenderBlock {DIV} at (5,58) size 759x40 [color=#FF0000] [border: (1px solid #FFFF00)]
+        RenderText {#text} at (6,6) size 123x26
+          text run at (6,6) width 123: "test #1 (red)"
+      RenderBlock {DIV} at (5,102) size 759x62 [color=#FF0000] [border: (1px solid #FFFF00)]
+        RenderBlock (anonymous) at (6,6) size 747x0
+          RenderInline {SPAN} at (0,0) size 0x0
+            RenderText {#text} at (0,0) size 0x0
+        RenderBlock (anonymous) at (6,11) size 747x39
+          RenderBlock {DIV} at (5,0) size 737x39 [border: (1px solid #FFFF00)]
+            RenderText {#text} at (6,6) size 153x26
+              text run at (6,6) width 153: "x-comp1 (blue)"
+            RenderText {#text} at (0,0) size 0x0
+        RenderBlock (anonymous) at (6,55) size 747x0
+          RenderInline {SPAN} at (0,0) size 0x0
+            RenderText {#text} at (0,0) size 0x0
+          RenderText {#text} at (0,0) size 0x0
+      RenderBlock {DIV} at (5,168) size 759x40 [color=#FF0000] [border: (1px solid #FFFF00)]
+        RenderInline {SPAN} at (0,0) size 331x26
+          RenderText {#text} at (0,0) size 0x0
+          RenderInline {DIV} at (0,0) size 321x38 [color=#008000] [border: (1px solid #008000)]
+            RenderText {#text} at (0,0) size 0x0
+            RenderText {#text} at (17,6) size 309x26
+              text run at (17,6) width 309: "x-comp3 (green/green border)"
+            RenderText {#text} at (0,0) size 0x0
+          RenderText {#text} at (0,0) size 0x0
+        RenderText {#text} at (0,0) size 0x0
+      RenderBlock {DIV} at (5,212) size 759x62 [color=#FF0000] [border: (1px solid #FFFF00)]
+        RenderBlock (anonymous) at (6,6) size 747x0
+          RenderInline {SPAN} at (0,0) size 0x0
+            RenderText {#text} at (0,0) size 0x0
+        RenderBlock (anonymous) at (6,11) size 747x39
+          RenderBlock {DIV} at (5,0) size 737x39 [border: (1px solid #FFFF00)]
+            RenderText {#text} at (6,6) size 383x26
+              text run at (6,6) width 383: "x-comp1-reset (yellow/yellow border)"
+            RenderText {#text} at (0,0) size 0x0
+        RenderBlock (anonymous) at (6,55) size 747x0
+          RenderInline {SPAN} at (0,0) size 0x0
+            RenderText {#text} at (0,0) size 0x0
+          RenderText {#text} at (0,0) size 0x0
+      RenderBlock {DIV} at (5,278) size 759x40 [color=#FF0000] [border: (1px solid #FFFF00)]
+        RenderText {#text} at (6,6) size 123x26
+          text run at (6,6) width 123: "test #4 (red)"
+      RenderBlock (anonymous) at (0,322) size 769x1
+        RenderInline {SPAN} at (0,0) size 0x0
+          RenderText {#text} at (0,0) size 0x0
+      RenderBlock (anonymous) at (0,322) size 769x92
+        RenderBlock {DIV} at (5,0) size 759x91 [color=#800080] [border: (3px solid #800080)]
+          RenderBlock {BLOCKQUOTE} at (48,32) size 663x27 [color=#FF00FF]
+            RenderText {#text} at (0,0) size 435x26
+              text run at (0,0) width 435: "x-comp4 (magenta text purple border 2px)"
+            RenderText {#text} at (0,0) size 0x0
+      RenderBlock (anonymous) at (0,418) size 769x1
+        RenderInline {SPAN} at (0,0) size 0x0
+          RenderText {#text} at (0,0) size 0x0
+        RenderText {#text} at (0,0) size 0x0
+      RenderBlock {H1} at (0,434) size 769x38
+        RenderText {#text} at (0,0) size 334x36
+          text run at (0,0) width 334: "NO Apply Author Styles"
+      RenderBlock (anonymous) at (0,493) size 769x28
+        RenderInline {DIV} at (0,0) size 552x38 [color=#008000] [border: (1px solid #008000)]
+          RenderText {#text} at (11,0) size 540x26
+            text run at (11,0) width 540: "Test with class a2 (green solid border display: inline)"
+        RenderText {#text} at (0,0) size 0x0
+      RenderBlock {DIV} at (5,525) size 759x82 [color=#FF0000] [border: (1px solid #FFFF00)]
+        RenderBlock (anonymous) at (6,6) size 747x0
+          RenderInline {SPAN} at (0,0) size 0x0
+            RenderText {#text} at (0,0) size 0x0
+        RenderBlock (anonymous) at (6,11) size 747x59
+          RenderBlock {DIV} at (5,0) size 737x59 [color=#800080] [border: (1px solid #800080)]
+            RenderText {#text} at (16,16) size 594x26
+              text run at (16,16) width 594: "x-comp2 with class a2 (purple solid border display: inline)"
+            RenderText {#text} at (0,0) size 0x0
+        RenderBlock (anonymous) at (6,75) size 747x0
+          RenderInline {SPAN} at (0,0) size 0x0
+            RenderText {#text} at (0,0) size 0x0
+          RenderText {#text} at (0,0) size 0x0
+      RenderBlock {DIV} at (5,611) size 759x82 [color=#FF0000] [border: (1px solid #FFFF00)]
+        RenderBlock (anonymous) at (6,6) size 747x0
+          RenderInline {SPAN} at (0,0) size 0x0
+            RenderText {#text} at (0,0) size 0x0
+        RenderBlock (anonymous) at (6,21) size 747x39
+          RenderBlock {DIV} at (15,0) size 717x39 [color=#FFA500] [border: (1px dashed #FFA500)]
+            RenderText {#text} at (6,6) size 684x26
+              text run at (6,6) width 684: "x-comp2-reset with class a2 (orange dashed border display: block;)"
+            RenderText {#text} at (0,0) size 0x0
+        RenderBlock (anonymous) at (6,75) size 747x0
+          RenderInline {SPAN} at (0,0) size 0x0
+            RenderText {#text} at (0,0) size 0x0
+          RenderText {#text} at (0,0) size 0x0
+      RenderBlock (anonymous) at (0,697) size 769x28
+        RenderInline {DIV} at (0,0) size 552x38 [color=#008000] [border: (1px solid #008000)]
+          RenderText {#text} at (11,0) size 540x26
+            text run at (11,0) width 540: "Test with class a2 (green solid border display: inline)"
+        RenderText {#text} at (0,0) size 0x0
+        RenderText {#text} at (0,0) size 0x0

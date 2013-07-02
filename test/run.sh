@@ -125,7 +125,6 @@ echo -e "\nRunning unit tests... "
 dart $DART_FLAGS run_all.dart $TEST_PATTERN || compare_all
 popd > /dev/null
 
-
 # Run Dart analyzer to check that we're generating warning clean code.
 # It's a bit slow, so only do this for TodoMVC and html5_utils tests.
 OUT_PATTERN="$DIR/data/out/html5_utils_*$TEST_PATTERN*_bootstrap.dart $DIR/../example/todomvc/test/out/test/*$TEST_PATTERN*_bootstrap.dart"

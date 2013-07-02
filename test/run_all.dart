@@ -59,9 +59,45 @@ main() {
   exampleTest('../example/component/news', ['--no-shadowdom']..addAll(args));
 
   exampleTest('../example/todomvc');
+
+  // cssCompilePolyFillTest('data/input/css_compile', 'index_test\.html',
+  //     'reset.css');
+  // cssCompilePolyFillTest('data/input/css_compile', 'index_reset_test\.html',
+  //     'full_reset.css', false);
+  // cssCompileShadowDOMTest('data/input/css_compile',
+  //     'index_shadow_dom_test\.html', false);
+  // cssCompileMangleTest('data/input/css_compile', 'index_mangle_test\.html',
+  //     false);
+  // cssCompilePolyFillTest('data/input/css_compile', 'index_apply_test\.html',
+  //     'reset.css', false);
+  // cssCompileShadowDOMTest('data/input/css_compile',
+  //     'index_apply_shadow_dom_test\.html', false);
 }
 
-void exampleTest(String path, [List args]) {
+void exampleTest(String path, [List<String> args]) {
   renderTests(path, '$path/test', '$path/test/expected', '$path/test/out',
       args);
+}
+
+void cssCompileMangleTest(String path, String pattern,
+    [bool deleteDirectory = true]) {
+  renderTests(path, path, '$path/expected', '$path/out',
+      ['--css-mangle'], null, pattern, deleteDirectory);
+}
+
+void cssCompilePolyFillTest(String path, String pattern, String cssReset,
+    [bool deleteDirectory = true]) {
+  var args = ['--no-css-mangle'];
+  if (cssReset != null) {
+    args.addAll(['--css-reset', '${path}/${cssReset}']);
+  }
+  renderTests(path, path, '$path/expected', '$path/out', args, null, pattern,
+      deleteDirectory);
+}
+
+void cssCompileShadowDOMTest(String path, String pattern,
+    [bool deleteDirectory = true]) {
+  var args = ['--no-css'];
+  renderTests(path, path, '$path/expected', '$path/out', args, null, pattern,
+      deleteDirectory);
 }

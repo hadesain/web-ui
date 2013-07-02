@@ -12,6 +12,7 @@ import 'package:html5lib/dom_parsing.dart';
 import 'package:html5lib/parser.dart';
 import 'package:source_maps/span.dart' show Span, FileLocation;
 
+import 'compiler.dart';
 import 'code_printer.dart';
 import 'dart_parser.dart' show DartCodeInfo;
 import 'html5_utils.dart';
@@ -51,8 +52,8 @@ class CssEmitter extends CssPrinter {
    * If element selector is a component's tag name, then change selector to
    * find element who's is attribute's the component's name.
    */
-  bool _emitComponentElement(var node) {
-    if (node is ElementSelector && _componentsTag.contains(node.name)) {
+  bool _emitComponentElement(ElementSelector node) {
+    if (_componentsTag.contains(node.name)) {
       emit('[is="${node.name}"]');
       return true;
     }
@@ -74,41 +75,109 @@ class CssEmitter extends CssPrinter {
  */
 class ComponentCssEmitter extends CssPrinter {
   final String _componentTagName;
-  final String _prefixed;
+  final CssPolyfillKind _polyfillKind;
+  bool _inHostDirective = false;
+  bool _selectorStartInHostDirective = false;
 
-  ComponentCssEmitter(this._componentTagName, this._prefixed);
+  ComponentCssEmitter(this._componentTagName, this._polyfillKind);
+
+  /** Is the element selector an x-tag name. */
+  bool _isSelectorElementXTag(Selector node) {
+    if (node.simpleSelectorSequences.length > 0) {
+      var selector = node.simpleSelectorSequences[0].simpleSelector;
+      return selector is ElementSelector && selector.name == _componentTagName;
+    }
+    return false;
+  }
 
   /**
    * If element selector is the component's tag name, then change selector to
    * find element who's is attribute is the component's name.
    */
-  bool _emitComponentElement(var node) {
-    if (node is ElementSelector && _componentTagName == node.name) {
+  bool _emitComponentElement(ElementSelector node) {
+    if (_polyfillKind == CssPolyfillKind.SCOPED_POLYFILL &&
+        _componentTagName == node.name) {
       emit('[is="$_componentTagName"]');
       return true;
     }
     return false;
   }
 
+  void visitSelector(Selector node) {
+    // If the selector starts with an x-tag name don't emit it twice.
+    if (!_isSelectorElementXTag(node) &&
+        _polyfillKind == CssPolyfillKind.SCOPED_POLYFILL) {
+      if (_inHostDirective) {
+        // Style the element that's hosting the component, therefore don't emit
+        // the descendent combinator (first space after the [is="x-..."]).
+        emit('[is="$_componentTagName"]');
+        // Signal that first simpleSelector must be checked.
+        _selectorStartInHostDirective = true;
+      } else {
+        // Emit its scoped as a descendent (space at end).
+        emit('[is="$_componentTagName"] ');
+      }
+    }
+    super.visitSelector(node);
+  }
+
+  /**
+   * If first simple selector of a ruleset in a @host directive is a wildcard
+   * then don't emit the wildcard.
+   */
+  void visitSimpleSelectorSequence(SimpleSelectorSequence node) {
+    if (_selectorStartInHostDirective) {
+      _selectorStartInHostDirective = false;
+      if (_polyfillKind == CssPolyfillKind.SCOPED_POLYFILL &&
+          node.simpleSelector.isWildcard) {
+        // Skip the wildcard if first item in the sequence.
+        return;
+      }
+      assert(node.isCombinatorNone);
+    }
+
+    super.visitSimpleSelectorSequence(node);
+  }
+
   void visitClassSelector(ClassSelector node) {
-    if (_prefixed == null) {
-      super.visitClassSelector(node);
+    if (_polyfillKind == CssPolyfillKind.MANGLED_POLYFILL) {
+      emit('.${_componentTagName}_${node.name}');
     } else {
-      emit('.${_prefixed}_${node.name}');
+      super.visitClassSelector(node);
     }
   }
 
   void visitIdSelector(IdSelector node) {
-    if (_prefixed == null) {
-      super.visitIdSelector(node);
+    if (_polyfillKind == CssPolyfillKind.MANGLED_POLYFILL) {
+      emit('#${_componentTagName}_${node.name}');
     } else {
-      emit('#${_prefixed}_${node.name}');
+      super.visitIdSelector(node);
     }
   }
 
   void visitElementSelector(ElementSelector node) {
     if (_emitComponentElement(node)) return;
     super.visitElementSelector(node);
+  }
+
+  /**
+   * If we're polyfilling scoped styles the @host directive is stripped.  Any
+   * ruleset(s) processed in an @host will fixup the first selector.  See
+   * visitSelector and visitSimpleSelectorSequence in this class, they adjust
+   * the selectors so it styles the element hosting the compopnent.
+   */
+  void visitHostDirective(HostDirective node) {
+    if (_polyfillKind == CssPolyfillKind.SCOPED_POLYFILL) {
+      _inHostDirective = true;
+      emit('/* @host */');
+      for (var ruleset in node.rulesets) {
+        ruleset.visit(this);
+      }
+      _inHostDirective = false;
+      emit('/* end of @host */\n');
+    } else {
+      super.visitHostDirective(node);
+    }
   }
 }
 
@@ -120,25 +189,24 @@ String emitStyleSheet(StyleSheet ss, FileInfo file) =>
       ..visitTree(ss, pretty: true)).toString();
 
 /** Helper function to emit a component's style tag content. */
-String emitComponentStyleSheet(StyleSheet ss, String tagName, String prefix) =>
-  (new ComponentCssEmitter(tagName, prefix)
+String emitComponentStyleSheet(StyleSheet ss, String tagName,
+                               CssPolyfillKind polyfillKind) =>
+  ((new ComponentCssEmitter(tagName, polyfillKind))
       ..visitTree(ss, pretty: true)).toString();
 
 /** Generates the class corresponding to a single web component. */
 class WebComponentEmitter {
   final Messages messages;
   final FileInfo _fileInfo;
+  final CssPolyfillKind cssPolyfillKind;
   Context _context;
 
-  WebComponentEmitter(this._fileInfo, this.messages)
+  WebComponentEmitter(this._fileInfo, this.messages, this.cssPolyfillKind)
       : _context = new Context(isClass: true, indent: 1);
 
   CodePrinter run(ComponentInfo info, PathMapper pathMapper,
       TextEditTransaction transaction) {
     var templateNode = info.elementNode;
-
-    // TODO(terry): Eliminate when polyfill is the default.
-    var cssPolyfill = useCssPolyFill(messages.options, info);
 
     // elementNode is pointing at template tag (no attributes).
     assert(templateNode.tagName == 'element');
@@ -159,8 +227,6 @@ class WebComponentEmitter {
 
     if (templateNode.tagName == 'template') {
       if (!info.styleSheets.isEmpty && !messages.options.processCss) {
-        // TODO(terry): Need to support obfuscated prefix.
-        var prefix = cssPolyfill ? info.tagName : null;
         // TODO(terry): Only one style tag per component.
 
         // TODO(jmesserly): csslib + html5lib should work together.
@@ -168,7 +234,7 @@ class WebComponentEmitter {
         // Calling innerHtml on a StyleElement should be enought - like a real
         // browser. CSSOM and DOM should work together in the same tree.
         var styleText = emitComponentStyleSheet(
-            info.styleSheets[0], info.tagName, prefix);
+            info.styleSheets[0], info.tagName, cssPolyfillKind);
 
         templateNode.insertBefore(
             new Element.html('<style>\n$styleText\n</style>'),
@@ -228,7 +294,8 @@ class WebComponentEmitter {
     header.addLine('');
     transaction.edit(0, codeInfo.directivesEnd, header);
 
-    var cssMapExpression = createCssSelectorsExpression(info, cssPolyfill);
+    var mangle = cssPolyfillKind == CssPolyfillKind.MANGLED_POLYFILL;
+    var cssMapExpression = createCssSelectorsExpression(info, mangle);
     var classBody = new CodePrinter(1)
         ..add('\n')
         ..addLine('/** Autogenerated from the template. */')

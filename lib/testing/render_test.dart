@@ -16,15 +16,16 @@ import 'package:unittest/unittest.dart';
 import 'package:web_ui/dwc.dart' as dwc;
 
 void renderTests(String baseDir, String inputDir, String expectedDir,
-    String outDir, [List<String> arguments, String script]) {
-
+    String outDir, [List<String> arguments, String script, String pattern,
+    bool deleteDir = true]) {
   if (arguments == null) arguments = new Options().arguments;
   if (script == null) script = new Options().script;
 
   var args = _parseArgs(arguments, script);
   if (args == null) exit(1);
 
-  var pattern = new RegExp(args.rest.length > 0 ? args.rest[0] : '.');
+  var filePattern = new RegExp(pattern != null ? pattern
+      : (args.rest.length > 0 ? args.rest[0] : '.'));
 
   var scriptDir = path.absolute(path.dirname(script));
   baseDir = path.join(scriptDir, baseDir);
@@ -34,27 +35,28 @@ void renderTests(String baseDir, String inputDir, String expectedDir,
 
   var paths = new Directory(inputDir).listSync()
       .where((f) => f is File).map((f) => f.path)
-      .where((p) => p.endsWith('_test.html') && pattern.hasMatch(p));
+      .where((p) => p.endsWith('_test.html') && filePattern.hasMatch(p));
 
   if (paths.isEmpty) return;
 
   // First clear the output folder. Otherwise we can miss bugs when we fail to
   // generate a file.
   var dir = new Directory(outDir);
-  if (dir.existsSync()) {
+  if (dir.existsSync() && deleteDir) {
     print('Cleaning old output for ${path.normalize(outDir)}');
     dir.deleteSync(recursive: true);
   }
   dir.createSync();
 
+  args.addAll(['-o', outDir, '--basedir', baseDir]);
   for (var filePath in paths) {
     var filename = path.basename(filePath);
     test('compile $filename', () {
-      expect(dwc.run(['-o', outDir, '--basedir', baseDir, filePath],
-        printTime: false)
-        .then((res) {
-          expect(res.messages.length, 0, reason: res.messages.join('\n'));
-        }), completes);
+      var testArgs = args.toList();
+      testArgs.add(filePath);
+      expect(dwc.run(testArgs, printTime: false).then((res) {
+        expect(res.messages.length, 0, reason: res.messages.join('\n'));
+      }), completes);
     });
   }
 
@@ -93,7 +95,7 @@ void renderTests(String baseDir, String inputDir, String expectedDir,
         var expectedPath = path.join(expectedDir, '$filename.txt');
         new File(outPath).writeAsStringSync(output);
         var expected = new File(expectedPath).readAsStringSync();
-        expect(output, new SmartStringMatcher(expected),
+        expect(output, expected,
           reason: 'unexpected output for <$filename>');
       });
     }
@@ -135,89 +137,6 @@ void renderTests(String baseDir, String inputDir, String expectedDir,
   if (args['shadowdom'] == true) {
     ensureCompileToJs();
     runTests('?js=1&shadowdomjs=1');
-  }
-}
-
-// TODO(jmesserly): we need a full diff tool.
-// TODO(sigmund): consider moving this matcher to unittest
-class SmartStringMatcher extends BaseMatcher {
-  final String _value;
-
-  SmartStringMatcher(this._value);
-
-  bool matches(item, MatchState mismatchState) => _value == item;
-
-  Description describe(Description description) =>
-      description.addDescriptionOf(_value);
-
-  Description describeMismatch(item, Description mismatchDescription,
-      MatchState matchState, bool verbose) {
-    if (item is! String) {
-      return mismatchDescription.addDescriptionOf(item).add(' not a string');
-    } else {
-      var buff = new StringBuffer();
-      buff.write('Strings are not equal.');
-      var escapedItem = _escape(item);
-      var escapedValue = _escape(_value);
-      int minLength = min(escapedItem.length, escapedValue.length);
-      int start;
-      for (start = 0; start < minLength; start++) {
-        if (escapedValue.codeUnitAt(start) != escapedItem.codeUnitAt(start)) {
-          break;
-        }
-      }
-      if (start == minLength) {
-        if (escapedValue.length < escapedItem.length) {
-          buff.write(' Both strings start the same, but the given value also'
-              ' has the following trailing characters: ');
-          _writeTrailing(buff, escapedItem, escapedValue.length);
-        } else {
-          buff.write(' Both strings start the same, but the given value is'
-              ' missing the following trailing characters: ');
-          _writeTrailing(buff, escapedValue, escapedItem.length);
-        }
-      } else {
-        buff.write('\nExpected: ');
-        _writeLeading(buff, escapedValue, start);
-        buff.write('[32m');
-        buff.write(escapedValue[start]);
-        buff.write('[0m');
-        _writeTrailing(buff, escapedValue, start + 1);
-        buff.write('\n But was: ');
-        _writeLeading(buff, escapedItem, start);
-        buff.write('[31m');
-        buff.write(escapedItem[start]);
-        buff.write('[0m');
-        _writeTrailing(buff, escapedItem, start + 1);
-        buff.write('[32;1m');
-        buff.write('\n          ');
-        for (int i = (start > 10 ? 14 : start); i > 0; i--) buff.write(' ');
-        buff.write('^  [0m');
-      }
-
-      return mismatchDescription.replace(buff.toString());
-    }
-  }
-
-  static String _escape(String s) =>
-      s.replaceAll('\n', '\\n').replaceAll('\r', '\\r').replaceAll('\t', '\\t');
-
-  static String _writeLeading(StringBuffer buff, String s, int start) {
-    if (start > 10) {
-      buff.write('... ');
-      buff.write(s.substring(start - 10, start));
-    } else {
-      buff.write(s.substring(0, start));
-    }
-  }
-
-  static String _writeTrailing(StringBuffer buff, String s, int start) {
-    if (start + 10 > s.length) {
-      buff.write(s.substring(start));
-    } else {
-      buff.write(s.substring(start, start + 10));
-      buff.write(' ...');
-    }
   }
 }
 

@@ -56,6 +56,8 @@ class Compiler {
   final List<OutputFile> output = <OutputFile>[];
 
   String _mainPath;
+  String _resetCssFile;
+  StyleSheet _cssResetStyleSheet;
   PathMapper _pathMapper;
   Messages _messages;
 
@@ -68,6 +70,8 @@ class Compiler {
 
   final GlobalInfo global = new GlobalInfo();
 
+  bool get hasCssReset => _resetCssFile != null;
+
   /** Creates a compiler with [options] using [fileSystem]. */
   Compiler(this.fileSystem, this.options, this._messages) {
     _mainPath = options.inputFile;
@@ -76,6 +80,14 @@ class Compiler {
     var outputDir = options.outputDir != null ? options.outputDir : mainDir;
     var packageRoot = options.packageRoot != null ? options.packageRoot
         : path.join(path.dirname(_mainPath), 'packages');
+
+    if (options.resetCssFile != null) {
+      _resetCssFile = options.resetCssFile;
+      if (path.isRelative(_resetCssFile)) {
+        // If CSS reset file path is relative from our current path.
+        _resetCssFile = path.resolve(_resetCssFile);
+      }
+    }
 
     // Normalize paths - all should be relative or absolute paths.
     if (path.isAbsolute(_mainPath) || path.isAbsolute(baseDir) ||
@@ -141,6 +153,12 @@ class Compiler {
         _pathMapper.packageRoot, _messages, isEntryPoint: isEntryPoint);
     });
     info[inputUrl.resolvedPath] = fileInfo;
+
+    if (isEntryPoint && hasCssReset) {
+      _processed.add(_resetCssFile);
+      _tasks.add(_parseCssFile(new UrlInfo(_resetCssFile, _resetCssFile,
+          null)));
+    }
 
     _setOutputFilenames(fileInfo);
     _processImports(fileInfo);
@@ -318,7 +336,9 @@ class Compiler {
     info[inputUrl.resolvedPath] = fileInfo;
 
     var styleSheet = parseCss(cssFile.code, _messages, options);
-    if (styleSheet != null) {
+    if (inputUrl.url == _resetCssFile) {
+      _cssResetStyleSheet = styleSheet;
+    } else if (styleSheet != null) {
       _resolveStyleSheetImports(inputUrl, cssFile.path, styleSheet);
       fileInfo.styleSheets.add(styleSheet);
     }
@@ -534,8 +554,8 @@ class Compiler {
       if (file.isDart || file.isStyleSheet) continue;
       _time('Codegen', file.path, () {
         var fileInfo = info[file.path];
-        fixupHtmlCss(fileInfo, options);
-        _emitComponents(fileInfo);
+        fixupHtmlCss(fileInfo, options, getCssPolyfillKind);
+        _emitComponents(fileInfo, pseudoElements);
       });
     }
 
@@ -628,8 +648,11 @@ class Compiler {
         }
 
         // Emit the linked style sheet in the output directory.
-        var outCss = _pathMapper.outputPath(fileInfo.inputUrl.resolvedPath, '');
-        output.add(new OutputFile(outCss, css.toString()));
+        if (fileInfo.inputUrl.url != _resetCssFile) {
+          var outCss = _pathMapper.outputPath(fileInfo.inputUrl.resolvedPath,
+              '');
+          output.add(new OutputFile(outCss, css.toString()));
+        }
       }
     }
 
@@ -654,8 +677,21 @@ class Compiler {
                 '/* ==================================================== \n'
                 '   Component ${component.tagName} stylesheet \n'
                 '   ==================================================== */\n');
-            buff.write(emitComponentStyleSheet(styleSheet, component.tagName,
-                component.scoped ? component.tagName : null));
+
+            var polyType = getCssPolyfillKind(component);
+            var tagName = component.tagName;
+            if (!component.hasAuthorStyles) {
+              if (_cssResetStyleSheet != null && !options.mangleCss) {
+                // If component doesn't have apply-author-styles then we need to
+                // reset the CSS the styles for the component (if css-reset file
+                // option was passed).
+                buff.write('\n/* Start CSS Reset */\n');
+                buff.write(emitComponentStyleSheet(_cssResetStyleSheet, tagName,
+                    polyType));
+                buff.write('/* End CSS Reset */\n\n');
+              }
+            }
+            buff.write(emitComponentStyleSheet(styleSheet, tagName, polyType));
             buff.write('\n\n');
           }
         }
@@ -680,10 +716,23 @@ class Compiler {
             'Component has more than one stylesheet - first stylesheet used.',
             span);
       }
-      var printer = new WebComponentEmitter(fileInfo, _messages)
+      var polyType = getCssPolyfillKind(component);
+      var printer = new WebComponentEmitter(fileInfo, _messages, polyType)
           .run(component, _pathMapper, _edits[component.userCode]);
       _emitFileAndSourceMaps(component, printer, component.externalFile);
     }
+  }
+
+  /** Given a component and CompilerOptions compute the CSS polyfill to emit. */
+  CssPolyfillKind getCssPolyfillKind(ComponentInfo component) {
+    if (!useCssPolyfill(options, component)) return CssPolyfillKind.NO_POLYFILL;
+
+    if (options.mangleCss) return CssPolyfillKind.MANGLED_POLYFILL;
+
+    if (!component.hasAuthorStyles && !hasCssReset)
+      return CssPolyfillKind.MANGLED_POLYFILL;
+
+    return CssPolyfillKind.SCOPED_POLYFILL;
   }
 
   /**
@@ -698,7 +747,7 @@ class Compiler {
     var libPath = _pathMapper.outputLibraryPath(lib);
     var dir = path.dirname(libPath);
     var filename = path.basename(libPath);
-    printer.add('\n//@ sourceMappingURL=$filename.map');
+    printer.add('\n//# sourceMappingURL=$filename.map');
     printer.build(libPath);
     var sourcePath = dartCodeUrl != null ? dartCodeUrl.resolvedPath : null;
     output.add(new OutputFile(libPath, printer.text, source: sourcePath));
@@ -724,6 +773,22 @@ class Compiler {
     return time(message.toString(), callback,
         printTime: options.verbose || printTime);
   }
+}
+
+// TODO(terry): Replace with enum when supported.
+/** Enum for type of polyfills supported. */
+class CssPolyfillKind {
+  final index;
+  const CssPolyfillKind(this.index);
+
+  /** Emit CSS selectors as seen (no polyfill). */
+  static const NO_POLYFILL = const CssPolyfillKind(0);
+
+  /** Emit CSS selectors scoped to the "is" attribute of the component. */
+  static const SCOPED_POLYFILL = const CssPolyfillKind(1);
+
+  /** Emit CSS selectors mangled. */
+  static const MANGLED_POLYFILL = const CssPolyfillKind(2);
 }
 
 /**

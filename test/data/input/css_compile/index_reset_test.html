@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2013, the Dart project authors.  Please see the AUTHORS file
+for details. All rights reserved. Use of this source code is governed by a
+BSD-style license that can be found in the LICENSE file.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <link rel="import" href="components/comp1.html">
+  <link rel="import" href="components/comp2.html">
+  <link rel="import" href="components/comp3.html">
+  <link rel="import" href="components/comp4.html">
+  <link rel="import" href="components/comp1_reset.html">
+  <link rel="import" href="components/comp2_reset.html">
+  <title>CSS Compile-Time</title>
+</head>
+<body>
+  <style>
+    div {
+      font-size:18pt;
+      font-weight: bold;
+      color: red;
+      margin: 5px;
+     }
+
+    .a2 {
+       display: inline;
+       color: green;
+       border: 1px solid green;
+    }
+  </style>
+
+  <h1>Apply Author Styles</h1>
+  <div>test #1 (red)</div>
+  <div>
+    <x-comp1>x-comp1 (blue)</x-comp1>
+  </div>
+  <div>
+    <x-comp3>x-comp3 (green/green border)</x-comp3>
+  </div>
+  <div>
+    <x-comp1-reset>x-comp1-reset (yellow/yellow border)</x-comp1-reset>
+  </div>
+  <div>test #4 (red)</div>
+  <x-comp4>x-comp4 (magenta text purple border 2px)</x-comp4>
+
+  <h1>NO Apply Author Styles</h1>
+  <div class="a2">Test with class a2 (green solid border display: inline)</div>
+  <div>
+    <x-comp2>x-comp2 with class a2 (purple solid border display: inline)</x-comp2>
+  </div>
+  <div>
+    <x-comp2-reset>x-comp2-reset with class a2 (orange dashed border display: block;)</x-comp2-reset>
+  </div>
+  <div class="a2">Test with class a2 (green solid border display: inline)</div>
+
+  <script type="application/dart">
+import 'dart:async';
+import 'dart:html';
+import 'package:unittest/unittest.dart';
+import 'package:web_ui/web_ui.dart';
+
+main() {
+  useShadowDom = false;
+
+  Timer.run(() {
+    var divs = queryAll('div');
+    expect(divs.length, 15);
+
+    var items = queryAll('div .a2');
+    expect(items.length, 3);
+
+    var blockquotes = queryAll('.a3 blockquote');
+    expect(blockquotes.length, 1);
+
+    var xComp1 = queryAll('[is="x-comp1"]');
+    expect(xComp1.length, 1);
+
+    var xComp1Reset = queryAll('[is="x-comp1-reset"]');
+    expect(xComp1Reset.length, 1);
+
+    var xComp2 = queryAll('[is="x-comp2"]');
+    expect(xComp2.length, 1);
+
+    var xComp2Reset = queryAll('[is="x-comp2-reset"]');
+    expect(xComp2Reset.length, 1);
+
+    window.postMessage('done', '*');
+   });
+}
+  </script>
+</body>
+</html>
