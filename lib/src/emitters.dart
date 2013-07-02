@@ -14,8 +14,8 @@ import 'package:source_maps/span.dart' show Span, FileLocation;
 
 import 'code_printer.dart';
 import 'dart_parser.dart' show DartCodeInfo;
-import 'html5_utils.dart';
 import 'html_css_fixup.dart';
+import 'html5_utils.dart';
 import 'info.dart';
 import 'messages.dart';
 import 'paths.dart';

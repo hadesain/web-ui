@@ -14,10 +14,10 @@ import 'package:html5lib/dom.dart';
 import 'package:html5lib/dom_parsing.dart';
 import 'package:source_maps/span.dart' hide SourceFile;
 
+import 'custom_tag_name.dart';
 import 'dart_parser.dart';
 import 'files.dart';
 import 'html_css_fixup.dart';
-import 'html5_utils.dart';
 import 'info.dart';
 import 'messages.dart';
 import 'summary.dart';

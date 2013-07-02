@@ -21,7 +21,6 @@ import 'package:web_ui/testing/render_test.dart';
 
 import 'css_test.dart' as css_test;
 import 'compiler_test.dart' as compiler_test;
-import 'html5_utils_test.dart' as html5_utils_test;
 import 'paths_test.dart' as paths_test;
 import 'refactor_test.dart' as refactor_test;
 import 'utils_test.dart' as utils_test;
@@ -40,7 +39,6 @@ main() {
 
   addGroup('compiler_test.dart', compiler_test.main);
   addGroup('css_test.dart', css_test.main);
-  addGroup('html5_utils_test.dart', html5_utils_test.main);
   addGroup('paths_test.dart', paths_test.main);
   addGroup('refactor_test.dart', refactor_test.main);
   addGroup('utils_test.dart', utils_test.main);

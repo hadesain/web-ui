@@ -128,7 +128,7 @@ popd > /dev/null
 
 # Run Dart analyzer to check that we're generating warning clean code.
 # It's a bit slow, so only do this for TodoMVC and html5_utils tests.
-OUT_PATTERN="$DIR/data/out/html5_utils_*$TEST_PATTERN*_bootstrap.dart $DIR/../example/todomvc/test/out/test/*$TEST_PATTERN*_bootstrap.dart"
+OUT_PATTERN="$DIR/../example/todomvc/test/out/test/*$TEST_PATTERN*_bootstrap.dart"
 if [[ `ls $OUT_PATTERN 2>/dev/null` != "" ]]; then
   echo -e "\nAnalyzing generated code for warnings or type errors."
   ls $OUT_PATTERN 2>/dev/null | dartanalyzer --package-root=packages \
