@@ -10,7 +10,7 @@
 library web_ui.observe_html;
 
 import 'dart:html';
-import 'package:mdv_observe/mdv_observe.dart';
+import 'package:observe/observe.dart';
 
 /** An observable version of [window.location.hash]. */
 final ObservableLocationHash windowLocation = new ObservableLocationHash._();
@@ -35,7 +35,7 @@ class ObservableLocationHash extends ObservableBase {
   set hash(String value) {
     if (value == hash) return;
 
-    window.history.pushState(const {}, '', value);
+    window.history.pushState(null, '', value);
     _notifyHashChange(null);
   }
 

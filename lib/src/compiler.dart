@@ -467,7 +467,7 @@ class Compiler {
           // and web_ui, resulting in a collision.
           // TODO(jmesserly): only generate this for libraries that need it.
           transaction.edit(pos, pos, "\nimport "
-              "'package:mdv_observe/mdv_observe.dart' as __observe;\n");
+              "'package:observe/observe.dart' as __observe;\n");
         }
         _emitFileAndSourceMaps(lib, transaction.commit(), lib.dartCodeUrl);
       }

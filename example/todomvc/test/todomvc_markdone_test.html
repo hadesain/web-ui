@@ -21,7 +21,8 @@ programatically, and clicks on a checkbox to mark others via the UI.
   <script type="application/dart">
 import 'dart:async';
 import 'dart:html';
-import 'package:mdv_observe/mdv_observe.dart';
+import 'package:mdv/mdv.dart' as mdv;
+import 'package:observe/observe.dart';
 import 'package:unittest/unittest.dart';
 import 'package:web_ui/web_ui.dart';
 import '../web/model.dart';
@@ -56,6 +57,8 @@ Node findShadowHost(Node node, ShadowRoot root) {
 }
 
 main() {
+  mdv.initialize();
+
   Timer.run(() {
     appModel.todos.add(new Todo('one (unchecked)'));
     appModel.todos.add(new Todo('two (unchecked)'));

@@ -37,7 +37,7 @@ option[template] {
         <template repeat="{{app.visibleTodos}}">
           <li is="todo-row" todo="{{}}"></li>
         </template>
-          <li is="todo-row" todo="{{}}"><shadow-root>    
+        <li is="todo-row" todo="{{}}"><shadow-root>    
     <div class="todo-row_todo-item">
       <input class="todo-row_toggle" type="checkbox">
       <div is="editable-label" id="label" value="{{todo.task}}"><shadow-root>    <template bind="" if="{{notEditing}}">
@@ -54,7 +54,7 @@ option[template] {
       <button class="todo-row_destroy" on-click="appModel.todos.remove(todo)"></button>
     </div>
   </shadow-root></li>
-        
+          
       </ul>
     </section>
     <template bind="" if="{{app.hasTodos}}">

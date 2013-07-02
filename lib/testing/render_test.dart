@@ -95,8 +95,7 @@ void renderTests(String baseDir, String inputDir, String expectedDir,
         var expectedPath = path.join(expectedDir, '$filename.txt');
         new File(outPath).writeAsStringSync(output);
         var expected = new File(expectedPath).readAsStringSync();
-        expect(output, expected,
-          reason: 'unexpected output for <$filename>');
+        expect(output, expected, reason: 'unexpected output for <$filename>');
       });
     }
   }

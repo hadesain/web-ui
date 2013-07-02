@@ -11,7 +11,7 @@ library web_ui.observe;
 import 'dart:async';
 // TODO(jmesserly): PathObserver should be in mdv_observe.
 import 'dart:html' show PathObserver;
-import 'package:mdv_observe/mdv_observe.dart';
+import 'package:observe/observe.dart';
 
 /**
  * Use `@observable` to make a property observable.

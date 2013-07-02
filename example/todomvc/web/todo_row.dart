@@ -4,7 +4,7 @@
 
 library todo_row;
 
-import 'package:mdv_observe/mdv_observe.dart';
+import 'package:observe/observe.dart';
 import 'package:web_ui/web_ui.dart';
 import 'model.dart';
 
