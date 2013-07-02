@@ -48,12 +48,12 @@ void renderTests(String baseDir, String inputDir, String expectedDir,
   }
   dir.createSync();
 
-  args.addAll(['-o', outDir, '--basedir', baseDir]);
   for (var filePath in paths) {
     var filename = path.basename(filePath);
     test('compile $filename', () {
-      var testArgs = args.toList();
-      testArgs.add(filePath);
+      var testArgs = ['-o', outDir, '--basedir', baseDir]
+          ..addAll(args.rest)
+          ..add(filePath);
       expect(dwc.run(testArgs, printTime: false).then((res) {
         expect(res.messages.length, 0, reason: res.messages.join('\n'));
       }), completes);

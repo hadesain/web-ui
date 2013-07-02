@@ -555,7 +555,7 @@ class Compiler {
       _time('Codegen', file.path, () {
         var fileInfo = info[file.path];
         fixupHtmlCss(fileInfo, options, getCssPolyfillKind);
-        _emitComponents(fileInfo, pseudoElements);
+        _emitComponents(fileInfo);
       });
     }
 
