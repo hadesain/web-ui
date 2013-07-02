@@ -11,22 +11,5 @@ import 'dart:io';
 void main() {
   build(new Options().arguments, [
     'example/component/news/web/index.html',
-    'example/explainer/clickcount.html',
-    'example/explainer/countcomponent.html',
-    'example/explainer/countcomponent5.html',
-    'example/explainer/counter.html',
-    'example/explainer/fruitsearch.html',
-    'example/explainer/helloworld.html',
-    'example/explainer/matchstrings.html',
-    'example/explainer/redbox.html',
-    'example/explainer/tableif.html',
-    'example/explainer/twoway.html',
-    'example/explainer/tictactoe.html',
-    'example/mdv/forms_validation/forms_validation.html',
-    'example/mdv/hidden/hidden.html',
-    'example/mdv/hidden2/hidden2.html',
-    'example/mdv/model/main.html',
-    'example/mdv/table/table.html',
-    'example/mdv/style/style.html',
     'example/todomvc/web/index.html']);
 }
