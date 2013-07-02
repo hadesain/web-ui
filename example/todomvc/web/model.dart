@@ -5,7 +5,7 @@
 library model;
 
 import 'dart:html' show CompoundBinding;
-import 'package:mdv_observe/mdv_observe.dart';
+import 'package:observe/observe.dart';
 import 'package:web_ui/web_ui.dart';
 
 final appModel = new AppModel._();

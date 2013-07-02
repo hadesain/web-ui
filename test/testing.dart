@@ -25,11 +25,6 @@ Document parseDocument(String html) => parse(html);
 
 Element parseSubtree(String html) => parseFragment(html).nodes[0];
 
-ElementInfo analyzeElement(Element elem, Messages messages) {
-  var fileInfo = analyzeNodeForTesting(elem, messages);
-  return fileInfo.bodyInfo;
-}
-
 FileInfo analyzeDefinitionsInTree(Document doc, Messages messages,
     {String packageRoot: 'packages'}) {
 

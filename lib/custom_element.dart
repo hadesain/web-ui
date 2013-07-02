@@ -6,6 +6,7 @@ library web_ui.custom_element;
 
 import 'dart:async';
 import 'dart:html';
+import 'package:mdv/mdv.dart' as mdv;
 import 'package:meta/meta.dart';
 import 'src/custom_tag_name.dart';
 
@@ -133,6 +134,8 @@ abstract class CustomElement implements Element {
    */
   DocumentFragment cloneTemplate(DocumentFragment shadowTemplate) {
     var result = shadowTemplate.clone(true);
+    // TODO(jmesserly): should bindModel ensure this happens?
+    TemplateElement.bootstrap(result);
     if (_templateCreated != null) {
       for (var callback in _templateCreated) callback(result);
     }
@@ -155,7 +158,7 @@ abstract class CustomElement implements Element {
   static Set<DocumentFragmentCreated> get templateCreated {
     if (_templateCreated == null) {
       _templateCreated = new Set<DocumentFragmentCreated>();
-      TemplateElement.instanceCreated.listen((value) {
+      mdv.instanceCreated.listen((value) {
         for (var callback in _templateCreated) callback(value);
       });
     }
@@ -498,9 +501,9 @@ abstract class CustomElement implements Element {
 
   List<Node> get $dom_childNodes => host.$dom_childNodes;
 
-  Node get $dom_firstChild => host.$dom_firstChild;
+  Node get firstChild => host.firstChild;
 
-  Node get $dom_lastChild => host.$dom_lastChild;
+  Node get lastChild => host.lastChild;
 
   String get localName => host.localName;
   String get $dom_localName => host.$dom_localName;
@@ -643,7 +646,7 @@ typedef DocumentFragmentCreated(DocumentFragment fragment);
 Map<String, Function> _customElements;
 
 void _createElements(Node node) {
-  for (var c = node.$dom_firstChild; c != null; c = c.nextNode) {
+  for (var c = node.firstChild; c != null; c = c.nextNode) {
     _createElements(c);
   }
   if (node is Element) {

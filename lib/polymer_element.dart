@@ -6,7 +6,7 @@ library web_ui.polymer_element;
 
 import 'dart:async';
 import 'dart:html';
-import 'package:mdv_observe/mdv_observe.dart';
+import 'package:observe/observe.dart';
 import 'custom_element.dart';
 import 'observe.dart';
 import 'src/utils_observe.dart' show toCamelCase;
@@ -19,10 +19,12 @@ import 'src/utils_observe.dart' show toCamelCase;
 void registerPolymerElement(Element elementElement, CustomElement create()) {
   // Creates the CustomElement and then publish attributes.
   createElement() {
-    CustomElement element = create();
+    final CustomElement element = create();
     // TODO(jmesserly): to simplify the DWC compiler, we always emit calls to
     // registerPolymerElement, regardless of the base class type.
-    if (element is PolymerElement) element._publishAttributes(elementElement);
+    if (element is PolymerElement) {
+      element._publishAttributes(elementElement);
+    }
     return element;
   }
 
