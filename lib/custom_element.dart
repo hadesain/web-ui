@@ -200,7 +200,8 @@ abstract class CustomElement implements Element {
   get isTemplate => host.isTemplate;
   get ref => host.ref;
   get content => host.content;
-  DocumentFragment createInstance() => host.createInstance();
+  DocumentFragment createInstance(model, String syntax) =>
+      host.createInstance(model, syntax);
   void bind(String name, model, String path) => host.bind(name, model, path);
   void unbind(String name) => host.unbind(name);
   void unbindAll() => host.unbindAll();
