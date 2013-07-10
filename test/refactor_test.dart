@@ -2,11 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library web_ui.test.refactor_test;
+library polymer.test.refactor_test;
 
 import 'package:unittest/compact_vm_config.dart';
 import 'package:unittest/unittest.dart';
-import 'package:web_ui/src/refactor.dart';
+import 'package:polymer/src/refactor.dart';
 import 'package:source_maps/span.dart';
 
 main() {

@@ -6,7 +6,7 @@ library model;
 
 import 'dart:html' show CompoundBinding;
 import 'package:observe/observe.dart';
-import 'package:web_ui/web_ui.dart';
+import 'package:polymer/polymer.dart';
 
 final appModel = new AppModel._();
 
@@ -47,7 +47,6 @@ class AppModel extends ObservableBase {
       filterDone = false;
     }
 
-    // TODO(jmesserly): the filter should be stable.
     visibleTodos = todos.where(
         (t) => filterDone == null || t.done == filterDone)
         .toList(growable: false);

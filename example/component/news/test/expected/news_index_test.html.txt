@@ -2,7 +2,7 @@ Content-Type: text/plain
 <html><head><style>template { display: none; }</style>
   <title>Simple Web Components Example</title>
   
-  <script src="../../packages/web_ui/testing/testing.js"></script>
+  <script src="../../packages/polymer/testing/testing.js"></script>
 <link rel="stylesheet" type="text/css" href="news_index_test.html.css"></head>
 <body>
 <h1>Simple Web Components Example</h1>

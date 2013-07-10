@@ -5,7 +5,7 @@
 library todo_row;
 
 import 'package:observe/observe.dart';
-import 'package:web_ui/web_ui.dart';
+import 'package:polymer/polymer.dart';
 import 'model.dart';
 
 class TodoRow extends PolymerElement with ObservableMixin {

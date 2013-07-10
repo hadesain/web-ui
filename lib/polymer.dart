@@ -9,7 +9,7 @@
  * See this article for more information:
  * <http://www.dartlang.org/articles/dart-web-components/>.
  */
-library web_ui;
+library polymer;
 
 export 'custom_element.dart';
 export 'custom_syntax.dart';

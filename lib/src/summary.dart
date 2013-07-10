@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-/** 
+/**
  * Summary information for components and libraries.
  *
  * These classes are used for modular compilation. Summaries are a subset of the
@@ -11,7 +11,7 @@
  * as info objects, but any information that is needed from other files (like
  * imported components) is stored as a summary.
  */
-library web_ui.src.summary;
+library polymer.src.summary;
 
 import 'package:source_maps/span.dart' show Span;
 

@@ -62,7 +62,7 @@ if [[ ($TEST_PATTERN == "") ]]; then
     echo -e "Ignoring analyzer errors ([36mdartbug.com/8132[0m)"
 
   echo -e "\nAnalyzing runtime for warnings or type errors"
-  dartanalyzer --fatal-warnings --fatal-type-errors lib/web_ui.dart || \
+  dartanalyzer --fatal-warnings --fatal-type-errors lib/polymer.dart || \
     echo -e "Ignoring analyzer errors ([36mdartbug.com/8132[0m)"
 
   popd > /dev/null

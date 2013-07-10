@@ -3,6 +3,12 @@
 This file contains highlights of what changes on each version of the web_ui
 package. This file is normally updated whenever we push a new version to pub.
 
+#### Pub version 0.5
+  * rename package to "polymer".
+  * use mdv, observe, and shadow_dom packages.
+  * rename WebComponent to CustomElement.
+  * includes beginnings of PolymerElement.
+
 #### Pub version 0.4.7+2
   * getShadowRoot replaces _root (_root kept for a deprecation period) #224
   * fixes to preserve 'package:' imports in generated code
@@ -142,7 +148,7 @@ package. This file is normally updated whenever we push a new version to pub.
 
 #### Pub version 0.3.1+3 - Feb 1 2013 (integration SDK r17657)
   * bug fixes in watchers library: watchers were being fired out of order at times
-    (e.g. when template-conditionals are false, watchers of child nodes should not 
+    (e.g. when template-conditionals are false, watchers of child nodes should not
      be fired, but they were). Another bug was making watchers being checked 10
      times, instead of 1.
    * better warnings when missing script type.

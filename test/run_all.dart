@@ -16,8 +16,8 @@ import 'dart:utf' show encodeUtf8;
 import 'package:pathos/path.dart' as path;
 import 'package:unittest/compact_vm_config.dart';
 import 'package:unittest/unittest.dart';
-import 'package:web_ui/dwc.dart' as dwc;
-import 'package:web_ui/testing/content_shell_test.dart';
+import 'package:polymer/dwc.dart' as dwc;
+import 'package:polymer/testing/content_shell_test.dart';
 
 import 'css_test.dart' as css_test;
 import 'compiler_test.dart' as compiler_test;

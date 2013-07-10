@@ -5,14 +5,14 @@
 /**
  * Helper library to run tests in content_shell
  */
-library web_ui.testing.end2end;
+library polymer.testing.end2end;
 
 import 'dart:io';
 import 'dart:math' show min;
 import 'package:args/args.dart';
 import 'package:pathos/path.dart' as path;
 import 'package:unittest/unittest.dart';
-import 'package:web_ui/dwc.dart' as dwc;
+import 'package:polymer/dwc.dart' as dwc;
 
 
 /**
@@ -120,7 +120,7 @@ void _testHelper(_TestOptions options) {
 
     for (var filename in filenames) {
       test('dart2js $filename', () {
-        // TODO(jmesserly): this depends on web_ui's output scheme.
+        // TODO(jmesserly): this depends on DWC's output scheme.
         // Alternatively we could use html5lib to find the script tag.
         var inPath = '${filename}_bootstrap.dart';
         var outPath = '${inPath}.js';

@@ -4,9 +4,9 @@
 
 import 'package:unittest/compact_vm_config.dart';
 import 'package:unittest/unittest.dart';
-import 'package:web_ui/src/dart_parser.dart';
-import 'package:web_ui/src/messages.dart';
-import 'package:web_ui/src/observable_transform.dart';
+import 'package:polymer/src/dart_parser.dart';
+import 'package:polymer/src/messages.dart';
+import 'package:polymer/src/observable_transform.dart';
 
 main() {
   useCompactVMConfiguration();

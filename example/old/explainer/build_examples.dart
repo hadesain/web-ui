@@ -12,7 +12,7 @@ library build_examples;
 import 'dart:async';
 import 'dart:io';
 import 'package:args/args.dart';
-import 'package:web_ui/dwc.dart' as dwc;
+import 'package:polymer/dwc.dart' as dwc;
 
 main() {
   var argParser = new ArgParser();

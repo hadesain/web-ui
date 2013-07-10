@@ -1,47 +1,44 @@
-Web UI
-===========
+Polymer.dart
+============
 
-Web UI lets you build web apps as if you had a browser from the future. You can
-use the cool new web technologies like [Web Components][wc],
-and features like dynamic templates and live data binding inspired by
-[Model Driven Views][mdv] and [Dart][d] today. Build apps easily using HTML as
-your template language, express your application's components in HTML, and
-synchronize your data automatically between Dart and your components.
+Polymer is a new type of library for the web, built on top of Web Components,
+and designed to leverage the evolving web platform on modern browsers.
 
-We believe that:
+Polymer.dart is a Dart port of Polymer created and maintained by the Dart team.
+The Dart team is collaborating with the Polymer team to ensure that polymer.dart
+elements and polyfills are fully compatible with Polymer.
 
-- Web Components and MDV are on their way, we should start using them now.
-- Cool new features should be made available to [modern browsers][mb] that
-  haven't yet implemented them.
-- Write/reload is just as important as write/compile/minimize/ship.
-- Working in open source is the way to go.
-- Developers from all backgrounds should be building awesome modern web apps.
+For more information about Polymer, see <http://www.polymer-project.org/>.
+For more information about Dart, see <http://www.dartlang.org/>.
 
 [![Build Status](https://drone.io/github.com/dart-lang/web-ui/status.png)](https://drone.io/github.com/dart-lang/web-ui/latest)
 
 Try It Now
 -----------
-Add the Web UI package to your pubspec.yaml file:
+Add the polymer.dart package to your pubspec.yaml file:
 
 ```yaml
 dependencies:
-  web_ui: any
+  polymer: any
 ```
 
 Instead of using `any`, we recommend using version ranges to avoid getting your project broken on each release. Using a version range lets you upgrade your package at your own pace:
 
 ```yaml
 dependencies:
-  web_ui: ">=0.4.8 <0.4.9"
+  polymer: ">=0.5.0 <0.5.1"
 ```
 
-We update versions within the range when we release small bug fixes. For instance, `0.4.8+1` is considered
-a non-breaking change. We change versions outside of the range when we introduce a breaking change. See our
+We update versions within the range when we release small bug fixes. For
+instance, `0.5.0+1` is considered a non-breaking change. We change versions
+outside of the range when we introduce a breaking change. See our
 [changelog][changelog] to find the version that works best for you.
 
 
 Learn More
 ----------
+
+**Note**: these documents are currently out of date.
 
 * [Read an overview][overview]
 * [Setup your tools][tools]
@@ -70,7 +67,7 @@ which can be downloaded prebuilt for [Ubuntu Lucid][cs_lucid],
 [Dartium and content_shell sources][dartium_src].
 
 For Linux users all the necessary fonts must be installed see
-https://code.google.com/p/chromium/wiki/LayoutTestsLinux
+<https://code.google.com/p/chromium/wiki/LayoutTestsLinux>.
 
 Contacting Us
 -------------
@@ -82,9 +79,6 @@ We also have the [Web UI development list][devlist] for discussions about
 internals of the code, code reviews, etc.
 
 [wc]: http://dvcs.w3.org/hg/webcomponents/raw-file/tip/explainer/index.html
-[mdv]: https://github.com/toolkitchen/mdv/
-[d]: http://www.dartlang.org
-[mb]: http://www.dartlang.org/support/faq.html#what-browsers-supported
 [pub]: http://www.dartlang.org/docs/pub-package-manager/
 [cs]: http://www.chromium.org/developers/testing/webkit-layout-tests
 [cs_lucid]: http://gsdview.appspot.com/dartium-archive/continuous/drt-lucid64.zip

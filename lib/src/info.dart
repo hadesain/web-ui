@@ -6,7 +6,7 @@
  * Datatypes holding information extracted by the analyzer and used by later
  * phases of the compiler.
  */
-library web_ui.src.info;
+library polymer.src.info;
 
 import 'dart:collection' show SplayTreeMap, LinkedHashMap;
 

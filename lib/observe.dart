@@ -6,7 +6,7 @@
  * Helpers for observable objects.
  * Intended for use with `package:mdv_observe`.
  */
-library web_ui.observe;
+library polymer.observe;
 
 import 'dart:async';
 // TODO(jmesserly): PathObserver should be in mdv_observe.
@@ -45,7 +45,7 @@ const _VALUE = const Symbol('value');
  *
  *       MyModel() {
  *         ...
- *         _sub = bindProperty(_otherModel, const Symbol('value')
+ *         _sub = bindProperty(_otherModel, const Symbol('value'),
  *             () => notifyProperty(this, const Symbol('prop'));
  *       }
  *

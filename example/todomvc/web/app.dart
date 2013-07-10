@@ -6,7 +6,7 @@ library app;
 
 import 'dart:html';
 import 'package:observe/observe.dart';
-import 'package:web_ui/web_ui.dart';
+import 'package:polymer/polymer.dart';
 import 'model.dart';
 
 class TodoApp extends PolymerElement with ObservableMixin {

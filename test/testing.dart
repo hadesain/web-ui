@@ -11,14 +11,14 @@ import 'dart:io';
 import 'package:csslib/visitor.dart';
 import 'package:html5lib/dom.dart';
 import 'package:html5lib/parser.dart';
-import 'package:web_ui/src/analyzer.dart';
-import 'package:web_ui/src/compiler.dart';
-import 'package:web_ui/src/file_system.dart';
-import 'package:web_ui/src/info.dart';
-import 'package:web_ui/src/messages.dart';
-import 'package:web_ui/src/options.dart';
-import 'package:web_ui/src/files.dart';
-import 'package:web_ui/src/utils.dart';
+import 'package:polymer/src/analyzer.dart';
+import 'package:polymer/src/compiler.dart';
+import 'package:polymer/src/file_system.dart';
+import 'package:polymer/src/info.dart';
+import 'package:polymer/src/messages.dart';
+import 'package:polymer/src/options.dart';
+import 'package:polymer/src/files.dart';
+import 'package:polymer/src/utils.dart';
 
 
 Document parseDocument(String html) => parse(html);

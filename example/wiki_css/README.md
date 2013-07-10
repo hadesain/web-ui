@@ -8,7 +8,7 @@ Generated code will be created under "web/out/". Any time you edit and save a
 source file, the necessary files will be regenerated automatically. Look at
 "build.dart" to see how this works.
 
-This example is interactivly changed in the web_ui WIKI pages:
+This example is interactivly changed in the polymer WIKI pages:
 
   https://github.com/dart-lang/web-ui/wiki/CSS-Scoping-Polyfill
 

@@ -6,7 +6,7 @@ library editable_label;
 
 import 'dart:html';
 import 'package:observe/observe.dart';
-import 'package:web_ui/web_ui.dart';
+import 'package:polymer/polymer.dart';
 
 /**
  * Label whose [value] can be edited by double clicking. When editing, it

@@ -16,8 +16,8 @@
 library component_loader;
 
 import 'dart:html';
-import 'package:web_ui/web_ui.dart';
-import 'package:web_ui/src/list_map.dart';
+import 'package:polymer/polymer.dart';
+import 'package:polymer/src/list_map.dart';
 
 /** Should we use prototype rewiring and the new WebComponent interface? */
 bool _usePrototypeRewiring;

@@ -5,7 +5,7 @@
 library router_options;
 
 import 'dart:html';
-import 'package:web_ui/web_ui.dart';
+import 'package:polymer/polymer.dart';
 
 /**
  * Given a set of child links to this page, this will add the "selected" CSS

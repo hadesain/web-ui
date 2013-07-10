@@ -6,7 +6,7 @@
  * Holds path information that is used by the WebUI compiler to find files,
  * compute their output location and relative paths between them.
  */
-library web_ui.src.paths;
+library polymer.src.paths;
 
 import 'info.dart' show UrlInfo;
 import 'messages.dart';

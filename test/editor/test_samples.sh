@@ -11,7 +11,7 @@ echo "*** Testing TodoMVC editor sample ***"
 echo "If this fails you can reproduce by running:"
 echo "${BASH_SOURCE[0]}"
 echo
-echo "Fixing this test may involve updating web_ui to work with the latest SDK"
+echo "Fixing this test may involve updating polymer to work with the latest SDK"
 echo "and uploading to Pub. It might also require updating the sample code at:"
 echo "$SAMPLE_SVN_PATH"
 echo "You can copy this code from example/todomvc."

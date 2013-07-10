@@ -1,8 +1,11 @@
-name: web_ui
+name: polymer
 author: "Web UI Authors <web-ui-dev@dartlang.org>"
 homepage: https://github.com/dart-lang/web-ui
-description: An easy way to build web apps in Dart.
-version: 0.4.14
+description: >
+  Polymer.dart is a new type of library for the web, built on top of Web
+  Components, and designed to leverage the evolving web platform on modern
+  browsers.
+version: 0.5.0
 dependencies:
   args: ">=0.4.5"
   analyzer_experimental: ">=0.5.12"

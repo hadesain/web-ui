@@ -8,7 +8,7 @@ programatically, and clicks on a checkbox to mark others via the UI.
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   
   <link rel="stylesheet" href="../web/base.css">
-  <script src="../../packages/web_ui/testing/testing.js"></script>
+  <script src="../../packages/polymer/testing/testing.js"></script>
   <title>Dart • TodoMVC</title>
 <link rel="stylesheet" type="text/css" href="todomvc_markdone_test.html.css"><style>template,
 thead[template],

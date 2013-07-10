@@ -8,9 +8,9 @@ library path_info_test;
 import 'package:pathos/path.dart' as path;
 import 'package:unittest/compact_vm_config.dart';
 import 'package:unittest/unittest.dart';
-import 'package:web_ui/src/info.dart';
-import 'package:web_ui/src/paths.dart';
-import 'package:web_ui/src/utils.dart' as utils;
+import 'package:polymer/src/info.dart';
+import 'package:polymer/src/paths.dart';
+import 'package:polymer/src/utils.dart' as utils;
 import 'testing.dart';
 
 

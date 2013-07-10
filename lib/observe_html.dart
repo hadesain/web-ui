@@ -7,7 +7,7 @@
 // getter and convert this into an Observable.
 
 /** Helpers for exposing dart:html as observable data. */
-library web_ui.observe_html;
+library polymer.observe_html;
 
 import 'dart:html';
 import 'package:observe/observe.dart';
