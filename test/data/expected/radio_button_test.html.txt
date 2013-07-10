@@ -10,8 +10,8 @@ Content-Type: text/plain
   <input name="a" type="radio" value="Bar">Bar!
   </form>
   <pre>You picked Bar. Final value should be 'Bar'</pre>
-  
 
 
-<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+
+<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="radio_button_test.html_bootstrap.dart"></script></body></html>

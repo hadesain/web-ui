@@ -11,6 +11,7 @@ dependencies:
   mdv: ">=0.6.2"
   observe: ">=0.6.2"
   pathos: ">=0.4.5"
+  shadow_dom: any
   unittest: ">=0.4.5"
   # Pin these github packages so we don't get breaks from publishing them:
   csslib: ">=0.4.7 <0.4.8"

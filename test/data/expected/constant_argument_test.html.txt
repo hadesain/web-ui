@@ -5,14 +5,14 @@ Content-Type: text/plain
   <script src="../input/packages/web_ui/testing/testing.js"></script>
 </head>
 <body>
-  
+
   Expect "1 2 3 4":
   <span is="x-foo"><shadow-root>1</shadow-root></span>
   <span is="x-foo" my-attribute="2"><shadow-root>2</shadow-root></span>
   <span is="x-foo" my-attribute="3"><shadow-root>3</shadow-root></span>
   <span is="x-foo"><shadow-root>4</shadow-root></span>
-  
 
 
-<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+
+<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="constant_argument_test.html_bootstrap.dart"></script></body></html>

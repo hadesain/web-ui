@@ -8,9 +8,9 @@ Content-Type: text/plain
   <template></template>
   <template></template>
     <span>yay! test passes</span>
-  
-  
 
 
-<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+
+
+<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="conditional_test.html_bootstrap.dart"></script></body></html>

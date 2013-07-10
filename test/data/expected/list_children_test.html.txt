@@ -11,23 +11,23 @@ Content-Type: text/plain
     <template></template><span>a</span>
     <span style="display:none"></span>
     <span>a</span>
-  
+
     <span>b</span>
     <template></template><span>b</span>
     <span style="display:none"></span>
     <span>b</span>
-  
+
   <p>Now you should see: "abc" "def" "abc" "def".
   This tests what happens when the "iterate" does not have data binding inside.
   <template></template>
     <span>abc</span>
     <span>def</span>
-  
+
     <span>abc</span>
     <span>def</span>
-  
-  
 
 
-</p><script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+
+
+</p><script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="list_children_test.html_bootstrap.dart"></script></body></html>

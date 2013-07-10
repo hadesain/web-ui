@@ -11,38 +11,38 @@ Content-Type: text/plain
     <tbody id="test">
     <tr>
       <td>1</td>
-    
+
       <td>2</td>
-    
+
       <td>X</td>
     </tr>
-  
+
     <tr>
       <td>a</td>
-    
+
       <td>Y</td>
-    
+
       <td>c</td>
     </tr>
-  
+
     <tr>
       <td>A</td>
-    
+
       <td>B</td>
-    
+
       <td>C</td>
     </tr>
-  
+
     <tr>
       <td>_</td>
-    
+
       <td>__</td>
-    
+
       <td>___</td>
     </tr>
   </tbody></table>
-  
 
 
-<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+
+<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="table_test.html_bootstrap.dart"></script></body></html>

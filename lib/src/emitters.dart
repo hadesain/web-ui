@@ -515,7 +515,7 @@ void transformMainHtml(Document document, FileInfo fileInfo,
   if (!shadowDomFound) {
     // TODO(jmesserly): we probably shouldn't add this automatically.
     document.body.nodes.add(parseFragment('<script type="text/javascript" '
-        'src="packages/web_ui/shadowdom.debug.js"></script>\n'));
+        'src="packages/shadow_dom/shadow_dom.debug.js"></script>\n'));
   }
   if (!dartLoaderFound) {
     // TODO(jmesserly): turn this warning on.

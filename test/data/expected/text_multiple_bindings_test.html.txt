@@ -10,8 +10,8 @@ Content-Type: text/plain
   over the 'lazy' dog.</pre>
   <pre>The "quick" \brown $fox jumps
   over the 'lazy' dog.</pre>
-  
 
 
-<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+
+<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="text_multiple_bindings_test.html_bootstrap.dart"></script></body></html>

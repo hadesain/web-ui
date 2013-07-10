@@ -8,7 +8,7 @@ Content-Type: text/plain
 }</style>
 </head>
 <body>
-  
+
   <p>
   The message changes from "hello world" to something more interesting.
   </p>
@@ -17,8 +17,8 @@ Content-Type: text/plain
   <div is="x-greeter" id="greet"><shadow-root></shadow-root>
   </div>
   <p id="actual">Yo dawg I heard you like world so we put world in yo world.</p>
-  
 
 
-<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+
+<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="component_field_2way_test.html_bootstrap.dart"></script></body></html>

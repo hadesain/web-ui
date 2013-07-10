@@ -11,8 +11,8 @@ Content-Type: text/plain
   <div>text to html (expect html1 in a real span): <div>html1</div></div>
   <div>html to text (expect &lt;span&gt;text2&lt;/span&gt;): &lt;span&gt;text2&lt;/span&gt;</div>
   <div>html to html (expect html2 in a real span): <div>html2</div></div>
-  
 
 
-<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+
+<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="escape2_test.html_bootstrap.dart"></script></body></html>

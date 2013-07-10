@@ -12,15 +12,15 @@ Content-Type: text/plain
     <p>two</p>
     <p style="display:none"></p><p template="" if="true">three</p>
     <template></template><p>four</p>
-  
+
   <!-- This intentionally has no data binding. -->
   <template></template>
     <p>five</p>
     <p>six</p>
-  
+
   <template></template>
-  
 
 
-<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+
+<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="if_children_test.html_bootstrap.dart"></script></body></html>

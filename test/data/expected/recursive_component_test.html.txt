@@ -7,7 +7,7 @@ Content-Type: text/plain
 </head>
 <body>
   Expect nested divs 0 then 1.
-  
+
   <div is="x-rec"><shadow-root>
       0
       <template></template>
@@ -15,12 +15,12 @@ Content-Type: text/plain
       1
       <template></template>
     </shadow-root></div>
-      
+
     </shadow-root></div>
 
-  
 
 
 
-<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+
+<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="recursive_component_test.html_bootstrap.dart"></script></body></html>

@@ -7,14 +7,14 @@ Content-Type: text/plain
 </head>
 <body>
   You should see a message from B then A
-  
+
   <span is="x-component-a"><shadow-root>      <span is="x-component-b"><shadow-root>      <template></template>
       <div class="b" title="TitleB">hello from B</div>
     </shadow-root></span>
       <div class="a" title="TitleA">hello from A</div>
     </shadow-root></span>
-  
 
 
-<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+
+<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="component_unique_ids_test.html_bootstrap.dart"></script></body></html>

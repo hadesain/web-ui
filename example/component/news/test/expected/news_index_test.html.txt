@@ -30,5 +30,5 @@ Content-Type: text/plain
 
 
 
-<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="news_index_test.html_bootstrap.dart"></script></body></html>

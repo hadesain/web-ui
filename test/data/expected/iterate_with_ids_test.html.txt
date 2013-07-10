@@ -9,8 +9,8 @@ Content-Type: text/plain
   <template></template><div id="a">a</div><div id="b">b</div><div id="c">c</div>
   Same thing, this time with indentation="remove":
   <template indentation="remove"></template><div id="indent_a">indent_a</div><div id="indent_b">indent_b</div><div id="indent_c">indent_c</div>
-  
 
 
-<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+
+<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="iterate_with_ids_test.html_bootstrap.dart"></script></body></html>

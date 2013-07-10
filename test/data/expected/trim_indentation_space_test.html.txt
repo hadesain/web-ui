@@ -5,11 +5,11 @@ Content-Type: text/plain
   <script src="../input/packages/web_ui/testing/testing.js"></script>
 </head>
 <body>
-  
-  
-  
+
+
+
   <!-- there is a trailing space after 2 below -->
-  
+
   <div id="a" is="x-a" style="background-color:#fff"><shadow-root><div>1xx2 3x4<span>5</span><span>x</span>6</div></shadow-root></div>
   <div id="b" is="x-b" style="background-color:#f00"><shadow-root>      <div>
       1
@@ -32,9 +32,9 @@ Content-Type: text/plain
   <div id="c" is="x-c" style="background-color:#0f0"><shadow-root><div>1xx2 3x4<span>5</span><span>x</span>6</div></shadow-root></div>
   <div id="d" is="x-d" style="background-color:#00f"><shadow-root><div>1xx2
       3x4<span>5</span><span>x</span>6</div></shadow-root></div>
-  
 
 
 
-<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
+
+<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
 <script type="application/dart" src="trim_indentation_space_test.html_bootstrap.dart"></script></body></html>
