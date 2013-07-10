@@ -7,8 +7,8 @@ Content-Type: text/plain
 <body>
   Test the $index meta variable:
   <template indentation="remove"></template><div>"foo" is the 0th item out of 5.</div><div>"bar" is the 1st item out of 5.</div><div>"baz" is the 2nd item out of 5.</div><div>"qux" is the 3rd item out of 5.</div><div>"quux" is the 4th item out of 5.</div>
+  
 
 
-
-<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
 <script type="application/dart" src="loop_metavar_test.html_bootstrap.dart"></script></body></html>

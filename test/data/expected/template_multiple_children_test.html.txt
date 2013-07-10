@@ -8,12 +8,12 @@ Content-Type: text/plain
 }</style>
 </head>
 <body>
-
+  
   <div is="x-test"><shadow-root>      <div>This tests a component with </div>
       <div>multiple children of &lt;template&gt; tag.</div>
     </shadow-root></div>
+  
 
 
-
-<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
 <script type="application/dart" src="template_multiple_children_test.html_bootstrap.dart"></script></body></html>

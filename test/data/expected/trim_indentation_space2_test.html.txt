@@ -9,11 +9,11 @@ Content-Type: text/plain
   <div id="t1">
     <template></template>
       a
-
+    
       b
-
+    
       c
-
+    
   </div>
   <div>expect: abc</div>
   <div id="t2">
@@ -34,7 +34,7 @@ Content-Type: text/plain
       (
         -)
       ]
-
+  
     b
     <template indentation="remove"></template>[_<template indentation="preserve"></template>(
         -)
@@ -45,7 +45,7 @@ Content-Type: text/plain
       (
         -)
       ]
-
+  
     c
     <template indentation="remove"></template>[_<template indentation="preserve"></template>(
         -)
@@ -56,11 +56,11 @@ Content-Type: text/plain
       (
         -)
       ]
-
+  
   </div>
+  
 
 
 
-
-<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
 <script type="application/dart" src="trim_indentation_space2_test.html_bootstrap.dart"></script></body></html>

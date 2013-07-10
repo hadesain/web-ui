@@ -5,8 +5,8 @@ Content-Type: text/plain
   <script src="../input/packages/web_ui/testing/testing.js"></script>
 </head>
 <body>
-
-
+  
+  
   <div is="x-derived"><shadow-root><shadow><older-shadow-root>      <div>Here are the lifecycle methods that have been called:</div>
       <pre>
 Base.created
@@ -16,8 +16,8 @@ Derived.inserted</pre>
       <div>You should see Base created, Derived created,
            Base inserted, Derived inserted</div>
     </older-shadow-root></shadow></shadow-root></div>
+  
 
 
-
-<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
 <script type="application/dart" src="component_inherit_test.html_bootstrap.dart"></script></body></html>

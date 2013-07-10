@@ -6,8 +6,8 @@ Content-Type: text/plain
 </head>
 <body>
   <input type="checkbox">
+  
 
 
-
-<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
 <script type="application/dart" src="dom_accessor_binding2_test.html_bootstrap.dart"></script>expected input.checked to be false, got falseexpected input.checked to be true, got true</body></html>

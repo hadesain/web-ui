@@ -35,18 +35,18 @@ input {
     <input class="comp-1-input" value="Test AAA">
   </div>
   <input class="comp-1-done" value="Test BBB">
-  <span is="x-comp1"><shadow-root>
+  <span is="x-comp1"><shadow-root>        
         <div id="x-comp1_box-1">
           <input id="x-comp1_input-1" class="comp-1 x-comp1_comp-1-input">
         </div>
       </shadow-root></span>
-  <span is="x-comp1" type="flipper"><shadow-root>
+  <span is="x-comp1" type="flipper"><shadow-root>        
         <div id="x-comp1_box-1">
           <input id="x-comp1_input-1" class="comp-1 x-comp1_comp-1-done">
         </div>
       </shadow-root></span>
+  
 
 
-
-<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
 <script type="application/dart" src="css_var_test.html_bootstrap.dart"></script></body></html>

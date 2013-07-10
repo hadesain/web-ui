@@ -5,10 +5,10 @@ Content-Type: text/plain
   <script src="../input/packages/web_ui/testing/testing.js"></script>
 </head>
 <body>
-
+  
   <span is="say-hello" name="component create in html"><shadow-root>Hello component create in html!</shadow-root></span>
+  
 
 
-
-<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
 <script type="application/dart" src="component_created_in_code_test.html_bootstrap.dart"></script><div><shadow-root>Hello component created in code!</shadow-root></div></body></html>

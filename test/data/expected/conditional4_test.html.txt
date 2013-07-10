@@ -11,9 +11,9 @@ Content-Type: text/plain
   <template></template>
     <span is="x-pass"><shadow-root>    <span>yay! test is passing</span>
   </shadow-root></span>
+  
+  
 
 
-
-
-<script type="text/javascript" src="packages/shadow_dom/shadow_dom.debug.js"></script>
+<script type="text/javascript" src="packages/web_ui/shadowdom.debug.js"></script>
 <script type="application/dart" src="conditional4_test.html_bootstrap.dart"></script></body></html>
