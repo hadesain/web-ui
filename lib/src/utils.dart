@@ -268,8 +268,8 @@ void compilerAssert(bool condition, [String message]) {
 // we have a noSuchMethod error or something it will show up the same way as
 // this does, including the bug report link.
 /** Error thrown if there is a bug in the compiler itself. */
-class InternalError implements Error {
-  final message;
+class InternalError extends Error {
+  final String message;
 
   InternalError([this.message]);
 
