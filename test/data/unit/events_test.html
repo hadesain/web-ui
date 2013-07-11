@@ -7,7 +7,7 @@
 <html>
   <head>
     <title>event path</title>
-    <script src="packages/web_ui/testing/testing.js"></script>
+    <script src="packages/polymer/testing/testing.js"></script>
     <script src="packages/unittest/test_controller.js"></script>
     <!--
     Test ported from:
@@ -23,7 +23,7 @@
   <element name="test-a" on-click="clickHandler">
     <template></template>
     <script type="application/dart">
-      import 'package:web_ui/web_ui.dart';
+      import 'package:polymer/polymer.dart';
 
       class TestA extends PolymerElement {
         List clicks = [];
@@ -42,7 +42,7 @@
       </div>
     </template>
     <script type="application/dart">
-      import 'package:web_ui/web_ui.dart';
+      import 'package:polymer/polymer.dart';
 
       class TestB extends PolymerElement {
         List clicks = [];
