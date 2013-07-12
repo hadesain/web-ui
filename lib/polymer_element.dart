@@ -152,6 +152,9 @@ abstract class _EventsMixin {
   //    implementation does't forward the return value.
   //  - we don't keep the side-table (weak hash map) of unhandled events (see
   //    handleIfNotHandled)
+  //  - we don't use event.type to dispatch events, instead we save the event
+  //    name with the event listeners. We do so to avoid translating back and
+  //    forth between Dom and Dart event names.
 
   // ---------------------------------------------------------------------------
   // The following section was ported from:
@@ -176,45 +179,10 @@ abstract class _EventsMixin {
   /** Whether an attribute declares an event. */
   static bool _isEvent(String attr) => attr.startsWith(_eventPrefix);
 
-  /** Extract the event name from the attribute name. */
-  static String _getEventName(String attr) {
-    // Translation of events names to get the proper DOM names capitalization.
-    var _eventTranslations = const {
-      'animationstart': 'animationStart',
-      'animationend': 'animationEnd',
-      'transitionend': 'transitionEnd',
-      // These events are not part of dart:html yet
-      'domfocusout': 'DOMFocusOut',
-      'domfocusin': 'DOMFocusIn',
-    };
-
-    var eventName = attr.substring(_eventPrefix.length);
-    var result = _eventTranslations[eventName];
-    return toCamelCase(result == null ? eventName : result);
-  }
-
-  /**
-   * Get the attribute name corresponding to an event name (inverse of
-   * [_getEventName]).
-   */
-  static String _getAttributeName(String eventName) {
-    // Inverse of _eventTranslations in [_getEventName].
-    var _revEventTranslations = const {
-      'animationStart': 'animationstart',
-      'animationEnd': 'animationend',
-      'transitionEnd': 'transitionend',
-      'DOMFocusOut': 'domfocusout',
-      'DOMFocusIn': 'domfocusin',
-    };
-    var result = _revEventTranslations[eventName];
-    return toHyphenedName(
-        result == null ? '$_eventPrefix$eventName' : '$_eventPrefix$result');
-  }
-
   /** Extracts events from the element tag attributes. */
   void _parseHostEvents(elementElement) {
     for (var attr in elementElement.attributes.keys.where(_isEvent)) {
-      _delegates[_getEventName(attr)] = elementElement.attributes[attr];
+      _delegates[toCamelCase(attr)] = elementElement.attributes[attr];
     }
   }
 
@@ -241,7 +209,7 @@ abstract class _EventsMixin {
     events = events == null ? new Set<String>() : events;
 
     // from: accumulateAttributeEvents, accumulateEvent
-    events.addAll(element.attributes.keys.where(_isEvent).map(_getEventName));
+    events.addAll(element.attributes.keys.where(_isEvent).map(toCamelCase));
 
     // from: accumulateChildEvents
     for (var child in element.children) {
@@ -267,35 +235,65 @@ abstract class _EventsMixin {
 
   /** Attaches event listeners on the [host] element. */
   void _addHostListeners() {
-    for (var event in _delegates.keys) {
-      _addNodeListener(host, event, _hostEventListener);
+    for (var eventName in _delegates.keys) {
+      _addNodeListener(host, eventName,
+          (e) => _hostEventListener(eventName, e));
     }
   }
 
-  void _addNodeListener(node, event, listener) {
-    // TODO(sigmund): make dispatch more precise: some events are defined in
-    // subclasses of Element (e.g, MediaElement.canPlayEvent)
-    var eventProvider = reflectClass(Element).getField(
-        new Symbol('${event}Event'));
-    if (eventProvider is InstanceMirror && eventProvider.reflectee != null) {
-      // TODO(sigmund): Remove check for null reflectee (see dartbug.com/11745)
-      eventProvider.reflectee.forTarget(node).listen(listener);
-    } else {
-      node.on[event].listen(listener);
+  void _addNodeListener(node, String onEvent, Function listener) {
+    // If [node] is an element (typically when listening for host events) we
+    // use directly the '.onFoo' event stream of the element instance.
+    if (node is Element) {
+      reflect(node).getField(new Symbol(onEvent)).reflectee.listen(listener);
+      return;
     }
+
+    // When [node] is not an element, most commonly when [node] is the
+    // shadow-root of the polymer-element, we find the appropriate static event
+    // stream providers and attach it to [node].
+    var eventProvider = _eventStreamProviders[onEvent];
+    if (eventProvider != null) {
+      eventProvider.forTarget(node).listen(listener);
+      return;
+    }
+
+    // When no provider is available, mainly because of custom-events, we use
+    // the underlying event listeners from the DOM.
+    var eventName = onEvent.substring(2).toLowerCase(); // onOneTwo => onetwo
+    // Most events names in Dart match those in JS in lowercase except for some
+    // few events listed in this map. We expect these cases to be handled above,
+    // but just in case we include them as a safety net here.
+    var jsNameFixes = const {
+      'animationend': 'webkitAnimationEnd',
+      'animationiteration': 'webkitAnimationIteration',
+      'animationstart': 'webkitAnimationStart',
+      'doubleclick': 'dblclick',
+      'fullscreenchange': 'webkitfullscreenchange',
+      'fullscreenerror': 'webkitfullscreenerror',
+      'keyadded': 'webkitkeyadded',
+      'keyerror': 'webkitkeyerror',
+      'keymessage': 'webkitkeymessage',
+      'needkey': 'webkitneedkey',
+      'speechchange': 'webkitSpeechChange',
+    };
+    var fixedName = jsNameFixes[eventName];
+    node.on[fixedName != null ? fixedName : eventName].listen(listener);
   }
 
   void _addInstanceListeners(ShadowRoot root, String elementName) {
     var events = _templateDelegates[elementName];
     if (events == null) return;
-    for (var event in events) {
-      _addNodeListener(root, event, _instanceEventListener);
+    for (var eventName in events) {
+      _addNodeListener(root, eventName,
+          (e) => _instanceEventListener(eventName, e));
     }
   }
 
-  void _hostEventListener(Event event) {
-    if (event.bubbles && _delegates.containsKey(event.type)) {
-      _dispatchMethod(this, _delegates[event.type], event, host);
+  void _hostEventListener(String eventName, Event event) {
+    var method = _delegates[eventName];
+    if (event.bubbles && method != null) {
+      _dispatchMethod(this, method, event, host);
     }
   }
 
@@ -305,6 +303,10 @@ abstract class _EventsMixin {
     var args = [event, detail, target];
 
     var method = new Symbol(methodName);
+    // TODO(sigmund): consider making event listeners list all arguments
+    // explicitly. Unless VM mirrors are optimized first, this reflectClass call
+    // will be expensive once custom elements extend directly from Element (see
+    // dartbug.com/11108).
     var methodDecl = reflectClass(receiver.runtimeType).methods[method];
     if (methodDecl != null) {
       // This will either truncate the argument list or extend it with extra
@@ -316,18 +318,18 @@ abstract class _EventsMixin {
     reflect(receiver).invoke(method, args);
   }
 
-  bool _instanceEventListener(Event event) {
+  bool _instanceEventListener(String eventName, Event event) {
     if (event.bubbles) {
       if (event.path == null || !ShadowRoot.supported) {
-        return _listenLocalNoEventPath(event);
+        return _listenLocalNoEventPath(eventName, event);
       } else {
-        return _listenLocal(event);
+        return _listenLocal(eventName, event);
       }
     }
     return false;
   }
 
-  bool _listenLocal(Event event) {
+  bool _listenLocal(String eventName, Event event) {
     var controller = null;
     for (var target in event.path) {
       // if we hit host, stop
@@ -339,7 +341,8 @@ abstract class _EventsMixin {
 
       // if we have a controller, dispatch the event, and stop if the handler
       // returns true
-      if (controller != null && handleEvent(controller, event, target)) {
+      if (controller != null
+          && handleEvent(controller, eventName, event, target)) {
         return true;
       }
     }
@@ -352,12 +355,13 @@ abstract class _EventsMixin {
   // from a composed node to a node in shadowRoot.
   // This will be addressed via an event path api
   // https://www.w3.org/Bugs/Public/show_bug.cgi?id=21066
-  bool _listenLocalNoEventPath(Event event) {
+  bool _listenLocalNoEventPath(String eventName, Event event) {
     var target = event.target;
     var controller = null;
     while (target != null && target != host) {
       controller = (controller == host) ? controller : _findController(target);
-      if (controller != null && handleEvent(controller, event, target)) {
+      if (controller != null
+          && handleEvent(controller, eventName, event, target)) {
         return true;
       }
       target = target.parent;
@@ -371,14 +375,105 @@ abstract class _EventsMixin {
   // [node] is under [host]'s shadow-root.
   Element _findController(Node node) => host.xtag;
 
-  bool handleEvent(Element controller, Event event, Element element) {
+  bool handleEvent(
+      Element controller, String eventName, Event event, Element element) {
     // Note: local events are listened only in the shadow root. This dynamic
     // lookup is used to distinguish determine whether the target actually has a
     // listener, and if so, to determine lazily what's the target method.
-    var methodName = element.attributes[_getAttributeName(event.type)];
+    var methodName = element.attributes[toHyphenedName(eventName)];
     if (methodName != null) {
       _dispatchMethod(controller, methodName, event, element);
     }
     return event.bubbles;
   }
 }
+
+
+/** Event stream providers per event name. */
+// TODO(sigmund): after dartbug.com/11108 is fixed, consider eliminating this
+// table and using reflection instead.
+const Map<String, EventStreamProvider> _eventStreamProviders = const {
+  'onMouseWheel': Element.mouseWheelEvent,
+  'onTransitionEnd': Element.transitionEndEvent,
+  'onAbort': Element.abortEvent,
+  'onBeforeCopy': Element.beforeCopyEvent,
+  'onBeforeCut': Element.beforeCutEvent,
+  'onBeforePaste': Element.beforePasteEvent,
+  'onBlur': Element.blurEvent,
+  'onChange': Element.changeEvent,
+  'onClick': Element.clickEvent,
+  'onContextMenu': Element.contextMenuEvent,
+  'onCopy': Element.copyEvent,
+  'onCut': Element.cutEvent,
+  'onDoubleClick': Element.doubleClickEvent,
+  'onDrag': Element.dragEvent,
+  'onDragEnd': Element.dragEndEvent,
+  'onDragEnter': Element.dragEnterEvent,
+  'onDragLeave': Element.dragLeaveEvent,
+  'onDragOver': Element.dragOverEvent,
+  'onDragStart': Element.dragStartEvent,
+  'onDrop': Element.dropEvent,
+  'onError': Element.errorEvent,
+  'onFocus': Element.focusEvent,
+  'onInput': Element.inputEvent,
+  'onInvalid': Element.invalidEvent,
+  'onKeyDown': Element.keyDownEvent,
+  'onKeyPress': Element.keyPressEvent,
+  'onKeyUp': Element.keyUpEvent,
+  'onLoad': Element.loadEvent,
+  'onMouseDown': Element.mouseDownEvent,
+  'onMouseMove': Element.mouseMoveEvent,
+  'onMouseOut': Element.mouseOutEvent,
+  'onMouseOver': Element.mouseOverEvent,
+  'onMouseUp': Element.mouseUpEvent,
+  'onPaste': Element.pasteEvent,
+  'onReset': Element.resetEvent,
+  'onScroll': Element.scrollEvent,
+  'onSearch': Element.searchEvent,
+  'onSelect': Element.selectEvent,
+  'onSelectStart': Element.selectStartEvent,
+  'onSubmit': Element.submitEvent,
+  'onTouchCancel': Element.touchCancelEvent,
+  'onTouchEnd': Element.touchEndEvent,
+  'onTouchEnter': Element.touchEnterEvent,
+  'onTouchLeave': Element.touchLeaveEvent,
+  'onTouchMove': Element.touchMoveEvent,
+  'onTouchStart': Element.touchStartEvent,
+  'onFullscreenChange': Element.fullscreenChangeEvent,
+  'onFullscreenError': Element.fullscreenErrorEvent,
+  'onAutocomplete': FormElement.autocompleteEvent,
+  'onAutocompleteError': FormElement.autocompleteErrorEvent,
+  'onSpeechChange': InputElement.speechChangeEvent,
+  'onCanPlay': MediaElement.canPlayEvent,
+  'onCanPlayThrough': MediaElement.canPlayThroughEvent,
+  'onDurationChange': MediaElement.durationChangeEvent,
+  'onEmptied': MediaElement.emptiedEvent,
+  'onEnded': MediaElement.endedEvent,
+  'onLoadStart': MediaElement.loadStartEvent,
+  'onLoadedData': MediaElement.loadedDataEvent,
+  'onLoadedMetadata': MediaElement.loadedMetadataEvent,
+  'onPause': MediaElement.pauseEvent,
+  'onPlay': MediaElement.playEvent,
+  'onPlaying': MediaElement.playingEvent,
+  'onProgress': MediaElement.progressEvent,
+  'onRateChange': MediaElement.rateChangeEvent,
+  'onSeeked': MediaElement.seekedEvent,
+  'onSeeking': MediaElement.seekingEvent,
+  'onShow': MediaElement.showEvent,
+  'onStalled': MediaElement.stalledEvent,
+  'onSuspend': MediaElement.suspendEvent,
+  'onTimeUpdate': MediaElement.timeUpdateEvent,
+  'onVolumeChange': MediaElement.volumeChangeEvent,
+  'onWaiting': MediaElement.waitingEvent,
+  'onKeyAdded': MediaElement.keyAddedEvent,
+  'onKeyError': MediaElement.keyErrorEvent,
+  'onKeyMessage': MediaElement.keyMessageEvent,
+  'onNeedKey': MediaElement.needKeyEvent,
+  'onWebGlContextLost': CanvasElement.webGlContextLostEvent,
+  'onWebGlContextRestored': CanvasElement.webGlContextRestoredEvent,
+  'onPointerLockChange': Document.pointerLockChangeEvent,
+  'onPointerLockError': Document.pointerLockErrorEvent,
+  'onReadyStateChange': Document.readyStateChangeEvent,
+  'onSelectionChange': Document.selectionChangeEvent,
+  'onSecurityPolicyViolation': Document.securityPolicyViolationEvent,
+};
