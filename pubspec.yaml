@@ -5,7 +5,7 @@ description: >
   Polymer.dart is a new type of library for the web, built on top of Web
   Components, and designed to leverage the evolving web platform on modern
   browsers.
-version: 0.5.0
+version: 0.5.0+1
 dependencies:
   args: ">=0.4.5"
   analyzer_experimental: ">=0.5.12"
