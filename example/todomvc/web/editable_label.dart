@@ -48,7 +48,7 @@ class EditableLabel extends PolymerElement with ObservableMixin {
     editing = false;
   }
 
-  void maybeCancel(KeyEvent e) {
+  void maybeCancel(KeyboardEvent e) {
     if (e.keyCode == KeyCode.ESC) {
       editing = false;
     }
