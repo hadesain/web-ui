@@ -122,14 +122,6 @@ abstract class CustomElement implements Element {
 
   getShadowRoot(String componentName) => _generatedRoots[componentName];
 
-  /** Any CSS selector (class, id or element) defined name to mangled name. */
-  ScopedCssMapper _mapper = new ScopedCssMapper({});
-
-  // TODO(terry): Add a mapper per component in the type hierarchy.
-  ScopedCssMapper getScopedCss(String componentName) => _mapper;
-  void setScopedCss(String componentName, ScopedCssMapper mapper) {
-    _mapper = mapper;
-  }
 
   /**
    * *Warning*: This is an implementation helper for Custom Elements and
@@ -186,15 +178,6 @@ abstract class CustomElement implements Element {
   // See https://github.com/dart-lang/web-ui/issues/37
   /** Invoked when any attribute of the component is modified. */
   void attributeChanged(String name, String oldValue, String newValue) {}
-
-  /**
-   * **Note**: This is an implementation helper and should not need to be calle
-   * from your code.
-   *
-   * Initializes the contents of the ShadowRoot from template inside the
-   * `<element>` element.
-   */
-  void initShadow() {}
 
   get model => host.model;
 
@@ -624,29 +607,6 @@ abstract class CustomElement implements Element {
   }
 }
 
-/**
- * Maps CSS selectors (class and) to a mangled name and maps x-component name
- * to [is='x-component'].
- */
-class ScopedCssMapper {
-  final Map<String, String> _mapping;
-
-  ScopedCssMapper(this._mapping);
-
-  /** Returns mangled name of selector sans . or # character. */
-  String operator [](String selector) => _mapping[selector];
-
-  /** Returns mangled name of selector w/ . or # character. */
-  String getSelector(String selector) {
-    var prefixedName = this[selector];
-    var selectorType = selector[0];
-    if (selectorType == '.' || selectorType == '#') {
-      return '$selectorType${prefixedName}';
-    }
-
-    return prefixedName;
-  }
-}
 
 typedef DocumentFragmentCreated(DocumentFragment fragment);
 
@@ -659,8 +619,8 @@ void _createElements(Node node) {
   if (node is Element) {
     var ctor = _customElements[node.localName];
     if (ctor == null) {
-      var isAttr = node.attributes['is'];
-      if (isAttr != null) ctor = _customElements[isAttr];
+      var attr = node.attributes['is'];
+      if (attr != null) ctor = _customElements[attr];
     }
     if (ctor != null) _initCustomElement(node, ctor);
   }
@@ -671,7 +631,7 @@ void _initCustomElement(Element node, CustomElement ctor()) {
   element.host = node;
 
   // TODO(jmesserly): replace lifecycle stuff with a proper polyfill.
-  element..initShadow()..created();
+  element.created();
 
   _registerLifecycleInsert(element);
 }

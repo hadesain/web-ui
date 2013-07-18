@@ -554,7 +554,7 @@ class Compiler {
       if (file.isDart || file.isStyleSheet) continue;
       _time('Codegen', file.path, () {
         var fileInfo = info[file.path];
-        fixupHtmlCss(fileInfo, options, getCssPolyfillKind);
+        fixupHtmlCss(fileInfo, options);
         _emitComponents(fileInfo);
       });
     }
@@ -582,9 +582,16 @@ class Compiler {
   /** Emit the main .dart file. */
   void _emitMainDart(SourceFile file) {
     var fileInfo = info[file.path];
-    var printer = new EntryPointEmitter(fileInfo, global)
-        .run(_pathMapper, _edits[fileInfo.userCode], options.rewriteUrls);
-    _emitFileAndSourceMaps(fileInfo, printer, fileInfo.dartCodeUrl);
+
+    var codeInfo = fileInfo.userCode;
+    if (codeInfo != null) {
+      var printer = new CodePrinter(0);
+      if (codeInfo.libraryName == null) {
+        printer.addLine('library ${fileInfo.libraryName};');
+      }
+      printer.add(codeInfo.code);
+      _emitFileAndSourceMaps(fileInfo, printer, fileInfo.dartCodeUrl);
+    }
   }
 
   // TODO(jmesserly): refactor this out of Compiler.
@@ -596,14 +603,17 @@ class Compiler {
     var bootstrapPath = path.join(path.dirname(file.path), bootstrapName);
     var bootstrapOutPath = _pathMapper.outputPath(bootstrapPath, '');
     var bootstrapOutName = path.basename(bootstrapOutPath);
-    output.add(new OutputFile(bootstrapOutPath, _bootstrapCode(
-          _pathMapper.importUrlFor(new FileInfo(
-              new UrlInfo('', bootstrapPath, null)), fileInfo))));
+    var bootstrapInfo = new FileInfo(new UrlInfo('', bootstrapPath, null));
+    var printer = generateBootstrapCode(bootstrapInfo, fileInfo, global,
+        _pathMapper, options);
+    printer.build(bootstrapOutPath);
+    output.add(new OutputFile(
+          bootstrapOutPath, printer.text, source: file.path));
 
     var document = file.document;
     var hasCss = _emitAllCss();
     transformMainHtml(document, fileInfo, _pathMapper, hasCss,
-        options.rewriteUrls, _messages);
+        options.rewriteUrls, _messages, global);
 
     document.body.nodes.add(parseFragment(
         '<script type="application/dart" src="$bootstrapOutName"></script>'));
@@ -678,7 +688,7 @@ class Compiler {
                 '   Component ${component.tagName} stylesheet \n'
                 '   ==================================================== */\n');
 
-            var polyType = getCssPolyfillKind(component);
+            var cssPolyfillKind = CssPolyfillKind.of(options, component);
             var tagName = component.tagName;
             if (!component.hasAuthorStyles) {
               if (_cssResetStyleSheet != null && !options.mangleCss) {
@@ -687,11 +697,12 @@ class Compiler {
                 // option was passed).
                 buff.write('\n/* Start CSS Reset */\n');
                 buff.write(emitComponentStyleSheet(_cssResetStyleSheet, tagName,
-                    polyType));
+                    cssPolyfillKind));
                 buff.write('/* End CSS Reset */\n\n');
               }
             }
-            buff.write(emitComponentStyleSheet(styleSheet, tagName, polyType));
+            buff.write(emitComponentStyleSheet(styleSheet, tagName,
+                  cssPolyfillKind));
             buff.write('\n\n');
           }
         }
@@ -716,23 +727,11 @@ class Compiler {
             'Component has more than one stylesheet - first stylesheet used.',
             span);
       }
-      var polyType = getCssPolyfillKind(component);
-      var printer = new WebComponentEmitter(fileInfo, _messages, polyType)
+      var printer = new WebComponentEmitter(fileInfo, _messages,
+          CssPolyfillKind.of(options, component))
           .run(component, _pathMapper, _edits[component.userCode]);
       _emitFileAndSourceMaps(component, printer, component.externalFile);
     }
-  }
-
-  /** Given a component and CompilerOptions compute the CSS polyfill to emit. */
-  CssPolyfillKind getCssPolyfillKind(ComponentInfo component) {
-    if (!useCssPolyfill(options, component)) return CssPolyfillKind.NO_POLYFILL;
-
-    if (options.mangleCss) return CssPolyfillKind.MANGLED_POLYFILL;
-
-    if (!component.hasAuthorStyles && !hasCssReset)
-      return CssPolyfillKind.MANGLED_POLYFILL;
-
-    return CssPolyfillKind.SCOPED_POLYFILL;
   }
 
   /**
@@ -775,33 +774,3 @@ class Compiler {
   }
 }
 
-// TODO(terry): Replace with enum when supported.
-/** Enum for type of polyfills supported. */
-class CssPolyfillKind {
-  final index;
-  const CssPolyfillKind(this.index);
-
-  /** Emit CSS selectors as seen (no polyfill). */
-  static const NO_POLYFILL = const CssPolyfillKind(0);
-
-  /** Emit CSS selectors scoped to the "is" attribute of the component. */
-  static const SCOPED_POLYFILL = const CssPolyfillKind(1);
-
-  /** Emit CSS selectors mangled. */
-  static const MANGLED_POLYFILL = const CssPolyfillKind(2);
-}
-
-/**
- * The code that will be used to bootstrap the application, this is inlined in
- * the main.html.html output file.
- */
-String _bootstrapCode(String userMainImport) => """
-library bootstrap;
-
-import '$userMainImport' as userMain;
-
-main() {
-  userMain.main();
-  userMain.init_autogenerated();
-}
-""";

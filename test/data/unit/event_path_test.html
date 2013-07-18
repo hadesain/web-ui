@@ -19,29 +19,29 @@
   </head>
   <body>
 
-  <element name="x-selector">
+  <polymer-element name="x-selector">
     <template>
       <div id="selectorDiv">
         <content id="selectorContent"></content>
       </div>
     </template>
-  </element>
+  </polymer-element>
 
-  <element name="x-overlay">
+  <polymer-element name="x-overlay">
     <template>
       <content id="overlayContent"></content>
     </template>
-  </element>
+  </polymer-element>
 
-  <element name="x-menu" extends="x-selector">
+  <polymer-element name="x-menu" extends="x-selector">
     <template>
       <div id="menuDiv">
         <shadow id="menuShadow"></shadow>
       </div>
     </template>
-  </element>
+  </polymer-element>
 
-  <element name="x-menu-button">
+  <polymer-element name="x-menu-button">
     <template>
     <div>
       <x-overlay id="overlay">
@@ -53,7 +53,7 @@
       </x-overlay>
       </div>
     </template>
-  </element>
+  </polymer-element>
 
   <x-menu-button id="menuButton">
     <div id="item1"><div id="source"></div>Item1</div>

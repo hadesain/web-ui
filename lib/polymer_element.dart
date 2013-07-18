@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:mirrors';
 
+import 'package:mdv/mdv.dart' as mdv;
 import 'package:observe/observe.dart';
 
 import 'custom_element.dart';
@@ -19,23 +20,8 @@ import 'src/utils_observe.dart' show toCamelCase, toHyphenedName;
  * but it is designed to work with the `<element>` element and adds additional
  * features.
  */
-// TODO(sigmund): change this to take the 'localName' (recent polymer change)
-void registerPolymerElement(Element elementElement, CustomElement create()) {
-  // Creates the CustomElement and then publish attributes.
-  createElement() {
-    final CustomElement element = create();
-    // TODO(jmesserly): to simplify the DWC compiler, we always emit calls to
-    // registerPolymerElement, regardless of the base class type.
-    if (element is PolymerElement) {
-      PolymerElement pElement = element;
-      pElement._parseHostEvents(elementElement);
-      pElement._parseLocalEvents(elementElement);
-      pElement._publishAttributes(elementElement);
-    }
-    return element;
-  }
-
-  registerCustomElement(elementElement.attributes['name'], createElement);
+void registerPolymerElement(String localName, PolymerElement create()) {
+  registerCustomElement(localName, () => create().._initialize(localName));
 }
 
 /**
@@ -67,10 +53,48 @@ abstract class PolymerElement extends CustomElement with _EventsMixin {
   // TODO(sigmund): delete. The next line is only added to avoid warnings from
   // the analyzer (see http://dartbug.com/11672)
   Element get host => super.host;
+
+  bool get applyAuthorStyles => false;
+  bool get resetStyleInheritance => false;
+
+  /**
+   * The declaration of this polymer-element, used to extract template contents
+   * and other information.
+   */
+  static Map<String, Element> _declarations = {};
+  static Element getDeclaration(String localName) {
+    if (localName == null) return null;
+    var element = _declarations[localName];
+    if (element == null) {
+      element = document.query('polymer-element[name="$localName"]');
+      _declarations[localName] = element;
+    }
+    return element;
+  }
+
   Map<String, PathObserver> _publishedAttrs;
   Map<String, StreamSubscription> _bindings;
+  final List<String> _localNames = [];
 
-  void _publishAttributes(Element elementElement) {
+  void _initialize(String localName) {
+    if (localName == null) return;
+
+    var declaration = getDeclaration(localName);
+    if (declaration == null) return;
+
+    if (declaration.attributes['extends'] != null) {
+      var base = declaration.attributes['extends'];
+      // Skip normal tags, only initialize parent custom elements.
+      if (base.contains('-')) _initialize(base);
+    }
+
+    _parseHostEvents(declaration);
+    _parseLocalEvents(declaration);
+    _publishAttributes(declaration);
+    _localNames.add(localName);
+  }
+
+  void _publishAttributes(elementElement) {
     _bindings = {};
     _publishedAttrs = {};
 
@@ -93,14 +117,31 @@ abstract class PolymerElement extends CustomElement with _EventsMixin {
     // var value = attributes[name];
     //   if (value != null) propObserver.value = value;
     // });
-
+    _initShadowRoot();
     _addHostListeners();
   }
 
-  // TODO(sigmund): make this private once we create the shadow root directly
-  // here in polymer element.
-  void shadowRootReady(ShadowRoot root, String elementName) {
-    _addInstanceListeners(root, elementName);
+  void _initShadowRoot() {
+    for (var localName in _localNames) {
+      var declaration = getDeclaration(localName);
+      var root = createShadowRoot(localName);
+      _addInstanceListeners(root, localName);
+
+      root.applyAuthorStyles = applyAuthorStyles;
+      root.resetStyleInheritance = resetStyleInheritance;
+
+      var templateNode = declaration.children.firstWhere(
+          (n) => n.localName == 'template', orElse: () => null);
+      if (templateNode == null) return;
+
+      root.nodes.add(cloneTemplate(templateNode.content));
+      // TODO(sigmund): use fancy-syntax as the default.
+      var syntax = templateNode.attributes['syntax'];
+
+      // TODO(sigmund,jmesserly): mdv.bindModel should be async internally
+      Timer.run(() => mdv.bindModel(root, this,
+          syntax != null ? TemplateElement.syntax[syntax] : null));
+    }
   }
 
   void bind(String name, model, String path) {

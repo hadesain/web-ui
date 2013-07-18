@@ -19,8 +19,7 @@
   </head>
   <body>
 
-  <!-- TODO(sigmund): use <polymer-element>, not <element> -->
-  <element name="test-a" on-click="clickHandler">
+  <polymer-element name="test-a" on-click="clickHandler">
     <template></template>
     <script type="application/dart">
       import 'package:polymer/polymer.dart';
@@ -32,9 +31,9 @@
         }
       }
     </script>
-  </element>
+  </polymer-element>
 
-  <element name="test-b">
+  <polymer-element name="test-b">
     <template>
       <div>
         <span id="b-1">1</span>
@@ -51,7 +50,7 @@
         }
       }
     </script>
-  </element>
+  </polymer-element>
 
   <test-a id="a"></test-a>
   <test-b id="b"></test-b>

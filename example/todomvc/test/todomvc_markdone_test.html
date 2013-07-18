@@ -29,8 +29,11 @@ import '../web/model.dart';
 
 Node findWithText(Node node, String text) {
   if (node.text == text) return node;
-  if (node is Element && node.shadowRoot != null) {
-    var r = findWithText(node.shadowRoot, text);
+  if (node is Element && (node as Element).localName == 'polymer-element') {
+    return null;
+  }
+  if (node is Element && (node as Element).shadowRoot != null) {
+    var r = findWithText((node as Element).shadowRoot, text);
     if (r != null) return r;
   }
   for (var n in node.nodes) {
@@ -42,7 +45,7 @@ Node findWithText(Node node, String text) {
 
 Node findShadowHost(Node node, ShadowRoot root) {
   if (node is Element) {
-    var shadowRoot = node.shadowRoot;
+    var shadowRoot = (node as Element).shadowRoot;
     if (shadowRoot == root) return node;
     if (shadowRoot != null) {
       var r = findShadowHost(shadowRoot, root);
@@ -65,23 +68,27 @@ main() {
     appModel.todos.add(new Todo('three (checked)')..done = true);
     appModel.todos.add(new Todo('four (checked)'));
     deliverChangeRecords();
+    // TODO(sigmund): investigate why is not enough to do Timer.run
+    new Timer(new Duration(milliseconds: 200), () {
+      // Note: use query because "document" is unwrapped in ShadowDOM polyfill.
+      var body = query('body');
 
-    // Note: use query because "document" is unwrapped in ShadowDOM polyfill.
-    var body = query('body');
+      var label = findWithText(body, 'four (checked)');
+      expect(label is LabelElement, isTrue, reason: 'text is in a label');
 
-    var label = findWithText(body, 'four (checked)');
-    expect(label is LabelElement, isTrue, reason: 'text is in a label');
+      var host = findShadowHost(body, label.parentNode);
+      var node = host.parent.query('input');
+      expect(node is InputElement, isTrue, reason: 'node is a checkbox');
+      expect(node.type, 'checkbox', reason: 'node type is checkbox');
+      expect(node.checked, isFalse, reason: 'element is unchecked');
 
-    var host = findShadowHost(body, label.parentNode);
-    var node = host.parent.query('input');
-    expect(node is InputElement, isTrue, reason: 'node is a checkbox');
-    expect(node.type, 'checkbox', reason: 'node type is checkbox');
-    expect(node.checked, isFalse, reason: 'element is unchecked');
+      node.dispatchEvent(new MouseEvent('click', detail: 1));
+      expect(node.checked, isTrue, reason: 'element is checked');
 
-    node.dispatchEvent(new MouseEvent('click', detail: 1));
-    expect(node.checked, isTrue, reason: 'element is checked');
-
-    window.postMessage('done', '*');
+      Timer.run(() {
+        window.postMessage('done', '*');
+      });
+    });
   });
 }
   </script>

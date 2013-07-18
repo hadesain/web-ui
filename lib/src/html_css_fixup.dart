@@ -19,19 +19,34 @@ import 'options.dart';
 import 'paths.dart';
 import 'utils.dart';
 
-/**
- * Helper function returns [true] if CSS polyfill is on and component has a
- * scoped style tag.
- */
-bool useCssPolyfill(CompilerOptions opts, ComponentInfo component) =>
-    opts.processCss && component.scoped;
+/** Enum for type of polyfills supported. */
+class CssPolyfillKind {
+  final index;
+  const CssPolyfillKind(this.index);
+
+  /** Emit CSS selectors as seen (no polyfill). */
+  static const NO_POLYFILL = const CssPolyfillKind(0);
+
+  /** Emit CSS selectors scoped to the "is" attribute of the component. */
+  static const SCOPED_POLYFILL = const CssPolyfillKind(1);
+
+  /** Emit CSS selectors mangled. */
+  static const MANGLED_POLYFILL = const CssPolyfillKind(2);
+
+  static CssPolyfillKind of(CompilerOptions options, ComponentInfo component) {
+    if (!options.processCss || !component.scoped) return NO_POLYFILL;
+    if (options.mangleCss) return MANGLED_POLYFILL;
+    if (!component.hasAuthorStyles && !hasCssReset) return MANGLED_POLYFILL;
+    return SCOPED_POLYFILL;
+  }
+}
+
 
 /**
  *  If processCss is enabled, prefix any component's HTML attributes for id or
  *  class to reference the mangled CSS class name or id.
  */
-void fixupHtmlCss(FileInfo fileInfo, CompilerOptions options,
-                  CssPolyfillKind polyfillKind(ComponentInfo component)) {
+void fixupHtmlCss(FileInfo fileInfo, CompilerOptions options) {
   // Walk the HTML tree looking for class names or id that are in our parsed
   // stylesheet selectors and making those CSS classes and ids unique to that
   // component.
@@ -44,14 +59,14 @@ void fixupHtmlCss(FileInfo fileInfo, CompilerOptions options,
     if (component.styleSheets.length == 1) {
       // For components only 1 stylesheet allowed.
       var styleSheet = component.styleSheets[0];
-      var prefix = polyfillKind(component) == CssPolyfillKind.MANGLED_POLYFILL ?
-          component.tagName : null;
+      var prefix = CssPolyfillKind.of(options, component) ==
+          CssPolyfillKind.MANGLED_POLYFILL ?  component.tagName : null;
 
       // List of referenced #id and .class in CSS.
       var knownCss = new IdClassVisitor()..visitTree(styleSheet);
       // Prefix all id and class refs in CSS selectors and HTML attributes.
       new _ScopedStyleRenamer(knownCss, prefix, options.debugCss)
-          .visit(component.elementNode);
+          .visit(component.element);
     }
   }
 }
@@ -72,7 +87,8 @@ class IdClassVisitor extends Visitor {
 
 /** Build the Dart map of managled class/id names and component tag name. */
 Map _createCssSimpleSelectors(IdClassVisitor visitedCss, ComponentInfo info,
-    bool mangleNames) {
+    CssPolyfillKind kind) {
+  bool mangleNames = kind == CssPolyfillKind.MANGLED_POLYFILL;
   Map selectors = {};
   if (visitedCss != null) {
     for (var cssClass in visitedCss.classes) {
@@ -95,7 +111,7 @@ Map _createCssSimpleSelectors(IdClassVisitor visitedCss, ComponentInfo info,
  * Return a map of simple CSS selectors (class and id selectors) as a Dart map
  * definition.
  */
-String createCssSelectorsExpression(ComponentInfo info, bool mangled) {
+String createCssSelectorsExpression(ComponentInfo info, CssPolyfillKind kind) {
   var cssVisited = new IdClassVisitor();
 
   // For components only 1 stylesheet allowed.
@@ -104,7 +120,7 @@ String createCssSelectorsExpression(ComponentInfo info, bool mangled) {
     cssVisited..visitTree(styleSheet);
   }
 
-  return json.stringify(_createCssSimpleSelectors(cssVisited, info, mangled));
+  return json.stringify(_createCssSimpleSelectors(cssVisited, info, kind));
 }
 
 // TODO(terry): Need to handle other selectors than IDs/classes like tag name
@@ -545,7 +561,7 @@ class CssStyleTag extends TreeVisitor {
     // Don't process any style tags inside of element if we're processing a
     // FileInfo.  The style tags inside of a component defintion will be
     // processed when _info is a ComponentInfo.
-    if (node.tagName == 'element' && _info is FileInfo) return;
+    if (node.tagName == 'polymer-element' && _info is FileInfo) return;
     if (node.tagName == 'style') {
       // Parse the contents of the scoped style tag.
       var styleSheet = parseCss(node.nodes.single.value, _messages, _options);

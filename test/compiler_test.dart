@@ -25,10 +25,10 @@ main() {
                     '<body><x-foo></x-foo><x-bar></x-bar>'
                     '<script type="application/dart">main() {}</script>',
       'foo.html': '<head><link rel="import" href="bar.html">'
-                  '<body><element name="x-foo" constructor="Foo">'
+                  '<body><polymer-element name="x-foo" constructor="Foo">'
                   '<template><x-bar>',
       'bar.html': '<head><link rel="import" href="foo.html">'
-                  '<body><element name="x-bar" constructor="Boo">'
+                  '<body><polymer-element name="x-bar" constructor="Boo">'
                   '<template><x-foo>',
     }, messages);
 
@@ -116,7 +116,7 @@ main() {
             '<body><x-foo></x-foo>'
             '<script type="application/dart">main() {}</script>'
             '</body>',
-        'foo.html': '<body><element name="x-foo" constructor="Foo">'
+        'foo.html': '<body><polymer-element name="x-foo" constructor="Foo">'
             '<template></template>'
             '<script type="application/dart" src="notfound.dart"></script>',
       }, messages);

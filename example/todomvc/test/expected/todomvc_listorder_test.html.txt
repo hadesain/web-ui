@@ -27,8 +27,85 @@ col[template],
 option[template] {
   display: none;
 }</style></head>
-<body>
-  <span is="todo-app"><shadow-root>  <section id="todoapp">
+<body><polymer-element name="todo-row" extends="li" attributes="todo">
+  <template>
+    
+    <div class="todo-row_todo-item">
+      <input class="todo-row_toggle" type="checkbox" checked="{{todo.done}}">
+      <div is="editable-label" id="label" value="{{todo.task}}"></div>
+      <button class="todo-row_destroy" on-click="removeTodo"></button>
+    </div>
+  </template>
+  
+</polymer-element>
+<polymer-element name="todo-app">
+<template>
+  <section id="todoapp">
+    <header id="header">
+      <h1 class="title">todos</h1>
+      <form on-submit="addTodo">
+        <input id="new-todo" placeholder="What needs to be done?" autofocus="" on-change="addTodo">
+      </form>
+    </header>
+    <section id="main">
+      <input id="toggle-all" type="checkbox" checked="{{app.allChecked}}">
+      <label for="toggle-all"></label>
+      <ul id="todo-list">
+        <template repeat="{{app.visibleTodos}}">
+          <li is="todo-row" todo="{{}}"></li>
+        </template>
+      </ul>
+    </section>
+    <template bind="" if="{{app.hasTodos}}">
+      <footer id="footer">
+        <span id="todo-count"><strong>{{app.remaining}}</strong></span>
+        <ul is="router-options" id="filters">
+          <li> <a href="#/">All</a> </li>
+          <li> <a href="#/active">Active</a> </li>
+          <li> <a href="#/completed">Completed</a> </li>
+        </ul>
+        <template bind="" if="{{app.hasCompleteTodos}}">
+          <button id="clear-completed" on-click="clear">
+            Clear completed ({{app.doneCount}})
+          </button>
+        </template>
+      </footer>
+    </template>
+  </section>
+  <footer id="info">
+    <p>Double-click to edit a todo.</p>
+    <p>Credits: the <a href="http://www.dartlang.org">Dart</a> team.</p>
+    <p>
+      Learn more about
+      <a href="https://www.dartlang.org/articles/dart-web-components/">Dart + Web Components</a>
+      or
+      <a href="https://github.com/dart-lang/web-ui/tree/master/example/todomvc">view the source</a>.
+    </p>
+    <p>Part of <a href="http://todomvc.com">TodoMVC</a>.</p>
+  </footer>
+</template>
+
+</polymer-element>
+<polymer-element name="router-options" extends="ul">
+  <template><content></content></template>
+  
+</polymer-element>
+<polymer-element name="editable-label" extends="div" attributes="value">
+  <template>
+    <template bind="" if="{{notEditing}}">
+      <label class="edit-label" on-double-click="edit">{{value}}</label>
+    </template>
+    <template bind="" if="{{editing}}">
+      <form on-submit="update">
+        <input id="edit" class="edit editing" on-blur="update" on-key-up="maybeCancel">
+      </form>
+    </template>
+  </template>
+  
+</polymer-element>
+
+  <span is="todo-app"><shadow-root>
+  <section id="todoapp">
     <header id="header">
       <h1 class="title">todos</h1>
       <form on-submit="addTodo">
@@ -42,10 +119,12 @@ option[template] {
         <template repeat="{{app.visibleTodos}}">
           <li is="todo-row" todo="{{}}"></li>
         </template>
-          <li is="todo-row" todo="{{}}"><shadow-root>    
+          <li is="todo-row" todo="{{}}"><shadow-root>
+    
     <div class="todo-row_todo-item">
       <input class="todo-row_toggle" type="checkbox">
-      <div is="editable-label" id="label" value="{{todo.task}}"><shadow-root>    <template bind="" if="{{notEditing}}">
+      <div is="editable-label" id="label" value="{{todo.task}}"><shadow-root>
+    <template bind="" if="{{notEditing}}">
       <label class="edit-label" on-double-click="edit">{{value}}</label>
     </template>
       <label class="edit-label" on-double-click="edit">one (unchecked)</label>
@@ -60,10 +139,12 @@ option[template] {
     </div>
   </shadow-root></li>
         
-        <li is="todo-row" todo="{{}}"><shadow-root>    
+        <li is="todo-row" todo="{{}}"><shadow-root>
+    
     <div class="todo-row_todo-item todo-row_completed">
       <input class="todo-row_toggle" type="checkbox">
-      <div is="editable-label" id="label" value="{{todo.task}}"><shadow-root>    <template bind="" if="{{notEditing}}">
+      <div is="editable-label" id="label" value="{{todo.task}}"><shadow-root>
+    <template bind="" if="{{notEditing}}">
       <label class="edit-label" on-double-click="edit">{{value}}</label>
     </template>
       <label class="edit-label" on-double-click="edit">two (checked)</label>
@@ -78,10 +159,12 @@ option[template] {
     </div>
   </shadow-root></li>
           
-          <li is="todo-row" todo="{{}}"><shadow-root>    
+          <li is="todo-row" todo="{{}}"><shadow-root>
+    
     <div class="todo-row_todo-item">
       <input class="todo-row_toggle" type="checkbox">
-      <div is="editable-label" id="label" value="{{todo.task}}"><shadow-root>    <template bind="" if="{{notEditing}}">
+      <div is="editable-label" id="label" value="{{todo.task}}"><shadow-root>
+    <template bind="" if="{{notEditing}}">
       <label class="edit-label" on-double-click="edit">{{value}}</label>
     </template>
       <label class="edit-label" on-double-click="edit">three (unchecked)</label>

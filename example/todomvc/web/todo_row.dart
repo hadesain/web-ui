@@ -11,6 +11,7 @@ import 'model.dart';
 class TodoRow extends PolymerElement with ObservableMixin {
   @observable Todo todo;
 
+  bool get applyAuthorStyles => true;
   ScopedCssMapper get css => getScopedCss("todo-row");
 
   created() {

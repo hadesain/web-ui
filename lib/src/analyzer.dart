@@ -110,7 +110,7 @@ class _Analyzer extends TreeVisitor {
     node = _bindAndReplaceElement(node);
 
     var lastInfo = _currentInfo;
-    if (node.tagName == 'element') {
+    if (node.tagName == 'polymer-element') {
       // If element is invalid _ElementLoader already reported an error, but
       // we skip the body of the element here.
       var name = node.attributes['name'];
@@ -118,9 +118,6 @@ class _Analyzer extends TreeVisitor {
 
       ComponentInfo component = _fileInfo.components[name];
       if (component == null) return;
-
-      // Associate <element> tag with its component.
-      component.elementNode = node;
 
       _analyzeComponent(component);
 
@@ -210,7 +207,8 @@ class _Analyzer extends TreeVisitor {
       } else if (isCustomTag(node.tagName)) {
         componentName = node.tagName;
       }
-      if (component == null && componentName != null) {
+      if (component == null && componentName != null &&
+          componentName != 'polymer-element') {
         _messages.warning(
             'custom element with tag name $componentName not found.',
             node.sourceSpan);
@@ -372,7 +370,13 @@ class _ElementLoader extends TreeVisitor {
   void visitElement(Element node) {
     switch (node.tagName) {
       case 'link': visitLinkElement(node); break;
-      case 'element': visitElementElement(node); break;
+      case 'element':
+        _messages.warning('<element> elements are not supported, use'
+            ' <polymer-element> instead', node.sourceSpan);
+        break;
+      case 'polymer-element':
+         visitElementElement(node);
+         break;
       case 'script': visitScriptElement(node); break;
       case 'head':
         var savedInHead = _inHead;

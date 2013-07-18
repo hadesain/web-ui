@@ -324,7 +324,7 @@ test_component_var() {
                       '<meta charset="utf-8">'
                     '</head>'
                     '<body>'
-                      '<element name="x-foo" constructor="Foo">'
+                      '<polymer-element name="x-foo" constructor="Foo">'
                         '<template>'
                           '<style scoped>'
                             '@import "foo.css";'
@@ -334,7 +334,7 @@ test_component_var() {
                             '}'
                           '</style>'
                         '</template>'
-                      '</element>'
+                      '</polymer-element>'
                     '</body>'
                   '</html>',
       'foo.css':  r'''@main_color: var(b);
@@ -484,7 +484,7 @@ test_pseudo_element() {
                     '<x-foo></x-foo>'
                   '<script type="application/dart">main() {}</script>',
     'foo.html': '<head>'
-                '<body><element name="x-foo" constructor="Foo">'
+                '<body><polymer-element name="x-foo" constructor="Foo">'
                 '<template>'
                   '<div pseudo="x-foo">'
                     '<div>Test</div>'
@@ -511,14 +511,14 @@ test_pseudo_element() {
         'out/index.html_bootstrap.dart',
         'out/index.html',
       ]));
-      expect(compiler.output[0].contents.contains(
+      expect(compiler.output.last.contents, contains(
           '<div pseudo="x-foo_0">'
             '<div>Test</div>'
           '</div>'
           '<div pseudo="x-foo1_1 x-foo2_2">'
           '<div>Test</div>'
-          '</div>'), true);
-      expect(compiler.output[5].contents.contains(
+          '</div>'));
+      expect(compiler.output.last.contents, contains(
           '<style>.test > *[pseudo="x-foo_0"] {\n'
             '  background-color: #f00;\n'
           '}\n'
@@ -528,7 +528,7 @@ test_pseudo_element() {
           '.test > *[pseudo="x-foo2_2"] {\n'
           '  color: #008000;\n'
           '}'
-          '</style>'), true);
+          '</style>'));
     }));
 }
 

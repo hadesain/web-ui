@@ -4,9 +4,27 @@ Content-Type: text/plain
   
   <script src="../../packages/polymer/testing/testing.js"></script>
 <link rel="stylesheet" type="text/css" href="news_index_test.html.css"></head>
-<body>
+<body><polymer-element name="x-news" extends="ul">
+    <template>
+        
+        <div class="x-news_breaking">
+            <h2>Breaking Stories</h2>
+            <ul>
+                <content select=".breaking"></content>
+            </ul>
+        </div>
+        <div class="x-news_other">
+            <h2>Other News</h2>
+            <ul>
+                <content></content>
+            </ul>
+        </div>
+    </template>
+</polymer-element>
+
 <h1>Simple Web Components Example</h1>
-<ul is="x-news"><shadow-root>        
+<ul is="x-news"><shadow-root>
+        
         <div class="x-news_breaking">
             <h2>Breaking Stories</h2>
             <ul>

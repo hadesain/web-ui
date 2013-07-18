@@ -11,6 +11,7 @@ import 'model.dart';
 
 class TodoApp extends PolymerElement with ObservableMixin {
   @observable AppModel app;
+  bool get applyAuthorStyles => true;
 
   void created() {
     super.created();

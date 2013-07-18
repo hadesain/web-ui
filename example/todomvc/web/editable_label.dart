@@ -15,6 +15,7 @@ import 'package:polymer/polymer.dart';
 class EditableLabel extends PolymerElement with ObservableMixin {
   @observable bool editing = false;
   @observable String value = '';
+  bool get applyAuthorStyles => true;
 
   // TODO(jmesserly): replace this with allowing not-operator in templates.
   bool get notEditing => !editing;
