@@ -216,6 +216,8 @@ abstract class CustomElement implements Element {
 
   Node get nextNode => host.nextNode;
 
+  String get nodeName => host.nodeName;
+
   Document get document => host.document;
 
   Node get previousNode => host.previousNode;
@@ -256,6 +258,11 @@ abstract class CustomElement implements Element {
   set classes(Iterable<String> value) {
     host.classes = value;
   }
+
+  CssRect get contentEdge => host.contentEdge;
+  CssRect get paddingEdge => host.paddingEdge;
+  CssRect get borderEdge => host.borderEdge;
+  CssRect get marginEdge => host.marginEdge;
 
   Map<String, String> getNamespacedAttributes(String namespace) =>
       host.getNamespacedAttributes(namespace);
@@ -401,8 +408,8 @@ abstract class CustomElement implements Element {
 
   int get $dom_childElementCount => host.$dom_childElementCount;
 
-  String get $dom_className => host.$dom_className;
-  set $dom_className(String value) { host.$dom_className = value; }
+  String get className => host.className;
+  set className(String value) { host.className = value; }
 
   @deprecated
   int get clientHeight => client.height;

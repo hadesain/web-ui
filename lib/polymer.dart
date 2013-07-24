@@ -12,7 +12,6 @@
 library polymer;
 
 export 'custom_element.dart';
-export 'custom_syntax.dart';
 export 'event.dart';
 export 'observe.dart';
 export 'observe_html.dart';
