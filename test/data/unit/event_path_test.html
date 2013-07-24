@@ -25,12 +25,22 @@
         <content id="selectorContent"></content>
       </div>
     </template>
+    <script type="application/dart">
+      import 'package:polymer/polymer.dart';
+      @CustomTag("x-selector")
+      class XSelector extends PolymerElement {}
+    </script>
   </polymer-element>
 
   <polymer-element name="x-overlay">
     <template>
       <content id="overlayContent"></content>
     </template>
+    <script type="application/dart">
+      import 'package:polymer/polymer.dart';
+      @CustomTag("x-overlay")
+      class XOverlay extends PolymerElement {}
+    </script>
   </polymer-element>
 
   <polymer-element name="x-menu" extends="x-selector">
@@ -39,6 +49,11 @@
         <shadow id="menuShadow"></shadow>
       </div>
     </template>
+    <script type="application/dart">
+      import 'package:polymer/polymer.dart';
+      @CustomTag("x-menu")
+      class XMenu extends PolymerElement {}
+    </script>
   </polymer-element>
 
   <polymer-element name="x-menu-button">
@@ -53,6 +68,11 @@
       </x-overlay>
       </div>
     </template>
+    <script type="application/dart">
+      import 'package:polymer/polymer.dart';
+      @CustomTag("x-menu-button")
+      class XMenuButton extends PolymerElement {}
+    </script>
   </polymer-element>
 
   <x-menu-button id="menuButton">

@@ -57,7 +57,8 @@ void _testHelper(_TestOptions options) {
   for (var filePath in paths) {
     var filename = path.basename(filePath);
     test('compile $filename', () {
-      var testArgs = ['-o', options.outDir, '--basedir', options.baseDir]
+      var testArgs = ['-o', options.outDir,
+            '--basedir', options.baseDir, '--no-css']
           ..addAll(options.compilerArgs)
           ..add(filePath);
       expect(dwc.run(testArgs, printTime: false).then((res) {
@@ -75,29 +76,26 @@ void _testHelper(_TestOptions options) {
   var finalOutDir = path.join(options.outDir, relativeToBase);
 
   runTests(String search) {
-    var outs;
+    var output;
 
-    test('content_shell run $search', () {
-      var args = ['--dump-render-tree'];
-      args.addAll(filenames.map((name) => 'file://$finalOutDir/$name$search'));
-      var env = {'DART_FLAGS': '--checked'};
-      expect(Process.run('content_shell', args, environment: env).then((res) {
-        expect(res.exitCode, 0, reason: 'content_shell exit code: '
-            '${res.exitCode}. Contents of stderr: \n${res.stderr}');
-        outs = res.stdout.split('#EOF\n')
-          .where((s) => !s.trim().isEmpty).toList();
-        expect(outs.length, filenames.length);
-      }), completes);
-    });
+    for (var filename in filenames) {
+      test('content_shell run $filename$search', () {
+        var args = ['--dump-render-tree',
+            'file://$finalOutDir/$filename$search'];
+        var env = {'DART_FLAGS': '--checked'};
+        expect(Process.run('content_shell', args, environment: env).then((res) {
+          expect(res.exitCode, 0, reason: 'content_shell exit code: '
+              '${res.exitCode}. Contents of stderr: \n${res.stderr}');
+          var outs = res.stdout.split('#EOF\n')
+            .where((s) => !s.trim().isEmpty).toList();
+          expect(outs.length, 1);
+          output = outs.first;
+        }), completes);
+      });
 
-    for (int i = 0; i < filenames.length; i++) {
-      var filename = filenames[i];
-      // TODO(sigmund): remove this extra variable dartbug.com/8698
-      int j = i;
       test('verify $filename $search', () {
-        expect(outs, isNotNull, reason:
+        expect(output, isNotNull, reason:
           'Output not available, maybe content_shell failed to run.');
-        var output = outs[j];
         var outPath = path.join(options.outDir, '$filename.txt');
         new File(outPath).writeAsStringSync(output);
         if (options.isRenderTest) {
@@ -178,8 +176,15 @@ class _TestOptions {
     var args = _parseArgs(arguments, script);
     if (args == null) return null;
     var compilerArgs = args.rest;
-    var filePattern = new RegExp(pattern != null ? pattern
-        : (compilerArgs.length > 0 ? compilerArgs.removeAt(0) : '.'));
+    var filePattern;
+    if (pattern != null) {
+      filePattern = new RegExp(pattern);
+    } else if (compilerArgs.length > 0) {
+      filePattern = new RegExp(compilerArgs[0]);
+      compilerArgs = compilerArgs.sublist(1);
+    } else {
+      filePattern = new RegExp('.');
+    }
 
     var scriptDir = path.absolute(path.dirname(script));
     baseDir = path.join(scriptDir, baseDir);

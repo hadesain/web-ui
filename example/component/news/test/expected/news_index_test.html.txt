@@ -3,35 +3,56 @@ Content-Type: text/plain
   <title>Simple Web Components Example</title>
   
   <script src="../../packages/polymer/testing/testing.js"></script>
-<link rel="stylesheet" type="text/css" href="news_index_test.html.css"></head>
+</head>
 <body><polymer-element name="x-news" extends="ul">
     <template>
         
-        <div class="x-news_breaking">
+        <style>
+div.breaking {
+  color: #f00;
+  font-size: 20px;
+  border: 1px dashed #800080;
+}
+div.other {
+  padding: 2px 0 0 0;
+  border: 1px solid #0ff;
+}
+</style><div class="breaking">
             <h2>Breaking Stories</h2>
             <ul>
                 <content select=".breaking"></content>
             </ul>
         </div>
-        <div class="x-news_other">
+        <div class="other">
             <h2>Other News</h2>
             <ul>
                 <content></content>
             </ul>
         </div>
     </template>
+    
 </polymer-element>
 
 <h1>Simple Web Components Example</h1>
 <ul is="x-news"><shadow-root>
         
-        <div class="x-news_breaking">
+        <style>
+div.breaking {
+  color: #f00;
+  font-size: 20px;
+  border: 1px dashed #800080;
+}
+div.other {
+  padding: 2px 0 0 0;
+  border: 1px solid #0ff;
+}
+</style><div class="breaking">
             <h2>Breaking Stories</h2>
             <ul>
                 <content select=".breaking"></content>
             </ul>
         </div>
-        <div class="x-news_other">
+        <div class="other">
             <h2>Other News</h2>
             <ul>
                 <content></content>

@@ -24,6 +24,7 @@
     <script type="application/dart">
       import 'package:polymer/polymer.dart';
 
+      @CustomTag("test-a")
       class TestA extends PolymerElement {
         List clicks = [];
         void clickHandler() {
@@ -43,6 +44,7 @@
     <script type="application/dart">
       import 'package:polymer/polymer.dart';
 
+      @CustomTag("test-b")
       class TestB extends PolymerElement {
         List clicks = [];
         void clickHandler(event, detail, target) {

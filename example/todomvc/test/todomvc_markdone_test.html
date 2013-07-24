@@ -67,8 +67,8 @@ main() {
     appModel.todos.add(new Todo('two (unchecked)'));
     appModel.todos.add(new Todo('three (checked)')..done = true);
     appModel.todos.add(new Todo('four (checked)'));
-    deliverChangeRecords();
-    // TODO(sigmund): investigate why is not enough to do Timer.run
+
+     // TODO(sigmund): investigate why is not enough to do Timer.run
     new Timer(new Duration(milliseconds: 200), () {
       // Note: use query because "document" is unwrapped in ShadowDOM polyfill.
       var body = query('body');
@@ -91,6 +91,7 @@ main() {
     });
   });
 }
+
   </script>
 </body>
 </html>

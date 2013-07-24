@@ -36,7 +36,9 @@ class CssPolyfillKind {
   static CssPolyfillKind of(CompilerOptions options, ComponentInfo component) {
     if (!options.processCss || !component.scoped) return NO_POLYFILL;
     if (options.mangleCss) return MANGLED_POLYFILL;
-    if (!component.hasAuthorStyles && !hasCssReset) return MANGLED_POLYFILL;
+    if (!component.hasAuthorStyles && options.resetCssFile == null) {
+      return MANGLED_POLYFILL;
+    }
     return SCOPED_POLYFILL;
   }
 }

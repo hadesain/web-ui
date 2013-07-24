@@ -5,10 +5,10 @@
 library app;
 
 import 'dart:html';
-import 'package:observe/observe.dart';
 import 'package:polymer/polymer.dart';
 import 'model.dart';
 
+@CustomTag("todo-app")
 class TodoApp extends PolymerElement with ObservableMixin {
   @observable AppModel app;
   bool get applyAuthorStyles => true;

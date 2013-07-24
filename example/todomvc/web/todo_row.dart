@@ -4,24 +4,25 @@
 
 library todo_row;
 
-import 'package:observe/observe.dart';
 import 'package:polymer/polymer.dart';
 import 'model.dart';
 
+@CustomTag('todo-row')
 class TodoRow extends PolymerElement with ObservableMixin {
   @observable Todo todo;
 
   bool get applyAuthorStyles => true;
-  ScopedCssMapper get css => getScopedCss("todo-row");
 
-  created() {
+  // TODO(sigmund,terry): bring back scoped-css polyfills
+
+  void created() {
     super.created();
     var root = getShadowRoot("todo-row");
     var label = root.query('#label').xtag;
-    var item = root.query('.' + css['.todo-item']);
+    var item = root.query('.todo-item');
 
-    bindCssClass(item, css['.completed'], this, 'todo.done');
-    bindCssClass(item, css['.editing'], label, 'editing');
+    bindCssClass(item, 'completed', this, 'todo.done');
+    bindCssClass(item, 'editing', label, 'editing');
   }
 
   void removeTodo() => appModel.todos.remove(todo);

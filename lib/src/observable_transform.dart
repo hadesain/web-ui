@@ -86,6 +86,50 @@ void transformClass(ClassDeclaration cls, TextEditTransaction code,
         _getSpan(file, cls));
   }
 
+  // We'd like to track whether observable was declared explicitly, otherwise
+  // report a warning later below. Because we don't have type analysis (only
+  // syntactic understanding of the code), we only report warnings that are
+  // known to be true.
+  var declaresObservable = false;
+  if (cls.extendsClause != null) {
+    var id = _getSimpleIdentifier(cls.extendsClause.superclass.name);
+    if (id.name == 'ObservableBase') {
+      code.edit(id.offset, id.end, 'ChangeNotifierBase');
+      declaresObservable = true;
+    } else if (id.name == 'ChangeNotifierBase') {
+      declaresObservable = true;
+    } else if (id.name != 'PolymerElement' && id.name != 'CustomElement'
+        && id.name != 'Object') {
+      // TODO(sigmund): this is conservative, consider using type-resolution to
+      // improve this check.
+      declaresObservable = true;
+    }
+  }
+
+  if (cls.withClause != null) {
+    for (var type in cls.withClause.mixinTypes) {
+      var id = _getSimpleIdentifier(type.name);
+      if (id.name == 'ObservableMixin') {
+        code.edit(id.offset, id.end, 'ChangeNotifierMixin');
+        declaresObservable = true;
+        break;
+      } else if (id.name == 'ChangeNotifierMixin') {
+        declaresObservable = true;
+        break;
+      } else {
+        // TODO(sigmund): this is conservative, consider using type-resolution
+        // to improve this check.
+        declaresObservable = true;
+      }
+    }
+  }
+
+  if (!declaresObservable && cls.implementsClause != null) {
+    // TODO(sigmund): consider adding type-resolution to give a more precise
+    // answer.
+    declaresObservable = true;
+  }
+
   // Track fields that were transformed.
   var instanceFields = new Set<String>();
   var getters = new List<String>();
@@ -103,6 +147,14 @@ void transformClass(ClassDeclaration cls, TextEditTransaction code,
         continue;
       }
       if (hasObservable(member)) {
+        if (!declaresObservable) {
+          messages.warning('Observable fields should be put in an observable'
+              ' objects. Please declare that this class extends from '
+              'ObservableBase, includes ObservableMixin, or implements '
+              'Observable.',
+              _getSpan(file, member));
+
+        }
         transformFields(member.fields, code, member.offset, member.end);
 
         var names = member.fields.variables.map((v) => v.name.name);
@@ -139,6 +191,9 @@ void transformClass(ClassDeclaration cls, TextEditTransaction code,
     }
   }
 }
+
+SimpleIdentifier _getSimpleIdentifier(Identifier id) =>
+    id is PrefixedIdentifier ? id.identifier : id;
 
 
 /**

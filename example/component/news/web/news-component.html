@@ -34,6 +34,16 @@ https://github.com/dglazkov/Web-Components-Polyfill/blob/master/samples/news
             </ul>
         </div>
     </template>
+    <script type="application/dart">
+      import 'package:polymer/polymer.dart';
+
+      class XNews extends PolymerElement {}
+
+      @polymerInitMethod
+      _init() {
+        registerPolymerElement('x-news', () => new XNews());
+      }
+    </script>
 </polymer-element>
 </body>
 </html>

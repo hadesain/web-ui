@@ -5,7 +5,7 @@
 library polymer.event;
 
 import 'dart:html';
-import 'custom_element.dart';
+import 'package:custom_element/custom_element.dart';
 
 /**
  * *Warning*: this is an implementation helper and should not be used in your

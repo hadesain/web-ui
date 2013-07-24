@@ -13,23 +13,6 @@ import 'dart:async';
 import 'dart:html' show PathObserver;
 import 'package:observe/observe.dart';
 
-/**
- * Use `@observable` to make a property observable.
- * The overhead will be minimal unless they are actually being observed.
- */
-const observable = const _ObservableAnnotation();
-
-/**
- * The type of the `@observable` annotation.
- *
- * Library private because you should be able to use the [observable] field
- * to get the one and only instance. We could make it public though, if anyone
- * needs it for some reason.
- */
-class _ObservableAnnotation {
-  const _ObservableAnnotation();
-}
-
 // Inspired by ArrayReduction at:
 // https://raw.github.com/rafaelw/ChangeSummary/master/util/array_reduction.js
 // The main difference is we support anything on the rich Dart Iterable API.
@@ -71,7 +54,7 @@ StreamSubscription bindProperty(Observable source, Symbol sourceName,
  *
  *     target.notifyChange(new PropertyChangeRecord(targetName));
  */
-void notifyProperty(ObservableMixin target, Symbol targetName) {
+void notifyProperty(Observable target, Symbol targetName) {
   target.notifyChange(new PropertyChangeRecord(targetName));
 }
 
@@ -79,7 +62,7 @@ void notifyProperty(ObservableMixin target, Symbol targetName) {
 /**
  * Observes a path starting from each item in the list.
  */
-class ListPathObserver<E, P> extends ObservableBase {
+class ListPathObserver<E, P> extends ChangeNotifierBase {
   final ObservableList<E> list;
   final String _itemPath;
   final List<PathObserver> _observers = <PathObserver>[];
@@ -121,7 +104,7 @@ class ListPathObserver<E, P> extends ObservableBase {
   void _scheduleReduce(_) {
     if (_scheduled) return;
     _scheduled = true;
-    queueChangeRecords(_reduce);
+    runAsync(_reduce);
   }
 
   _observeItems(int lengthAdjust) {
@@ -129,7 +112,7 @@ class ListPathObserver<E, P> extends ObservableBase {
       for (int i = 0; i < lengthAdjust; i++) {
         int len = _observers.length;
         var pathObs = new PathObserver(list, '$len.$_itemPath');
-        _subs.add(pathObs.values.listen(_scheduleReduce));
+        _subs.add(pathObs.changes.listen(_scheduleReduce));
         _observers.add(pathObs);
       }
     } else if (lengthAdjust < 0) {
@@ -140,7 +123,4 @@ class ListPathObserver<E, P> extends ObservableBase {
       _observers.removeRange(len + lengthAdjust, len);
     }
   }
-
-  setValueWorkaround(key, value) {}
-  getValueWorkaround(key) => key == _VALUE ? value : null;
 }

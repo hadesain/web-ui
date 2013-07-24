@@ -8,10 +8,10 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:mirrors';
 
+import 'package:custom_element/custom_element.dart';
 import 'package:mdv/mdv.dart' as mdv;
 import 'package:observe/observe.dart';
 
-import 'custom_element.dart';
 import 'observe.dart';
 import 'src/utils_observe.dart' show toCamelCase, toHyphenedName;
 
@@ -136,11 +136,8 @@ abstract class PolymerElement extends CustomElement with _EventsMixin {
 
       root.nodes.add(cloneTemplate(templateNode.content));
       // TODO(sigmund): use fancy-syntax as the default.
-      var syntax = templateNode.attributes['syntax'];
-
       // TODO(sigmund,jmesserly): mdv.bindModel should be async internally
-      Timer.run(() => mdv.bindModel(root, this,
-          syntax != null ? TemplateElement.syntax[syntax] : null));
+      Timer.run(() => mdv.bindModel(root, this));
     }
   }
 

@@ -7,21 +7,23 @@ description: >
   browsers.
 version: 0.5.1
 dependencies:
-  args: ">=0.4.5"
   analyzer_experimental: ">=0.5.12"
+  args: ">=0.4.5"
   browser: ">=0.4.5"
+  custom_element: ">=0.6.13"
+  html_import: ">=0.6.12"
   logging: ">=0.4.5"
-  mdv: ">=0.6.9+2"
-  observe: ">=0.6.2"
+  mdv: ">=0.6.12"
+  observe: ">=0.6.13"
   pathos: ">=0.4.5"
   shadow_dom: ">=0.6.9+2"
+  source_maps: ">=0.4.5"
   unittest: ">=0.4.5"
   # Pin these github packages so we don't get breaks from publishing them:
   csslib: ">=0.4.7 <0.4.8"
   html5lib: ">=0.4.3 <0.4.4"
-  source_maps: ">=0.4.5"
 dev_dependencies:
   js: any
   benchmark_harness: ">=1.0.2 <1.0.3"
 environment:
-  sdk: ">=0.6.9+2"
+  sdk: ">=0.6.13"

@@ -5,7 +5,7 @@
 library editable_label;
 
 import 'dart:html';
-import 'package:observe/observe.dart';
+import 'dart:async';
 import 'package:polymer/polymer.dart';
 
 /**
@@ -33,13 +33,18 @@ class EditableLabel extends PolymerElement with ObservableMixin {
     editing = true;
 
     // This causes _editBox to be inserted.
-    deliverChangeRecords();
+    Observable.dirtyCheck();
 
-    // For IE and Firefox: use .focus(), then reset the value to move the
-    // cursor to the end.
-    _editBox.focus();
-    _editBox.value = '';
-    _editBox.value = value;
+    // TODO(sigmund): remove the 2 runAsync calls. To do so, we might want to
+    // make dirtyCheck return a future or something to indicate that all
+    // change propagations are done.
+    runAsync(() => runAsync(() {
+      // For IE and Firefox: use .focus(), then reset the value to move the
+      // cursor to the end.
+      _editBox.focus();
+      _editBox.value = '';
+      _editBox.value = value;
+    }));
   }
 
   void update(Event e) {
@@ -54,4 +59,9 @@ class EditableLabel extends PolymerElement with ObservableMixin {
       editing = false;
     }
   }
+}
+
+@polymerInitMethod
+void _init() {
+  registerPolymerElement('editable-label', () => new EditableLabel());
 }

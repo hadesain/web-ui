@@ -31,7 +31,6 @@ main() {
 
   Timer.run(() {
     appModel.todos.add(new Todo('hola'));
-    deliverChangeRecords();
     // TODO(sigmund): investigate why is not enough to do Timer.run
     new Timer(new Duration(milliseconds: 200),
         () => window.postMessage('done', '*'));

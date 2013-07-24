@@ -15,6 +15,7 @@ import 'package:polymer/polymer.dart';
  * have a tag like `<a href="#/completed">` it will get the class
  * `class="selected"`, and other links will have that CSS class removed.
  */
+@CustomTag('router-options')
 class RouterOptions extends PolymerElement {
 
   bool get applyAuthorStyles => true;

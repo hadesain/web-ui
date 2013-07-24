@@ -248,7 +248,8 @@ CodePrinter generateBootstrapCode(
   var printer = new CodePrinter(0)
       ..addLine('library app_bootstrap;')
       ..addLine('')
-      ..addLine("import 'package:polymer/polymer.dart' as polymer;");
+      ..addLine("import 'package:polymer/polymer.dart';")
+      ..addLine("import 'dart:mirrors' show currentMirrorSystem;");
 
   if (userMainInfo.userCode != null) {
     printer..addLine('')
@@ -256,30 +257,36 @@ CodePrinter generateBootstrapCode(
             "as userMain;\n");
   }
 
+  int i = 0;
   for (var c in global.components.values) {
     if (c.hasConflict) continue;
-    printer.addLine("import '${pathMapper.importUrlFor(info, c)}';");
+    printer.addLine("import '${pathMapper.importUrlFor(info, c)}' as i$i;");
+    i++;
   }
 
   printer..addLine('')
       ..addLine('void main() {')
-      ..indent += 1;
-
-  if (userMainInfo.userCode != null) printer.addLine('userMain.main();');
+      ..indent += 1
+      ..addLine("initPolymer([")
+      ..indent += 2;
 
   for (var c in global.components.values) {
     if (c.hasConflict) continue;
     var tagName = escapeDartString(c.tagName);
     var cssMapExpression = createCssSelectorsExpression(c,
         CssPolyfillKind.of(options, c));
-    printer
-        ..addLine("polymer.setScopedCss('$tagName', $cssMapExpression);")
-        ..addLine("polymer.registerPolymerElement("
-            "'$tagName', () => new ${c.className}());");
+    printer.addLine("'${pathMapper.importUrlFor(info, c)}',");
   }
 
   return printer
       ..indent -= 1
+      ..addLine('],')
+      ..addLine(userMainInfo.userCode != null ? 'userMain.main,' : '() {},')
+      ..addLine(
+          "currentMirrorSystem().findLibrary(const Symbol('app_bootstrap'))")
+      ..indent += 2
+      ..addLine(".first.uri.toString());")
+      ..indent -= 4
       ..addLine('}');
 }
 
@@ -360,6 +367,7 @@ void emitImports(DartCodeInfo codeInfo, LibraryInfo info, PathMapper pathMapper,
 }
 
 final shadowDomJS = new RegExp(r'shadowdom\..*\.js', caseSensitive: false);
+final bootJS = new RegExp(r'.*/polymer/boot.js', caseSensitive: false);
 
 /** Trim down the html for the main html page. */
 void transformMainHtml(Document document, FileInfo fileInfo,
@@ -381,8 +389,12 @@ void transformMainHtml(Document document, FileInfo fileInfo,
     }
     if (tag.attributes['type'] == 'application/dart') {
       tag.remove();
-    } else if (src != null && rewriteUrls) {
-      tag.attributes["src"] = pathMapper.transformUrl(filePath, src);
+    } else if (src != null) {
+      if (bootJS.hasMatch(src)) {
+        tag.remove();
+      } else if (rewriteUrls) {
+        tag.attributes["src"] = pathMapper.transformUrl(filePath, src);
+      }
     }
   }
 
