@@ -1,29 +1,28 @@
 name: polymer
-author: "Web UI Authors <web-ui-dev@dartlang.org>"
-homepage: https://github.com/dart-lang/web-ui
+version: 0.5.1
+author: Web UI Authors <web-ui-dev@dartlang.org>
 description: >
   Polymer.dart is a new type of library for the web, built on top of Web
   Components, and designed to leverage the evolving web platform on modern
   browsers.
-version: 0.5.1
+homepage: https://github.com/dart-lang/web-ui
+environment:
+  sdk: '>=0.6.13'
 dependencies:
-  analyzer_experimental: ">=0.5.12"
-  args: ">=0.4.5"
-  browser: ">=0.4.5"
-  custom_element: ">=0.6.13"
-  html_import: ">=0.6.12"
-  logging: ">=0.4.5"
-  mdv: ">=0.6.12"
-  observe: ">=0.6.13"
-  pathos: ">=0.4.5"
-  shadow_dom: ">=0.6.9+2"
-  source_maps: ">=0.4.5"
-  unittest: ">=0.4.5"
+  analyzer_experimental: '>=0.6.13'
+  args: '>=0.6.13'
+  browser: '>=0.6.13'
+  custom_element: '>=0.6.13'
+  html_import: '>=0.6.13'
+  logging: '>=0.6.13'
+  mdv: '>=0.6.13'
+  observe: '>=0.6.13'
+  path: '>=0.6.13'
+  shadow_dom: '>=0.6.13'
+  source_maps: '>=0.6.13'
+  unittest: '>=0.6.13'
   # Pin these github packages so we don't get breaks from publishing them:
   csslib: ">=0.4.7 <0.4.8"
   html5lib: ">=0.4.3 <0.4.4"
 dev_dependencies:
-  js: any
-  benchmark_harness: ">=1.0.2 <1.0.3"
-environment:
-  sdk: ">=0.6.13"
+  benchmark_harness: '>=1.0.2 <1.0.3'

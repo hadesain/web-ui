@@ -10,7 +10,7 @@ library polymer.testing.end2end;
 import 'dart:io';
 import 'dart:math' show min;
 import 'package:args/args.dart';
-import 'package:pathos/path.dart' as path;
+import 'package:path/path.dart' as path;
 import 'package:unittest/unittest.dart';
 import 'package:polymer/dwc.dart' as dwc;
 

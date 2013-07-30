@@ -5,7 +5,7 @@
 library polymer.src.utils;
 
 import 'dart:async';
-import 'package:pathos/path.dart' show Builder;
+import 'package:path/path.dart' show Builder;
 export 'utils_observe.dart' show toCamelCase, toHyphenedName;
 
 /**

@@ -5,7 +5,7 @@
 /** Tests for [PathMapper]. */
 library path_info_test;
 
-import 'package:pathos/path.dart' as path;
+import 'package:path/path.dart' as path;
 import 'package:unittest/compact_vm_config.dart';
 import 'package:unittest/unittest.dart';
 import 'package:polymer/src/info.dart';

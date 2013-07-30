@@ -13,7 +13,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:math' show min;
 import 'dart:utf' show encodeUtf8;
-import 'package:pathos/path.dart' as path;
+import 'package:path/path.dart' as path;
 import 'package:unittest/compact_vm_config.dart';
 import 'package:unittest/unittest.dart';
 import 'package:polymer/dwc.dart' as dwc;
