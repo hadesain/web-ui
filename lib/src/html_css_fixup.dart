@@ -15,7 +15,7 @@ import 'compiler.dart';
 import 'emitters.dart';
 import 'info.dart';
 import 'messages.dart';
-import 'options.dart';
+import 'compiler_options.dart';
 import 'paths.dart';
 import 'utils.dart';
 

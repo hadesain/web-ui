@@ -9,7 +9,7 @@ import 'dart:json' as json;
 import 'package:source_maps/span.dart' show Span;
 import 'package:logging/logging.dart' show Level;
 
-import 'options.dart';
+import 'compiler_options.dart';
 import 'utils.dart';
 
 /** Map between error levels and their display color. */

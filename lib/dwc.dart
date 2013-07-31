@@ -14,7 +14,7 @@ import 'src/file_system.dart';
 import 'src/file_system/console.dart';
 import 'src/files.dart';
 import 'src/messages.dart';
-import 'src/options.dart';
+import 'src/compiler_options.dart';
 import 'src/utils.dart';
 
 FileSystem fileSystem;

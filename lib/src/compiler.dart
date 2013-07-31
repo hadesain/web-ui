@@ -23,7 +23,7 @@ import 'html_css_fixup.dart';
 import 'info.dart';
 import 'messages.dart';
 import 'observable_transform.dart' show transformObservables;
-import 'options.dart';
+import 'compiler_options.dart';
 import 'paths.dart';
 import 'refactor.dart';
 import 'utils.dart';

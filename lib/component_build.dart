@@ -25,7 +25,7 @@ import 'package:args/args.dart';
 
 import 'dwc.dart' as dwc;
 import 'src/utils.dart';
-import 'src/options.dart';
+import 'src/compiler_options.dart';
 
 /**
  * Set up 'build.dart' to compile with the dart web components compiler every
