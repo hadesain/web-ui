@@ -3,6 +3,14 @@
 This file contains highlights of what changes on each version of the web_ui
 package. This file is normally updated whenever we push a new version to pub.
 
+#### Pub version 0.5.2
+  * No-compiler mode: Use boot.js to iterate without running build.dart. See
+    TodoMVC for an example.
+
+#### Pub version 0.5.1
+  * Progress towards no-compiler mode: build.dart generates less code, instead
+    of generating dart code it moves polymer-element declarations to HTML files.
+
 #### Pub version 0.5
   * rename package to "polymer".
   * use mdv, observe, and shadow_dom packages.
