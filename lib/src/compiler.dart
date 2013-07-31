@@ -70,8 +70,6 @@ class Compiler {
 
   final GlobalInfo global = new GlobalInfo();
 
-  bool get hasCssReset => _resetCssFile != null;
-
   /** Creates a compiler with [options] using [fileSystem]. */
   Compiler(this.fileSystem, this.options, this._messages) {
     _mainPath = options.inputFile;
@@ -154,7 +152,7 @@ class Compiler {
     });
     info[inputUrl.resolvedPath] = fileInfo;
 
-    if (isEntryPoint && hasCssReset) {
+    if (isEntryPoint && options.hasCssReset) {
       _processed.add(_resetCssFile);
       _tasks.add(_parseCssFile(new UrlInfo(_resetCssFile, _resetCssFile,
           null)));
