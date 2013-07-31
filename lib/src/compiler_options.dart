@@ -66,6 +66,8 @@ class CompilerOptions {
   /** Whether to analyze the input for warnings without generating any code. */
   final bool analysisOnly;
 
+  bool get hasCssReset => resetCssFile != null;
+
   // We could make this faster, if it ever matters.
   factory CompilerOptions() => parse(['']);
 

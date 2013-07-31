@@ -16,7 +16,7 @@ import 'package:polymer/src/compiler.dart';
 import 'package:polymer/src/file_system.dart';
 import 'package:polymer/src/info.dart';
 import 'package:polymer/src/messages.dart';
-import 'package:polymer/src/options.dart';
+import 'package:polymer/src/compiler_options.dart';
 import 'package:polymer/src/files.dart';
 import 'package:polymer/src/utils.dart';
 

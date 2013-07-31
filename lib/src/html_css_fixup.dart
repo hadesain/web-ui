@@ -15,28 +15,28 @@ import 'compiler.dart';
 import 'emitters.dart';
 import 'info.dart';
 import 'messages.dart';
-import 'options.dart';
+import 'compiler_options.dart';
 import 'paths.dart';
 import 'utils.dart';
 
 /** Enum for type of polyfills supported. */
 class CssPolyfillKind {
-  final index;
-  const CssPolyfillKind(this.index);
+  final _index;
+  const CssPolyfillKind._internal(this._index);
 
   /** Emit CSS selectors as seen (no polyfill). */
-  static const NO_POLYFILL = const CssPolyfillKind(0);
+  static const NO_POLYFILL = const CssPolyfillKind._internal(0);
 
   /** Emit CSS selectors scoped to the "is" attribute of the component. */
-  static const SCOPED_POLYFILL = const CssPolyfillKind(1);
+  static const SCOPED_POLYFILL = const CssPolyfillKind._internal(1);
 
   /** Emit CSS selectors mangled. */
-  static const MANGLED_POLYFILL = const CssPolyfillKind(2);
+  static const MANGLED_POLYFILL = const CssPolyfillKind._internal(2);
 
   static CssPolyfillKind of(CompilerOptions options, ComponentInfo component) {
     if (!options.processCss || !component.scoped) return NO_POLYFILL;
     if (options.mangleCss) return MANGLED_POLYFILL;
-    if (!component.hasAuthorStyles && options.resetCssFile == null) {
+    if (!component.hasAuthorStyles && !options.hasCssReset) {
       return MANGLED_POLYFILL;
     }
     return SCOPED_POLYFILL;

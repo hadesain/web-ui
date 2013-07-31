@@ -23,7 +23,7 @@ import 'html_css_fixup.dart';
 import 'info.dart';
 import 'messages.dart';
 import 'observable_transform.dart' show transformObservables;
-import 'options.dart';
+import 'compiler_options.dart';
 import 'paths.dart';
 import 'refactor.dart';
 import 'utils.dart';
@@ -69,8 +69,6 @@ class Compiler {
   final _edits = new Map<DartCodeInfo, TextEditTransaction>();
 
   final GlobalInfo global = new GlobalInfo();
-
-  bool get hasCssReset => _resetCssFile != null;
 
   /** Creates a compiler with [options] using [fileSystem]. */
   Compiler(this.fileSystem, this.options, this._messages) {
@@ -154,7 +152,7 @@ class Compiler {
     });
     info[inputUrl.resolvedPath] = fileInfo;
 
-    if (isEntryPoint && hasCssReset) {
+    if (isEntryPoint && options.hasCssReset) {
       _processed.add(_resetCssFile);
       _tasks.add(_parseCssFile(new UrlInfo(_resetCssFile, _resetCssFile,
           null)));
