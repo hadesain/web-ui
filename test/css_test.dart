@@ -37,7 +37,8 @@ test_simple_var() {
   }
 
   var messages = new Messages.silent();
-  var compiler = createCompiler(createFiles(), messages, errors: true);
+  var compiler = createCompiler(createFiles(), messages, errors: true,
+      scopedCss: true);
 
   compiler.run().then(expectAsync1((e) {
     MockFileSystem fs = compiler.fileSystem;
@@ -115,7 +116,8 @@ test_var() {
   }
 
   var messages = new Messages.silent();
-  var compiler = createCompiler(createFiles(), messages, errors: true);
+  var compiler = createCompiler(createFiles(), messages, errors: true,
+    scopedCss: true);
 
   compiler.run().then(expectAsync1((e) {
     MockFileSystem fs = compiler.fileSystem;
@@ -182,7 +184,8 @@ test_simple_import() {
   }
 
   var messages = new Messages.silent();
-  var compiler = createCompiler(createFiles(), messages, errors: true);
+  var compiler = createCompiler(createFiles(), messages, errors: true,
+      scopedCss: true);
 
   compiler.run().then(expectAsync1((e) {
     MockFileSystem fs = compiler.fileSystem;
@@ -253,7 +256,8 @@ test_imports() {
   }
 
   var messages = new Messages.silent();
-  var compiler = createCompiler(createFiles(), messages, errors: true);
+  var compiler = createCompiler(createFiles(), messages, errors: true,
+      scopedCss: true);
 
   compiler.run().then(expectAsync1((e) {
     MockFileSystem fs = compiler.fileSystem;
@@ -356,7 +360,8 @@ test_component_var() {
 
   test('var- and Less @define', () {
     var messages = new Messages.silent();
-    var compiler = createCompiler(createFiles(), messages, errors: true);
+    var compiler = createCompiler(createFiles(), messages, errors: true,
+      scopedCss: true);
 
     compiler.run().then(expectAsync1((e) {
       MockFileSystem fs = compiler.fileSystem;
@@ -394,10 +399,10 @@ test_component_var() {
               '   Component x-foo stylesheet \n'
               '   ==================================================== */\n'
               '@import "foo.css";\n'
-              '.x-foo_main {\n'
+              '[is="x-foo"] .main {\n'
               '  color: #f00;\n'
               '}\n'
-              '.x-foo_test-background {\n'
+              '[is="x-foo"] .test-background {\n'
               '  background: url("http://www.foo.com/bar.png");\n'
               '}\n\n');
         } else if (file.path == 'out/foo.css') {
@@ -493,7 +498,7 @@ test_pseudo_element() {
                   '<div>Test</div>'
                   '</div>'
                 '</template>',
-    }, messages);
+    }, messages, scopedCss: true);
 
     compiler.run().then(expectAsync1((e) {
       MockFileSystem fs = compiler.fileSystem;

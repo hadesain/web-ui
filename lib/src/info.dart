@@ -193,10 +193,6 @@ class ComponentInfo extends LibraryInfo implements ComponentSummary {
   ClassDeclaration get classDeclaration => _classDeclaration;
   ClassDeclaration _classDeclaration;
 
-  // TODO(terry): Remove once we stop mangling CSS selectors.
-  /** CSS selectors scoped. */
-  bool scoped = false;
-
   /** The declaring `<element>` tag. */
   final Node element;
 

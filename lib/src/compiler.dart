@@ -15,11 +15,14 @@ import 'package:source_maps/span.dart' show Span;
 
 import 'analyzer.dart';
 import 'code_printer.dart';
+import 'css_analyzer.dart' show analyzeCss, findUrlsImported,
+       findImportsInStyleSheet, parseCss;
+import 'css_emitters.dart' show rewriteCssUris,
+       emitComponentStyleSheet, emitOriginalCss, emitStyleSheet;
 import 'dart_parser.dart';
 import 'emitters.dart';
 import 'file_system.dart';
 import 'files.dart';
-import 'html_css_fixup.dart';
 import 'info.dart';
 import 'messages.dart';
 import 'observable_transform.dart' show transformObservables;
@@ -152,7 +155,7 @@ class Compiler {
     });
     info[inputUrl.resolvedPath] = fileInfo;
 
-    if (isEntryPoint && options.hasCssReset) {
+    if (isEntryPoint && _resetCssFile != null) {
       _processed.add(_resetCssFile);
       _tasks.add(_parseCssFile(new UrlInfo(_resetCssFile, _resetCssFile,
           null)));
@@ -272,7 +275,7 @@ class Compiler {
 
   /** Parse a stylesheet file. */
   Future _parseCssFile(UrlInfo inputUrl) {
-    if (!options.processCss ||
+    if (!options.emulateScopedCss ||
         !_pathMapper.checkInputPath(inputUrl, _messages)) {
       return new Future<SourceFile>.value(null);
     }
@@ -541,7 +544,8 @@ class Compiler {
     for (var file in files) {
       if (file.isHtml) {
         _time('Analyzed contents', file.path, () =>
-            analyzeFile(file, info, uniqueIds, global, _messages));
+            analyzeFile(file, info, uniqueIds, global, _messages,
+              options.emulateScopedCss));
       }
     }
   }
@@ -552,7 +556,6 @@ class Compiler {
       if (file.isDart || file.isStyleSheet) continue;
       _time('Codegen', file.path, () {
         var fileInfo = info[file.path];
-        fixupHtmlCss(fileInfo, options);
         _emitComponents(fileInfo);
       });
     }
@@ -627,7 +630,7 @@ class Compiler {
    * Returns true if a file was generated, otherwise false.
    */
   bool _emitAllCss() {
-    if (!options.processCss) return false;
+    if (!options.emulateScopedCss) return false;
 
     var buff = new StringBuffer();
 
@@ -638,16 +641,8 @@ class Compiler {
       if (file.isStyleSheet) {
         for (var styleSheet in fileInfo.styleSheets) {
           // Translate any URIs in CSS.
-          var uriVisitor = new UriVisitor(_pathMapper,
-              fileInfo.inputUrl.resolvedPath, options.rewriteUrls);
-          uriVisitor.visitTree(styleSheet);
-
-          if (options.debugCss) {
-            print('\nCSS source: ${fileInfo.inputUrl.resolvedPath}');
-            print('==========\n');
-            print(treeToDebugString(styleSheet));
-          }
-
+          rewriteCssUris(_pathMapper, fileInfo.inputUrl.resolvedPath,
+              options.rewriteUrls, styleSheet);
           css.write(
               '/* Auto-generated from style sheet href = ${file.path} */\n'
               '/* DO NOT EDIT. */\n\n');
@@ -670,11 +665,9 @@ class Compiler {
         var fileInfo = info[file.path];
         for (var component in fileInfo.declaredComponents) {
           for (var styleSheet in component.styleSheets) {
-
             // Translate any URIs in CSS.
-            var uriVisitor = new UriVisitor(_pathMapper,
-                fileInfo.inputUrl.resolvedPath, options.rewriteUrls);
-            uriVisitor.visitTree(styleSheet);
+            rewriteCssUris(_pathMapper, fileInfo.inputUrl.resolvedPath,
+                options.rewriteUrls, styleSheet);
 
             if (buff.isEmpty) {
               buff.write(
@@ -686,21 +679,28 @@ class Compiler {
                 '   Component ${component.tagName} stylesheet \n'
                 '   ==================================================== */\n');
 
-            var cssPolyfillKind = CssPolyfillKind.of(options, component);
             var tagName = component.tagName;
             if (!component.hasAuthorStyles) {
-              if (_cssResetStyleSheet != null && !options.mangleCss) {
+              if (_cssResetStyleSheet != null) {
                 // If component doesn't have apply-author-styles then we need to
                 // reset the CSS the styles for the component (if css-reset file
                 // option was passed).
                 buff.write('\n/* Start CSS Reset */\n');
-                buff.write(emitComponentStyleSheet(_cssResetStyleSheet, tagName,
-                    cssPolyfillKind));
+                var style;
+                if (options.emulateScopedCss) {
+                  style = emitComponentStyleSheet(_cssResetStyleSheet, tagName);
+                } else {
+                  style = emitOriginalCss(_cssResetStyleSheet);
+                }
+                buff.write(style);
                 buff.write('/* End CSS Reset */\n\n');
               }
             }
-            buff.write(emitComponentStyleSheet(styleSheet, tagName,
-                  cssPolyfillKind));
+            if (options.emulateScopedCss) {
+              buff.write(emitComponentStyleSheet(styleSheet, tagName));
+            } else {
+              buff.write(emitOriginalCss(styleSheet));
+            }
             buff.write('\n\n');
           }
         }
@@ -717,17 +717,16 @@ class Compiler {
   /** Emits the Dart code for all components in [fileInfo]. */
   void _emitComponents(FileInfo fileInfo) {
     for (var component in fileInfo.declaredComponents) {
-      // TODO(terry): Handle one stylesheet per component see fixupHtmlCss.
-      if (component.styleSheets.length > 1 && options.processCss) {
+      // TODO(terry): Handle more than one stylesheet per component
+      if (component.styleSheets.length > 1 && options.emulateScopedCss) {
         var span = component.externalFile != null
             ? component.externalFile.sourceSpan : null;
         _messages.warning(
             'Component has more than one stylesheet - first stylesheet used.',
             span);
       }
-      var printer = new WebComponentEmitter(fileInfo, _messages,
-          CssPolyfillKind.of(options, component))
-          .run(component, _pathMapper, _edits[component.userCode]);
+      var printer = emitPolymerElement(
+          component, _pathMapper, _edits[component.userCode], options);
       _emitFileAndSourceMaps(component, printer, component.externalFile);
     }
   }
@@ -771,4 +770,3 @@ class Compiler {
         printTime: options.verbose || printTime);
   }
 }
-

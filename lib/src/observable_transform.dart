@@ -193,7 +193,7 @@ void transformClass(ClassDeclaration cls, TextEditTransaction code,
 }
 
 SimpleIdentifier _getSimpleIdentifier(Identifier id) =>
-    id is PrefixedIdentifier ? id.identifier : id;
+    id is PrefixedIdentifier ? (id as PrefixedIdentifier).identifier : id;
 
 
 /**

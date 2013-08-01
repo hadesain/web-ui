@@ -9,9 +9,7 @@ import 'package:polymer/component_build.dart';
 import 'dart:io';
 
 void main() {
-  var args = new Options().arguments.toList();
-  args.addAll(['--', '--no-css']);
-  build(args, [
+  build(new Options().arguments, [
     'example/component/news/web/index.html',
     'example/todomvc/web/index.html']);
 }

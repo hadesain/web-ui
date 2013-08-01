@@ -64,14 +64,16 @@ Map<String, FileInfo> analyzeFiles(List<SourceFile> files,
   var uniqueIds = new IntIterator();
   var pseudoElements = new Map();
   for (var file in files) {
-    analyzeFile(file, result, uniqueIds, pseudoElements, messages);
+    analyzeFile(file, result, uniqueIds, pseudoElements, messages, true);
   }
   return result;
 }
 
-Compiler createCompiler(Map files, Messages messages, {bool errors: false}) {
+Compiler createCompiler(Map files, Messages messages, {bool errors: false,
+    bool scopedCss: false}) {
   List baseOptions = ['--no-colors', '-o', 'out', 'index.html'];
   if (errors) baseOptions.insert(0, '--warnings_as_errors');
+  if (scopedCss) baseOptions.insert(0, '--scoped-css');
   var options = CompilerOptions.parse(baseOptions);
   var fs = new MockFileSystem(files);
   return new Compiler(fs, options, messages);

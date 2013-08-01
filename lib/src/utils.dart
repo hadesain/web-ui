@@ -79,15 +79,6 @@ final String RED_COLOR = '\u001b[31m';
 final String MAGENTA_COLOR = '\u001b[35m';
 final String NO_COLOR = '\u001b[0m';
 
-/** Find and return the first element in [list] that satisfies [matcher]. */
-find(List list, bool matcher(elem)) {
-  for (var elem in list) {
-    if (matcher(elem)) return elem;
-  }
-  return null;
-}
-
-
 /** A future that waits until all added [Future]s complete. */
 // TODO(sigmund): this should be part of the futures/core libraries.
 class FutureGroup {

@@ -8,20 +8,17 @@
  */
 library analyzer;
 
-import 'package:csslib/parser.dart' as css;
-import 'package:csslib/visitor.dart' show StyleSheet, treeToDebugString, Visitor, Expressions, VarDefinition;
 import 'package:html5lib/dom.dart';
 import 'package:html5lib/dom_parsing.dart';
 import 'package:source_maps/span.dart' hide SourceFile;
 
 import 'custom_tag_name.dart';
-import 'dart_parser.dart';
+import 'dart_parser.dart' show parseDartCode;
 import 'files.dart';
-import 'html_css_fixup.dart';
 import 'info.dart';
 import 'messages.dart';
 import 'summary.dart';
-import 'utils.dart';
+import 'utils.dart' show IntIterator;
 
 /**
  * Finds custom elements in this file and the list of referenced files with
@@ -40,21 +37,6 @@ FileInfo analyzeDefinitions(GlobalInfo global, UrlInfo inputUrl,
 }
 
 /**
- * Extract relevant information from [source] and it's children.
- * Used for testing.
- *
- * Adds emitted error/warning messages to [messages], if [messages] is
- * supplied.
- */
-FileInfo analyzeNodeForTesting(Node source, Messages messages,
-    {String filepath: 'mock_testing_file.html'}) {
-  var result = new FileInfo(new UrlInfo(filepath, filepath, null));
-  new _Analyzer(result, new IntIterator(), new GlobalInfo(), messages)
-      .visit(source);
-  return result;
-}
-
-/**
  *  Extract relevant information from all files found from the root document.
  *
  *  Adds emitted error/warning messages to [messages], if [messages] is
@@ -62,9 +44,10 @@ FileInfo analyzeNodeForTesting(Node source, Messages messages,
  */
 void analyzeFile(SourceFile file, Map<String, FileInfo> info,
                  Iterator<int> uniqueIds, GlobalInfo global,
-                 Messages messages) {
+                 Messages messages, emulateScopedCss) {
   var fileInfo = info[file.path];
-  var analyzer = new _Analyzer(fileInfo, uniqueIds, global, messages);
+  var analyzer = new _Analyzer(fileInfo, uniqueIds, global, messages,
+      emulateScopedCss);
   analyzer._normalize(fileInfo, info);
   analyzer.visit(file.document);
 }
@@ -90,7 +73,10 @@ class _Analyzer extends TreeVisitor {
    */
   bool _keepIndentationSpaces = true;
 
-  _Analyzer(this._fileInfo, this._uniqueIds, this._global, this._messages) {
+  final bool _emulateScopedCss;
+
+  _Analyzer(this._fileInfo, this._uniqueIds, this._global, this._messages,
+      this._emulateScopedCss) {
     _currentInfo = _fileInfo;
   }
 
@@ -103,7 +89,7 @@ class _Analyzer extends TreeVisitor {
     if (node.tagName == 'style') {
       // We've already parsed the CSS.
       // If this is a component remove the style node.
-      if (_currentInfo is ComponentInfo) node.remove();
+      if (_currentInfo is ComponentInfo && _emulateScopedCss) node.remove();
       return;
     }
 
@@ -438,7 +424,6 @@ class _ElementLoader extends TreeVisitor {
 
     var tagName = node.attributes['name'];
     var extendsTag = node.attributes['extends'];
-    var templateNodes = node.nodes.where((n) => n.tagName == 'template');
 
     if (tagName == null) {
       _messages.error('Missing tag name of the component. Please include an '
@@ -578,155 +563,5 @@ class _ElementLoader extends TreeVisitor {
 
     _messages.error('there should be only one dart script tag in $location.',
         node.sourceSpan);
-  }
-}
-
-
-void analyzeCss(String packageRoot, List<SourceFile> files,
-                Map<String, FileInfo> info, Map<String, String> pseudoElements,
-                Messages messages, {warningsAsErrors: false}) {
-  var analyzer = new _AnalyzerCss(packageRoot, info, pseudoElements, messages,
-      warningsAsErrors);
-  for (var file in files) analyzer.process(file);
-  analyzer.normalize();
-}
-
-class _AnalyzerCss {
-  final String packageRoot;
-  final Map<String, FileInfo> info;
-  final Map<String, String> _pseudoElements;
-  final Messages _messages;
-  final bool _warningsAsErrors;
-
-  Set<StyleSheet> allStyleSheets = new Set<StyleSheet>();
-
-  /**
-   * [_pseudoElements] list of known pseudo attributes found in HTML, any
-   * CSS pseudo-elements 'name::custom-element' is mapped to the manged name
-   * associated with the pseudo-element key.
-   */
-  _AnalyzerCss(this.packageRoot, this.info, this._pseudoElements,
-               this._messages, this._warningsAsErrors);
-
-  /**
-   * Run the analyzer on every file that is a style sheet or any component that
-   * has a style tag.
-   */
-  void process(SourceFile file) {
-    var fileInfo = info[file.path];
-    if (file.isStyleSheet || fileInfo.styleSheets.length > 0) {
-      var styleSheets = processVars(fileInfo);
-
-      // Add to list of all style sheets analyzed.
-      allStyleSheets.addAll(styleSheets);
-    }
-
-    // Process any components.
-    for (var component in fileInfo.declaredComponents) {
-      var all = processVars(component);
-
-      // Add to list of all style sheets analyzed.
-      allStyleSheets.addAll(all);
-    }
-
-    processCustomPseudoElements();
-  }
-
-  void normalize() {
-    // Remove all var definitions for all style sheets analyzed.
-    for (var tree in allStyleSheets) new RemoveVarDefinitions().visitTree(tree);
-  }
-
-  List<StyleSheet> processVars(var libraryInfo) {
-    // Get list of all stylesheet(s) dependencies referenced from this file.
-    var styleSheets = _dependencies(libraryInfo).toList();
-
-    var errors = [];
-    css.analyze(styleSheets, errors: errors, options:
-      [_warningsAsErrors ? '--warnings_as_errors' : '', 'memory']);
-
-    // Print errors as warnings.
-    for (var e in errors) {
-      _messages.warning(e.message, e.span);
-    }
-
-    // Build list of all var definitions.
-    Map varDefs = new Map();
-    for (var tree in styleSheets) {
-      var allDefs = (new VarDefinitions()..visitTree(tree)).found;
-      allDefs.forEach((key, value) {
-        varDefs[key] = value;
-      });
-    }
-
-    // Resolve all definitions to a non-VarUsage (terminal expression).
-    varDefs.forEach((key, value) {
-      for (var expr in (value.expression as Expressions).expressions) {
-        var def = findTerminalVarDefinition(varDefs, value);
-        varDefs[key] = def;
-      }
-    });
-
-    // Resolve all var usages.
-    for (var tree in styleSheets) new ResolveVarUsages(varDefs).visitTree(tree);
-
-    return styleSheets;
-  }
-
-  processCustomPseudoElements() {
-    var polyFiller = new PseudoElementExpander(_pseudoElements);
-    for (var tree in allStyleSheets) {
-      polyFiller.visitTree(tree);
-    }
-  }
-
-  /**
-   * Given a component or file check if any stylesheets referenced.  If so then
-   * return a list of all referenced stylesheet dependencies (@imports or <link
-   * rel="stylesheet" ..>).
-   */
-  Set<StyleSheet> _dependencies(var libraryInfo, {Set<StyleSheet> seen}) {
-    if (seen == null) seen = new Set();
-
-    // Used to resolve all pathing information.
-    var inputUrl = libraryInfo is FileInfo
-        ? libraryInfo.inputUrl
-        : (libraryInfo as ComponentInfo).declaringFile.inputUrl;
-
-    for (var styleSheet in libraryInfo.styleSheets) {
-      if (!seen.contains(styleSheet)) {
-        // TODO(terry): VM uses expandos to implement hashes.  Currently, it's a
-        //              linear (not constant) time cost (see dartbug.com/5746).
-        //              If this bug isn't fixed and performance show's this a
-        //              a problem we'll need to implement our own hashCode or
-        //              use a different key for better perf.
-        // Add the stylesheet.
-        seen.add(styleSheet);
-
-        // Any other imports in this stylesheet?
-        var urlInfos = findImportsInStyleSheet(styleSheet, packageRoot,
-            inputUrl, _messages);
-
-        // Process other imports in this stylesheets.
-        for (var importSS in urlInfos) {
-          var importInfo = info[importSS.resolvedPath];
-          if (importInfo != null) {
-            // Add all known stylesheets processed.
-            seen.addAll(importInfo.styleSheets);
-            // Find dependencies for stylesheet referenced with a
-            // @import
-            for (var ss in importInfo.styleSheets) {
-              var urls = findImportsInStyleSheet(ss, packageRoot, inputUrl,
-                  _messages);
-              for (var url in urls) {
-                _dependencies(info[url.resolvedPath], seen: seen);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    return seen;
   }
 }

@@ -2,219 +2,173 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library html_css_fixup;
-
-import 'dart:json' as json;
+/** Portion of the analyzer dealing with CSS sources. */
+library polymer.src.css_analyzer;
 
 import 'package:csslib/parser.dart' as css;
 import 'package:csslib/visitor.dart';
 import 'package:html5lib/dom.dart';
 import 'package:html5lib/dom_parsing.dart';
 
-import 'compiler.dart';
-import 'emitters.dart';
 import 'info.dart';
+import 'files.dart' show SourceFile;
 import 'messages.dart';
 import 'compiler_options.dart';
-import 'paths.dart';
-import 'utils.dart';
 
-/** Enum for type of polyfills supported. */
-class CssPolyfillKind {
-  final _index;
-  const CssPolyfillKind._internal(this._index);
+void analyzeCss(String packageRoot, List<SourceFile> files,
+                Map<String, FileInfo> info, Map<String, String> pseudoElements,
+                Messages messages, {warningsAsErrors: false}) {
+  var analyzer = new _AnalyzerCss(packageRoot, info, pseudoElements, messages,
+      warningsAsErrors);
+  for (var file in files) analyzer.process(file);
+  analyzer.normalize();
+}
 
-  /** Emit CSS selectors as seen (no polyfill). */
-  static const NO_POLYFILL = const CssPolyfillKind._internal(0);
+class _AnalyzerCss {
+  final String packageRoot;
+  final Map<String, FileInfo> info;
+  final Map<String, String> _pseudoElements;
+  final Messages _messages;
+  final bool _warningsAsErrors;
 
-  /** Emit CSS selectors scoped to the "is" attribute of the component. */
-  static const SCOPED_POLYFILL = const CssPolyfillKind._internal(1);
+  Set<StyleSheet> allStyleSheets = new Set<StyleSheet>();
 
-  /** Emit CSS selectors mangled. */
-  static const MANGLED_POLYFILL = const CssPolyfillKind._internal(2);
+  /**
+   * [_pseudoElements] list of known pseudo attributes found in HTML, any
+   * CSS pseudo-elements 'name::custom-element' is mapped to the manged name
+   * associated with the pseudo-element key.
+   */
+  _AnalyzerCss(this.packageRoot, this.info, this._pseudoElements,
+               this._messages, this._warningsAsErrors);
 
-  static CssPolyfillKind of(CompilerOptions options, ComponentInfo component) {
-    if (!options.processCss || !component.scoped) return NO_POLYFILL;
-    if (options.mangleCss) return MANGLED_POLYFILL;
-    if (!component.hasAuthorStyles && !options.hasCssReset) {
-      return MANGLED_POLYFILL;
+  /**
+   * Run the analyzer on every file that is a style sheet or any component that
+   * has a style tag.
+   */
+  void process(SourceFile file) {
+    var fileInfo = info[file.path];
+    if (file.isStyleSheet || fileInfo.styleSheets.length > 0) {
+      var styleSheets = processVars(fileInfo);
+
+      // Add to list of all style sheets analyzed.
+      allStyleSheets.addAll(styleSheets);
     }
-    return SCOPED_POLYFILL;
-  }
-}
 
+    // Process any components.
+    for (var component in fileInfo.declaredComponents) {
+      var all = processVars(component);
 
-/**
- *  If processCss is enabled, prefix any component's HTML attributes for id or
- *  class to reference the mangled CSS class name or id.
- */
-void fixupHtmlCss(FileInfo fileInfo, CompilerOptions options) {
-  // Walk the HTML tree looking for class names or id that are in our parsed
-  // stylesheet selectors and making those CSS classes and ids unique to that
-  // component.
-  if (options.verbose) {
-    print("  CSS fixup ${path.basename(fileInfo.inputUrl.resolvedPath)}");
-  }
-  for (var component in fileInfo.declaredComponents) {
-    // Mangle class names and element ids in the HTML to match the stylesheet.
-    // TODO(terry): Allow more than one style sheet per component.
-    if (component.styleSheets.length == 1) {
-      // For components only 1 stylesheet allowed.
-      var styleSheet = component.styleSheets[0];
-      var prefix = CssPolyfillKind.of(options, component) ==
-          CssPolyfillKind.MANGLED_POLYFILL ?  component.tagName : null;
-
-      // List of referenced #id and .class in CSS.
-      var knownCss = new IdClassVisitor()..visitTree(styleSheet);
-      // Prefix all id and class refs in CSS selectors and HTML attributes.
-      new _ScopedStyleRenamer(knownCss, prefix, options.debugCss)
-          .visit(component.element);
+      // Add to list of all style sheets analyzed.
+      allStyleSheets.addAll(all);
     }
-  }
-}
 
-/** Build list of every CSS class name and id selector in a stylesheet. */
-class IdClassVisitor extends Visitor {
-  final Set<String> classes = new Set();
-  final Set<String> ids = new Set();
-
-  void visitClassSelector(ClassSelector node) {
-    classes.add(node.name);
+    processCustomPseudoElements();
   }
 
-  void visitIdSelector(IdSelector node) {
-    ids.add(node.name);
+  void normalize() {
+    // Remove all var definitions for all style sheets analyzed.
+    for (var tree in allStyleSheets) new _RemoveVarDefinitions().visitTree(tree);
   }
-}
 
-/** Build the Dart map of managled class/id names and component tag name. */
-Map _createCssSimpleSelectors(IdClassVisitor visitedCss, ComponentInfo info,
-    CssPolyfillKind kind) {
-  bool mangleNames = kind == CssPolyfillKind.MANGLED_POLYFILL;
-  Map selectors = {};
-  if (visitedCss != null) {
-    for (var cssClass in visitedCss.classes) {
-      selectors['.$cssClass'] =
-          mangleNames ? '${info.tagName}_$cssClass' : cssClass;
+  List<StyleSheet> processVars(var libraryInfo) {
+    // Get list of all stylesheet(s) dependencies referenced from this file.
+    var styleSheets = _dependencies(libraryInfo).toList();
+
+    var errors = [];
+    css.analyze(styleSheets, errors: errors, options:
+      [_warningsAsErrors ? '--warnings_as_errors' : '', 'memory']);
+
+    // Print errors as warnings.
+    for (var e in errors) {
+      _messages.warning(e.message, e.span);
     }
-    for (var id in visitedCss.ids) {
-      selectors['#$id'] = mangleNames ? '${info.tagName}_$id' : id;
+
+    // Build list of all var definitions.
+    Map varDefs = new Map();
+    for (var tree in styleSheets) {
+      var allDefs = (new _VarDefinitions()..visitTree(tree)).found;
+      allDefs.forEach((key, value) {
+        varDefs[key] = value;
+      });
     }
+
+    // Resolve all definitions to a non-VarUsage (terminal expression).
+    varDefs.forEach((key, value) {
+      for (var expr in (value.expression as Expressions).expressions) {
+        var def = _findTerminalVarDefinition(varDefs, value);
+        varDefs[key] = def;
+      }
+    });
+
+    // Resolve all var usages.
+    for (var tree in styleSheets) new _ResolveVarUsages(varDefs).visitTree(tree);
+
+    return styleSheets;
   }
 
-  // Add tag name selector x-comp == [is="x-comp"].
-  var componentName = info.tagName;
-  selectors['$componentName'] = '[is="$componentName"]';
-
-  return selectors;
-}
-
-/**
- * Return a map of simple CSS selectors (class and id selectors) as a Dart map
- * definition.
- */
-String createCssSelectorsExpression(ComponentInfo info, CssPolyfillKind kind) {
-  var cssVisited = new IdClassVisitor();
-
-  // For components only 1 stylesheet allowed.
-  if (!info.styleSheets.isEmpty && info.styleSheets.length == 1) {
-    var styleSheet = info.styleSheets[0];
-    cssVisited..visitTree(styleSheet);
-  }
-
-  return json.stringify(_createCssSimpleSelectors(cssVisited, info, kind));
-}
-
-// TODO(terry): Need to handle other selectors than IDs/classes like tag name
-//              e.g., DIV { color: red; }
-// TODO(terry): Would be nice if we didn't need to mangle names; requires users
-//              to be careful in their code and makes it more than a "polyfill".
-//              Maybe mechanism that generates CSS class name for scoping.  This
-//              would solve tag name selectors (see above TODO).
-/**
- * Fix a component's HTML to implement scoped stylesheets.
- *
- * We do this by renaming all element class and id attributes to be globally
- * unique to a component.
- */
-class _ScopedStyleRenamer extends TreeVisitor {
-  final bool _debugCss;
-
-  /** Set of classes and ids defined for this component. */
-  final IdClassVisitor _knownCss;
-
-  /** Prefix to apply to each class/id reference. */
-  final String _prefix;
-
-  _ScopedStyleRenamer(this._knownCss, this._prefix, this._debugCss);
-
-  void visitElement(Element node) {
-    // Walk the HTML elements mangling any references to id or class attributes.
-    _mangleClassAttribute(node, _knownCss.classes, _prefix);
-    _mangleIdAttribute(node, _knownCss.ids, _prefix);
-
-    super.visitElement(node);
+  processCustomPseudoElements() {
+    var polyFiller = new _PseudoElementExpander(_pseudoElements);
+    for (var tree in allStyleSheets) {
+      polyFiller.visitTree(tree);
+    }
   }
 
   /**
-   * Mangles HTML class reference that matches a CSS class name defined in the
-   * component's style sheet.
+   * Given a component or file check if any stylesheets referenced.  If so then
+   * return a list of all referenced stylesheet dependencies (@imports or <link
+   * rel="stylesheet" ..>).
    */
-  void _mangleClassAttribute(Node node, Set<String> classes, String prefix) {
-    if (node.attributes.containsKey('class')) {
-      var refClasses = node.attributes['class'].trim().split(" ");
+  Set<StyleSheet> _dependencies(var libraryInfo, {Set<StyleSheet> seen}) {
+    if (seen == null) seen = new Set();
 
-      bool changed = false;
-      var len = refClasses.length;
-      for (var i = 0; i < len; i++) {
-        var refClass = refClasses[i];
-        if (classes.contains(refClass)) {
-          if (prefix != null) {
-            refClasses[i] = '${prefix}_$refClass';
-            changed = true;
+    // Used to resolve all pathing information.
+    var inputUrl = libraryInfo is FileInfo
+        ? libraryInfo.inputUrl
+        : (libraryInfo as ComponentInfo).declaringFile.inputUrl;
+
+    for (var styleSheet in libraryInfo.styleSheets) {
+      if (!seen.contains(styleSheet)) {
+        // TODO(terry): VM uses expandos to implement hashes.  Currently, it's a
+        //              linear (not constant) time cost (see dartbug.com/5746).
+        //              If this bug isn't fixed and performance show's this a
+        //              a problem we'll need to implement our own hashCode or
+        //              use a different key for better perf.
+        // Add the stylesheet.
+        seen.add(styleSheet);
+
+        // Any other imports in this stylesheet?
+        var urlInfos = findImportsInStyleSheet(styleSheet, packageRoot,
+            inputUrl, _messages);
+
+        // Process other imports in this stylesheets.
+        for (var importSS in urlInfos) {
+          var importInfo = info[importSS.resolvedPath];
+          if (importInfo != null) {
+            // Add all known stylesheets processed.
+            seen.addAll(importInfo.styleSheets);
+            // Find dependencies for stylesheet referenced with a
+            // @import
+            for (var ss in importInfo.styleSheets) {
+              var urls = findImportsInStyleSheet(ss, packageRoot, inputUrl,
+                  _messages);
+              for (var url in urls) {
+                _dependencies(info[url.resolvedPath], seen: seen);
+              }
+            }
           }
         }
       }
-
-      if (changed) {
-        StringBuffer newClasses = new StringBuffer();
-        refClasses.forEach((String className) {
-          newClasses.write("${(newClasses.length > 0) ? ' ' : ''}$className");
-        });
-        var mangledClasses = newClasses.toString();
-        if (_debugCss) {
-          print("    class = ${node.attributes['class'].trim()} => "
-          "$mangledClasses");
-        }
-        node.attributes['class'] = mangledClasses;
-      }
     }
-  }
 
-  /**
-   * Mangles an HTML id reference that matches a CSS id selector name defined
-   * in the component's style sheet.
-   */
-  void _mangleIdAttribute(Node node, Set<String> ids, String prefix) {
-    if (prefix != null) {
-      var id = node.attributes['id'];
-      if (id != null && ids.contains(id)) {
-        var mangledName = '${prefix}_$id';
-        if (_debugCss) {
-          print("    id = ${node.attributes['id'].toString()} => $mangledName");
-        }
-        node.attributes['id'] = mangledName;
-      }
-    }
+    return seen;
   }
 }
-
 
 /**
  * Find var- definitions in a style sheet.
  * [found] list of known definitions.
  */
-class VarDefinitions extends Visitor {
+class _VarDefinitions extends Visitor {
   final Map<String, VarDefinition> found = new Map();
 
   void visitTree(StyleSheet tree) {
@@ -245,13 +199,13 @@ class VarDefinitions extends Visitor {
  *
  * then .test's color would be #ff00ff
  */
-class ResolveVarUsages extends Visitor {
+class _ResolveVarUsages extends Visitor {
   final Map<String, VarDefinition> varDefs;
   bool inVarDefinition = false;
   bool inUsage = false;
   Expressions currentExpressions;
 
-  ResolveVarUsages(this.varDefs);
+  _ResolveVarUsages(this.varDefs);
 
   void visitTree(StyleSheet tree) {
     visitStyleSheet(tree);
@@ -337,7 +291,7 @@ class ResolveVarUsages extends Visitor {
 }
 
 /** Remove all var definitions. */
-class RemoveVarDefinitions extends Visitor {
+class _RemoveVarDefinitions extends Visitor {
   void visitTree(StyleSheet tree) {
     visitStyleSheet(tree);
   }
@@ -371,10 +325,10 @@ class RemoveVarDefinitions extends Visitor {
  *
  *    .test > *[pseudo="x-box_2"]
  */
-class PseudoElementExpander extends Visitor {
+class _PseudoElementExpander extends Visitor {
   final Map<String, String> _pseudoElements;
 
-  PseudoElementExpander(this._pseudoElements);
+  _PseudoElementExpander(this._pseudoElements);
 
   void visitTree(StyleSheet tree) => visitStyleSheet(tree);
 
@@ -404,37 +358,9 @@ class PseudoElementExpander extends Visitor {
   }
 }
 
-/** Compute each CSS URI resource relative from the generated CSS file. */
-class UriVisitor extends Visitor {
-  /**
-   * Relative path from the output css file to the location of the original
-   * css file that contained the URI to each resource.
-   */
-  final String _pathToOriginalCss;
-
-  factory UriVisitor(PathMapper pathMapper, String cssPath, bool rewriteUrl) {
-    var cssDir = path.dirname(cssPath);
-    var outCssDir = rewriteUrl ? pathMapper.outputDirPath(cssPath)
-        : path.dirname(cssPath);
-    return new UriVisitor._internal(path.relative(cssDir, from: outCssDir));
-  }
-
-  UriVisitor._internal(this._pathToOriginalCss);
-
-  void visitUriTerm(UriTerm node) {
-    // Don't touch URIs that have any scheme (http, etc.).
-    var uri = Uri.parse(node.text);
-    if (uri.host != '') return;
-    if (uri.scheme != '' && uri.scheme != 'package') return;
-
-    node.text = pathToUrl(
-        path.normalize(path.join(_pathToOriginalCss, node.text)));
-  }
-}
-
 List<UrlInfo> findImportsInStyleSheet(StyleSheet styleSheet,
     String packageRoot, UrlInfo inputUrl, Messages messages) {
-  var visitor = new CssImports(packageRoot, inputUrl, messages);
+  var visitor = new _CssImports(packageRoot, inputUrl, messages);
   visitor.visitTree(styleSheet);
   return visitor.urlInfos;
 }
@@ -443,7 +369,7 @@ List<UrlInfo> findImportsInStyleSheet(StyleSheet styleSheet,
  * Find any imports in the style sheet; normalize the style sheet href and
  * return a list of all fully qualified CSS files.
  */
-class CssImports extends Visitor {
+class _CssImports extends Visitor {
   final String packageRoot;
 
   /** Input url of the css file, used to normalize relative import urls. */
@@ -454,7 +380,7 @@ class CssImports extends Visitor {
 
   final Messages _messages;
 
-  CssImports(this.packageRoot, this.inputUrl, this._messages);
+  _CssImports(this.packageRoot, this.inputUrl, this._messages);
 
   void visitTree(StyleSheet tree) {
     visitStyleSheet(tree);
@@ -488,7 +414,7 @@ StyleSheet parseCss(String content, Messages messages,
 }
 
 /** Find terminal definition (non VarUsage implies real CSS value). */
-VarDefinition findTerminalVarDefinition(Map<String, VarDefinition> varDefs,
+VarDefinition _findTerminalVarDefinition(Map<String, VarDefinition> varDefs,
                                         VarDefinition varDef) {
   var expressions = varDef.expression as Expressions;
   for (var expr in expressions.expressions) {
@@ -509,7 +435,7 @@ VarDefinition findTerminalVarDefinition(Map<String, VarDefinition> varDefs,
         return varDef;
       }
       if (foundDef is VarDefinition) {
-        return findTerminalVarDefinition(varDefs, foundDef);
+        return _findTerminalVarDefinition(varDefs, foundDef);
       }
     } else {
       // Return real CSS property.
@@ -533,13 +459,13 @@ List<UrlInfo> findUrlsImported(LibraryInfo info, UrlInfo inputUrl,
     String packageRoot, Node node, Messages messages, CompilerOptions options) {
   // Process any @imports inside of the <style> tag.
   var styleProcessor =
-      new CssStyleTag(packageRoot, info, inputUrl, messages, options);
+      new _CssStyleTag(packageRoot, info, inputUrl, messages, options);
   styleProcessor.visit(node);
   return styleProcessor.imports;
 }
 
 /* Process CSS inside of a style tag. */
-class CssStyleTag extends TreeVisitor {
+class _CssStyleTag extends TreeVisitor {
   final String _packageRoot;
 
   /** Either a FileInfo or ComponentInfo. */
@@ -556,7 +482,7 @@ class CssStyleTag extends TreeVisitor {
   /** List of @imports found. */
   List<UrlInfo> imports = [];
 
-  CssStyleTag(this._packageRoot, this._info, this._inputUrl, this._messages,
+  _CssStyleTag(this._packageRoot, this._info, this._inputUrl, this._messages,
       this._options);
 
   void visitElement(Element node) {
@@ -569,15 +495,6 @@ class CssStyleTag extends TreeVisitor {
       var styleSheet = parseCss(node.nodes.single.value, _messages, _options);
       if (styleSheet != null) {
         _info.styleSheets.add(styleSheet);
-
-        // TODO(terry): Check on scoped attribute there's a rumor that styles
-        //              might always be scoped in a component.
-        // TODO(terry): May need to handle multiple style tags some with scoped
-        //              and some without for now first style tag determines how
-        //              CSS is emitted.
-        if (node.attributes.containsKey('scoped') && _info is ComponentInfo) {
-          (_info as ComponentInfo).scoped = true;
-        }
 
         // Find all imports return list of @imports in this style tag.
         var urlInfos = findImportsInStyleSheet(styleSheet, _packageRoot,
