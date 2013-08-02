@@ -7,14 +7,17 @@ library compiler;
 import 'dart:async';
 import 'dart:collection' show SplayTreeMap;
 import 'dart:json' as json;
+
 import 'package:analyzer_experimental/src/generated/ast.dart' show Directive, UriBasedDirective;
 import 'package:csslib/visitor.dart' show StyleSheet, treeToDebugString;
 import 'package:html5lib/dom.dart';
 import 'package:html5lib/parser.dart';
+import 'package:observe/transform.dart' show transformObservables;
 import 'package:source_maps/span.dart' show Span;
+import 'package:source_maps/refactor.dart' show TextEditTransaction;
+import 'package:source_maps/printer.dart';
 
 import 'analyzer.dart';
-import 'code_printer.dart';
 import 'css_analyzer.dart' show analyzeCss, findUrlsImported,
        findImportsInStyleSheet, parseCss;
 import 'css_emitters.dart' show rewriteCssUris,
@@ -25,10 +28,8 @@ import 'file_system.dart';
 import 'files.dart';
 import 'info.dart';
 import 'messages.dart';
-import 'observable_transform.dart' show transformObservables;
 import 'compiler_options.dart';
 import 'paths.dart';
-import 'refactor.dart';
 import 'utils.dart';
 
 /**
@@ -312,8 +313,7 @@ class Compiler {
     var resolvedPath = inputUrl.resolvedPath;
     var fileInfo = new FileInfo(inputUrl);
     info[resolvedPath] = fileInfo;
-    fileInfo.inlinedCode =
-        parseDartCode(resolvedPath, dartFile.code, _messages);
+    fileInfo.inlinedCode = parseDartCode(resolvedPath, dartFile.code);
     fileInfo.outputFilename =
         _pathMapper.mangle(path.basename(resolvedPath), '.dart', false);
 
@@ -388,7 +388,9 @@ class Compiler {
 
     var transformed = [];
     for (var lib in libraries) {
-      var transaction = transformObservables(lib.userCode, _messages);
+      var userCode = lib.userCode;
+      var transaction = transformObservables(userCode.compilationUnit,
+          userCode.sourceFile, userCode.code, _messages);
       if (transaction != null) {
         _edits[lib.userCode] = transaction;
         if (transaction.hasEdits) {
@@ -586,7 +588,7 @@ class Compiler {
 
     var codeInfo = fileInfo.userCode;
     if (codeInfo != null) {
-      var printer = new CodePrinter(0);
+      var printer = new NestedPrinter(0);
       if (codeInfo.libraryName == null) {
         printer.addLine('library ${fileInfo.libraryName};');
       }
@@ -732,11 +734,11 @@ class Compiler {
   }
 
   /**
-   * Emits a file that was created using [CodePrinter] and it's corresponding
+   * Emits a file that was created using [NestedPrinter] and it's corresponding
    * source map file.
    */
   void _emitFileAndSourceMaps(
-      LibraryInfo lib, CodePrinter printer, UrlInfo dartCodeUrl) {
+      LibraryInfo lib, NestedPrinter printer, UrlInfo dartCodeUrl) {
     // Bail if we had an error generating the code for the file.
     if (printer == null) return;
 

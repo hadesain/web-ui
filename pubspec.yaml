@@ -11,7 +11,9 @@ environment:
 dependencies:
   analyzer_experimental: '>=0.6.13'
   args: '>=0.6.13'
+  barback: '>=0.6.13'
   browser: '>=0.6.13'
+  codegen: '>=0.6.13'
   custom_element: '>=0.6.15+2'
   fancy_syntax: '>=0.0.6'
   html_import: '>=0.6.13'

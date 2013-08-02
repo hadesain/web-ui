@@ -547,7 +547,7 @@ class _ElementLoader extends TreeVisitor {
           'file.', node.sourceSpan);
     } else {
       _currentInfo.inlinedCode = parseDartCode(
-          _currentInfo.dartCodeUrl.resolvedPath, text.value, _messages,
+          _currentInfo.dartCodeUrl.resolvedPath, text.value,
           text.sourceSpan.start);
       if (_currentInfo.userCode.partOf != null) {
         _messages.error('expected a library, not a part.',

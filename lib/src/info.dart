@@ -44,7 +44,7 @@ class GlobalInfo {
  * component-level behavior code. This code can either be inlined in the HTML
  * file or included in a script tag with the "src" attribute.
  */
-abstract class LibraryInfo extends Hashable implements LibrarySummary {
+abstract class LibraryInfo implements LibrarySummary {
 
   /** Whether there is any code associated with the page/component. */
   bool get codeAttached => inlinedCode != null || externalFile != null;

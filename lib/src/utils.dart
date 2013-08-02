@@ -237,14 +237,6 @@ class IntIterator implements Iterator<int> {
 }
 
 
-// TODO(jmesserly): VM hashCode performance workaround.
-// https://code.google.com/p/dart/issues/detail?id=5746
-class Hashable {
-  static int _nextHash = 0;
-  final int hashCode = ++_nextHash;
-}
-
-
 /**
  * Asserts that the condition is true, if not throws an [InternalError].
  * Note: unlike "assert" we want these errors to be always on so we get bug

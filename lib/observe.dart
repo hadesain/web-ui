@@ -4,16 +4,12 @@
 
 /**
  * Helpers for observable objects.
- * Intended for use with `package:mdv_observe`.
+ * Intended for use with `package:observe`.
  */
 library polymer.observe;
 
 import 'dart:async';
 import 'package:observe/observe.dart';
-
-// Inspired by ArrayReduction at:
-// https://raw.github.com/rafaelw/ChangeSummary/master/util/array_reduction.js
-// The main difference is we support anything on the rich Dart Iterable API.
 
 const _VALUE = const Symbol('value');
 
@@ -56,6 +52,10 @@ void notifyProperty(Observable target, Symbol targetName) {
   target.notifyChange(new PropertyChangeRecord(targetName));
 }
 
+
+// Inspired by ArrayReduction at:
+// https://raw.github.com/rafaelw/ChangeSummary/master/util/array_reduction.js
+// The main difference is we support anything on the rich Dart Iterable API.
 
 /**
  * Observes a path starting from each item in the list.

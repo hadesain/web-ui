@@ -13,10 +13,10 @@ import 'package:analyzer_experimental/src/generated/parser.dart';
 import 'package:analyzer_experimental/src/generated/scanner.dart';
 import 'package:source_maps/span.dart' show SourceFile, SourceFileSegment, Location;
 import 'messages.dart';
-import 'utils.dart';
+import 'utils.dart' show escapeDartString;
 
 /** Information extracted from a source Dart file. */
-class DartCodeInfo extends Hashable {
+class DartCodeInfo {
 
   /** Library qualified identifier, if any. */
   final String libraryName;
@@ -40,7 +40,7 @@ class DartCodeInfo extends Hashable {
       this.sourceFile, [compilationUnit])
       : this.code = code,
         this.compilationUnit = compilationUnit == null
-          ? parseCompilationUnit(code) : compilationUnit;
+          ? _parseCompilationUnit(code) : compilationUnit;
 
   bool get isPart =>
       compilationUnit.directives.any((d) => d is PartOfDirective);
@@ -85,12 +85,10 @@ SimpleStringLiteral createStringLiteral(String contents) {
 /**
  * Parse and extract top-level directives from [code].
  *
- * Adds emitted error/warning messages to [messages], if [messages] is
- * supplied.
  */
-DartCodeInfo parseDartCode(String path, String code, Messages messages,
-    [Location offset]) {
-  var unit = parseCompilationUnit(code, path: path, messages: messages);
+// TODO(sigmund): log emitted error/warning messages
+DartCodeInfo parseDartCode(String path, String code, [Location offset]) {
+  var unit = _parseCompilationUnit(code);
 
   // Extract some information from the compilation unit.
   String libraryName, partName;
@@ -121,39 +119,12 @@ DartCodeInfo parseDartCode(String path, String code, Messages messages,
       sourceFile, unit);
 }
 
-CompilationUnit parseCompilationUnit(String code, {String path,
-    Messages messages}) {
-
+CompilationUnit _parseCompilationUnit(String code) {
   var errorListener = new _ErrorCollector();
   var scanner = new StringScanner(null, code, errorListener);
   var token = scanner.tokenize();
   var parser = new Parser(null, errorListener);
-  var unit = parser.parseCompilationUnit(token);
-
-  if (path == null || messages == null) return unit;
-
-  // TODO(jmesserly): removed this for now because the analyzer doesn't format
-  // messages properly, so you end up with things like "Unexpected token '%s'".
-  // This used to convert parser messages into our messages. Enable this
-  // once analyzer is fixed.
-  // TODO(sigmund): once we enable this, we need to fix compiler.dart to clear
-  // out the output of the compiler if we see compilation errors.
-  if (false) {
-    var file = new SourceFile.text(path, code);
-    for (var e in errorListener.errors) {
-      var span = file.span(e.offset, e.offset + e.length);
-
-      var severity = e.errorCode.errorSeverity;
-      if (severity == ErrorSeverity.ERROR) {
-        messages.error(e.message, span);
-      } else {
-        assert(severity == ErrorSeverity.WARNING);
-        messages.warning(e.message, span);
-      }
-    }
-  }
-
-  return unit;
+  return parser.parseCompilationUnit(token);
 }
 
 class _ErrorCollector extends AnalysisErrorListener {

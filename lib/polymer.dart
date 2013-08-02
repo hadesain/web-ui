@@ -27,7 +27,6 @@ export 'observe.dart';
 export 'observe_html.dart';
 export 'polymer_element.dart';
 export 'safe_html.dart';
-export 'scoped_css.dart';
 
 
 /** Annotation used to automatically register polymer elements. */

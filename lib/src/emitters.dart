@@ -8,19 +8,19 @@ library emitters;
 import 'package:html5lib/dom.dart';
 import 'package:html5lib/dom_parsing.dart' show TreeVisitor;
 import 'package:html5lib/parser.dart' show parseFragment;
+import 'package:source_maps/printer.dart';
+import 'package:source_maps/refactor.dart';
 
-import 'code_printer.dart';
 import 'compiler_options.dart';
 import 'css_emitters.dart' show emitStyleSheet, emitOriginalCss;
 import 'html5_utils.dart';
 import 'info.dart' show ComponentInfo, FileInfo, GlobalInfo;
 import 'messages.dart';
 import 'paths.dart' show PathMapper;
-import 'refactor.dart' show TextEditTransaction;
 import 'utils.dart' show escapeDartString, path;
 
 /** Generates the class corresponding to a single web component. */
-CodePrinter emitPolymerElement(ComponentInfo info, PathMapper pathMapper,
+NestedPrinter emitPolymerElement(ComponentInfo info, PathMapper pathMapper,
     TextEditTransaction transaction, CompilerOptions options) {
   if (info.classDeclaration == null) return null;
 
@@ -40,11 +40,11 @@ CodePrinter emitPolymerElement(ComponentInfo info, PathMapper pathMapper,
 }
 
 /** The code that will be used to bootstrap the application. */
-CodePrinter generateBootstrapCode(
+NestedPrinter generateBootstrapCode(
     FileInfo info, FileInfo userMainInfo, GlobalInfo global,
     PathMapper pathMapper, CompilerOptions options) {
 
-  var printer = new CodePrinter(0)
+  var printer = new NestedPrinter(0)
       ..addLine('library app_bootstrap;')
       ..addLine('')
       ..addLine("import 'package:polymer/polymer.dart';")
