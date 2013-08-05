@@ -154,13 +154,8 @@ abstract class PolymerElement extends CustomElement with _EventsMixin {
           (n) => n.localName == 'template', orElse: () => null);
       if (templateNode == null) return;
 
-      // Create the contents of the element's ShadowRoot.
-      var fragment = instanceTemplate(templateNode);
-
-      // Add the nodes, making sure to initialize any custom elements.
-      // TODO(jmesserly): make initCustomElements go away by having a better
-      // custom elements polyfill.
-      root.nodes.add(fragment);
+      // Create the contents of the element's ShadowRoot, and add them.
+      root.nodes.add(instanceTemplate(templateNode));
     }
   }
 
