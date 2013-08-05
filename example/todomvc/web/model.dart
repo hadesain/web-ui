@@ -14,26 +14,25 @@ class AppModel extends ObservableBase {
   @observable int doneCount;
   @observable int remaining;
   @observable List<Todo> visibleTodos;
-  @observable bool hasTodos;
   @observable bool hasCompleteTodos;
 
   bool _allChecked;
 
   AppModel._() {
-    // TODO(jmesserly): need to make this easier.
     new ListPathObserver(todos, 'done').changes.listen(_updateTodoDone);
     windowLocation.changes.listen(_updateVisibleTodos);
     _updateTodoDone(null);
   }
 
   _updateTodoDone(_) {
+    // TODO(jmesserly): we should try using fancy-syntax expressions and filters
+    // instead of computing so many things.
     doneCount = todos.fold(0, (count, t) => count + (t.done ? 1 : 0));
     hasCompleteTodos = doneCount > 0;
     remaining = todos.length - doneCount;
-    hasTodos = todos.length > 0;
 
     _allChecked = notifyPropertyChange(const Symbol('allChecked'),
-        _allChecked, hasTodos && remaining == 0);
+        _allChecked, todos.length > 0 && remaining == 0);
 
     _updateVisibleTodos(_);
   }

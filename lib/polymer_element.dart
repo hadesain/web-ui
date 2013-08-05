@@ -9,8 +9,10 @@ import 'dart:html';
 import 'dart:mirrors';
 
 import 'package:custom_element/custom_element.dart';
-import 'package:mdv/mdv.dart' as mdv;
+import 'package:fancy_syntax/syntax.dart' show FancySyntax;
+import 'package:mdv/mdv.dart' show NodeBinding;
 import 'package:observe/observe.dart';
+import 'package:observe/src/microtask.dart';
 
 import 'observe.dart';
 import 'src/utils_observe.dart' show toCamelCase, toHyphenedName;
@@ -49,6 +51,9 @@ abstract class PolymerElement extends CustomElement with _EventsMixin {
   // https://github.com/Polymer/polymer/blob/7936ff8/src/declaration/events.js
   // https://github.com/Polymer/polymer/blob/7936ff8/src/instance/events.js
   // TODO(jmesserly): we still need to port more of the functionality
+
+  /// The one syntax to rule them all.
+  static BindingDelegate _fancySyntax = new FancySyntax();
 
   // TODO(sigmund): delete. The next line is only added to avoid warnings from
   // the analyzer (see http://dartbug.com/11672)
@@ -121,6 +126,21 @@ abstract class PolymerElement extends CustomElement with _EventsMixin {
     _addHostListeners();
   }
 
+  /**
+   * Creates the document fragment to use for each instance of the custom
+   * element, given the `<template>` node. By default this is equivalent to:
+   *
+   *     template.createInstance(this, fancySyntax);
+   *
+   * Where fancySyntax is a singleton `FancySyntax` instance from the
+   * [fancy_syntax](https://pub.dartlang.org/packages/fancy_syntax) package.
+   *
+   * You can override this method to change the instantiation behavior of the
+   * template, for example to use a different data-binding syntax.
+   */
+  DocumentFragment instanceTemplate(Element template) =>
+      template.createInstance(this, _fancySyntax);
+
   void _initShadowRoot() {
     for (var localName in _localNames) {
       var declaration = getDeclaration(localName);
@@ -134,41 +154,33 @@ abstract class PolymerElement extends CustomElement with _EventsMixin {
           (n) => n.localName == 'template', orElse: () => null);
       if (templateNode == null) return;
 
-      root.nodes.add(cloneTemplate(templateNode.content));
-      // TODO(sigmund): use fancy-syntax as the default.
-      // TODO(sigmund,jmesserly): mdv.bindModel should be async internally
-      Timer.run(() => mdv.bindModel(root, this));
+      // Create the contents of the element's ShadowRoot.
+      var fragment = instanceTemplate(templateNode);
+
+      // Add the nodes, making sure to initialize any custom elements.
+      // TODO(jmesserly): make initCustomElements go away by having a better
+      // custom elements polyfill.
+      root.nodes.add(fragment);
     }
   }
 
-  void bind(String name, model, String path) {
+  NodeBinding createBinding(String name, model, String path) {
     var propObserver = _publishedAttrs[name];
     if (propObserver != null) {
-      unbind(name);
-
-      _bindings[name] = new PathObserver(model, path).bindSync((value) {
-        propObserver.value = value;
-      });
-      return;
+      return new _PolymerBinding(this, name, model, path, propObserver);
     }
-    return super.bind(name, model, path);
+    return super.createBinding(name, model, path);
   }
+}
 
-  void unbind(String name) {
-    if (_bindings != null) {
-      var binding = _bindings.remove(name);
-      if (binding != null) {
-        binding.cancel();
-        return;
-      }
-    }
-    return super.unbind(name);
-  }
+class _PolymerBinding extends NodeBinding {
+  final PathObserver _publishedAttr;
 
-  void unbindAll() {
-    for (var binding in _bindings.values) binding.cancel();
-    _bindings.clear();
-    return super.unbindAll();
+  _PolymerBinding(node, property, model, path, PathObserver this._publishedAttr)
+      : super(node, property, model, path);
+
+  void boundValueChanged(newValue) {
+    _publishedAttr.value = newValue;
   }
 }
 
@@ -354,6 +366,7 @@ abstract class _EventsMixin {
       args.length = methodDecl.parameters.where((p) => !p.isOptional).length;
     }
     reflect(receiver).invoke(method, args);
+    performMicrotaskCheckpoint();
   }
 
   bool _instanceEventListener(String eventName, Event event) {

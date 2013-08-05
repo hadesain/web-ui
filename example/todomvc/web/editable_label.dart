@@ -17,34 +17,19 @@ class EditableLabel extends PolymerElement with ObservableMixin {
   @observable String value = '';
   bool get applyAuthorStyles => true;
 
-  // TODO(jmesserly): replace this with allowing not-operator in templates.
-  bool get notEditing => !editing;
-
   InputElement get _editBox => getShadowRoot("editable-label").query('#edit');
-
-  void created() {
-    super.created();
-
-    bindProperty(this, const Symbol('editing'),
-        () => notifyProperty(this, const Symbol('notEditing')));
-  }
 
   void edit() {
     editing = true;
 
     // This causes _editBox to be inserted.
-    Observable.dirtyCheck();
+    performMicrotaskCheckpoint();
 
-    // TODO(sigmund): remove the 2 runAsync calls. To do so, we might want to
-    // make dirtyCheck return a future or something to indicate that all
-    // change propagations are done.
-    runAsync(() => runAsync(() {
-      // For IE and Firefox: use .focus(), then reset the value to move the
-      // cursor to the end.
-      _editBox.focus();
-      _editBox.value = '';
-      _editBox.value = value;
-    }));
+    // For IE and Firefox: use .focus(), then reset the value to move the
+    // cursor to the end.
+    _editBox.focus();
+    _editBox.value = '';
+    _editBox.value = value;
   }
 
   void update(Event e) {

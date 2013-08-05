@@ -13,6 +13,7 @@ dependencies:
   args: '>=0.6.13'
   browser: '>=0.6.13'
   custom_element: '>=0.6.13'
+  fancy_syntax: '>=0.0.6'
   html_import: '>=0.6.13'
   logging: '>=0.6.13'
   mdv: '>=0.6.13'

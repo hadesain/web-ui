@@ -14,13 +14,16 @@ library polymer;
 import 'dart:async';
 import 'dart:mirrors';
 
+import 'package:custom_element/custom_element.dart';
 import 'package:mdv/mdv.dart' as mdv;
 import 'package:observe/observe.dart' show Observable;
+import 'package:observe/src/microtask.dart';
 import 'package:path/path.dart' as path;
 import 'polymer_element.dart' show registerPolymerElement;
 
 export 'package:custom_element/custom_element.dart';
 export 'package:observe/observe.dart';
+export 'package:observe/src/microtask.dart';
 
 export 'event.dart';
 export 'observe.dart';
@@ -55,15 +58,18 @@ const polymerInitMethod = const _InitPolymerAnnotation();
  * The urls in [elementLibraries] can be absolute or relative to [srcUrl].
  */
 initPolymer(List<String> elementLibraries, void userMain(), [String srcUrl]) {
-  new Timer.periodic(new Duration(milliseconds: 125),
-      (_) => Observable.dirtyCheck());
+  wrapMicrotask(() {
+    // DOM events don't yet go through microtasks, so we catch those here.
+    new Timer.periodic(new Duration(milliseconds: 125),
+        (_) => performMicrotaskCheckpoint());
 
-  // TODO(jmesserly): mdv should use initMdv instead of mdv.initialize.
-  mdv.initialize();
-  for (var lib in elementLibraries) {
-    _registerPolymerElementsOf(lib, srcUrl);
-  }
-  userMain();
+    // TODO(jmesserly): mdv should use initMdv instead of mdv.initialize.
+    mdv.initialize();
+    for (var lib in elementLibraries) {
+      _registerPolymerElementsOf(lib, srcUrl);
+    }
+    userMain();
+  })();
 }
 
 /** All libraries in the current isolate. */
