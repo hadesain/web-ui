@@ -135,7 +135,7 @@ ShadowRoot because it crosses the shadow boundary.
     </style>
     <div class="todo-item">
       <input class="toggle" type="checkbox" checked="{{todo.done}}">
-      <div is="editable-label" id="label" value="{{todo.task}}"></div>
+      <span is="editable-label" id="label" value="{{todo.task}}"></span>
       <button class="destroy" on-click="removeTodo"></button>
     </div>
   </template>
@@ -159,7 +159,7 @@ ShadowRoot because it crosses the shadow boundary.
         </template>
       </ul>
     </section>
-    <template bind="" if="{{app.hasTodos}}">
+    <template bind="" if="{{app.todos.length &gt; 0}}">
       <footer id="footer">
         <span id="todo-count"><strong>{{app.remaining}}</strong></span>
         <ul is="router-options" id="filters">
@@ -193,9 +193,9 @@ ShadowRoot because it crosses the shadow boundary.
   <template><content></content></template>
   
 </polymer-element>
-<polymer-element name="editable-label" extends="div" attributes="value">
+<polymer-element name="editable-label" attributes="value">
   <template>
-    <template bind="" if="{{notEditing}}">
+    <template bind="" if="{{!editing}}">
       <label class="edit-label" on-double-click="edit">{{value}}</label>
     </template>
     <template bind="" if="{{editing}}">
@@ -219,26 +219,10 @@ ShadowRoot because it crosses the shadow boundary.
       <input id="toggle-all" type="checkbox">
       <label for="toggle-all"></label>
       <ul id="todo-list">
-        <template repeat="{{app.visibleTodos}}">
-          <li is="todo-row" todo="{{}}"></li>
-        </template>
+        <template repeat="{{app.visibleTodos}}"></template>
       </ul>
     </section>
-    <template bind="" if="{{app.hasTodos}}">
-      <footer id="footer">
-        <span id="todo-count"><strong>{{app.remaining}}</strong></span>
-        <ul is="router-options" id="filters">
-          <li> <a href="#/">All</a> </li>
-          <li> <a href="#/active">Active</a> </li>
-          <li> <a href="#/completed">Completed</a> </li>
-        </ul>
-        <template bind="" if="{{app.hasCompleteTodos}}">
-          <button id="clear-completed" on-click="clear">
-            Clear completed ({{app.doneCount}})
-          </button>
-        </template>
-      </footer>
-    </template>
+    <template bind="" if="{{app.todos.length &gt; 0}}"></template>
   </section>
   <footer id="info">
     <p>Double-click to edit a todo.</p>

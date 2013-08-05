@@ -3,7 +3,19 @@ Content-Type: text/plain
   <title>Simple Web Components Example</title>
   
   <script src="../../packages/polymer/testing/testing.js"></script>
-</head>
+<style>template,
+thead[template],
+tbody[template],
+tfoot[template],
+th[template],
+tr[template],
+td[template],
+caption[template],
+colgroup[template],
+col[template],
+option[template] {
+  display: none;
+}</style></head>
 <body><polymer-element name="x-news" extends="ul">
     <template>
         <style scoped="">

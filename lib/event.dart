@@ -5,7 +5,7 @@
 library polymer.event;
 
 import 'dart:html';
-import 'package:custom_element/custom_element.dart';
+import 'package:mdv/mdv.dart';
 
 /**
  * *Warning*: this is an implementation helper and should not be used in your
@@ -17,7 +17,7 @@ import 'package:custom_element/custom_element.dart';
 void registerEventHandler(String query, void registerEvent(Node node)) {
   if (_eventHandlers == null) {
     _eventHandlers = {};
-    CustomElement.templateCreated.add(_hookEvents);
+    mdv.instanceCreated.add(_hookEvents);
   }
   if (_eventHandlers.containsKey(query)) {
     throw new ArgumentError('duplicate event handler selector $query');

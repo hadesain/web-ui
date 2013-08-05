@@ -28,41 +28,33 @@ import 'dart:async';
 import 'dart:html';
 import 'package:mdv/mdv.dart' as mdv;
 import 'package:observe/observe.dart';
-import 'package:unittest/unittest.dart';
 import 'package:polymer/polymer.dart';
+import 'package:unittest/unittest.dart';
 import '../web/model.dart';
 
 main() {
-  mdv.initialize();
+  appModel.todos.add(new Todo('one (unchecked)'));
+  appModel.todos.add(new Todo('two (checked)')..done = true);
+  appModel.todos.add(new Todo('three (unchecked)'));
 
-  Timer.run(() {
-    appModel.todos.add(new Todo('one (unchecked)'));
-    appModel.todos.add(new Todo('two (checked)')..done = true);
-    appModel.todos.add(new Todo('three (unchecked)'));
+  var root = query('span[is=todo-app]').xtag.shadowRoot;
 
-    var root = query('span[is=todo-app]').xtag.shadowRoot;
+  windowLocation.hash = '#/';
+  performMicrotaskCheckpoint();
 
-    windowLocation.hash = '#/';
-    Timer.run(() {
-      expect(root.queryAll('#todo-list li[is=todo-row]').length, 3);
+  expect(root.queryAll('#todo-list li[is=todo-row]').length, 3);
+  windowLocation.hash = '#/active';
+  performMicrotaskCheckpoint();
 
-      windowLocation.hash = '#/active';
-      Timer.run(() {
-        expect(root.queryAll('#todo-list li[is=todo-row]').length, 2);
+  expect(root.queryAll('#todo-list li[is=todo-row]').length, 2);
+  windowLocation.hash = '#/completed';
+  performMicrotaskCheckpoint();
 
-        windowLocation.hash = '#/completed';
-        Timer.run(() {
-          expect(root.queryAll('#todo-list li[is=todo-row]').length, 1);
+  expect(root.queryAll('#todo-list li[is=todo-row]').length, 1);
+  windowLocation.hash = '#/';
+  performMicrotaskCheckpoint();
 
-          windowLocation.hash = '#/';
-          // TODO(sigmund): investigate why is not enough to do Timer.run
-          new Timer(new Duration(milliseconds: 200), () {
-            window.postMessage('done', '*');
-          });
-        });
-      });
-    });
-  });
+  window.postMessage('done', '*');
 }
   </script>
 </body>
