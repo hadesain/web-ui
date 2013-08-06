@@ -44,7 +44,7 @@ void registerPolymerElement(String localName, PolymerElement create()) {
  * to camelCase, rather than searching for a property with the same name.
  */
 // TODO(jmesserly): fix the dash-separated-words issue. Polymer uses lowercase.
-abstract class PolymerElement extends CustomElement with _EventsMixin {
+class PolymerElement extends CustomElement with _EventsMixin {
   // This is a partial port of:
   // https://github.com/Polymer/polymer/blob/stable/src/attrs.js
   // https://github.com/Polymer/polymer/blob/stable/src/bindProperties.js
