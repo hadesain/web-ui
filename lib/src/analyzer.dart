@@ -18,7 +18,6 @@ import 'files.dart';
 import 'info.dart';
 import 'messages.dart';
 import 'summary.dart';
-import 'utils.dart' show IntIterator;
 
 /**
  * Finds custom elements in this file and the list of referenced files with

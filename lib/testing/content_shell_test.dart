@@ -8,7 +8,6 @@
 library polymer.testing.end2end;
 
 import 'dart:io';
-import 'dart:math' show min;
 import 'package:args/args.dart';
 import 'package:path/path.dart' as path;
 import 'package:unittest/unittest.dart';

@@ -4,7 +4,6 @@
 
 library code_printer;
 
-import 'dart:utf' show stringToCodepoints;
 import 'package:source_maps/source_maps.dart';
 
 /**

@@ -4,7 +4,6 @@
 
 library model;
 
-import 'dart:html' show CompoundBinding;
 import 'package:polymer/polymer.dart';
 
 final appModel = new AppModel._();

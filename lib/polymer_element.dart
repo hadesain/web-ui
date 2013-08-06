@@ -14,7 +14,6 @@ import 'package:mdv/mdv.dart' show NodeBinding;
 import 'package:observe/observe.dart';
 import 'package:observe/src/microtask.dart';
 
-import 'observe.dart';
 import 'src/utils_observe.dart' show toCamelCase, toHyphenedName;
 
 /**
