@@ -5,7 +5,6 @@
 library files;
 
 import 'package:html5lib/dom.dart';
-import 'info.dart';
 
 /** An input file to process by the template compiler. */
 class SourceFile {

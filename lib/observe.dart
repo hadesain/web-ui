@@ -9,8 +9,6 @@
 library polymer.observe;
 
 import 'dart:async';
-// TODO(jmesserly): PathObserver should be in mdv_observe.
-import 'dart:html' show PathObserver;
 import 'package:observe/observe.dart';
 
 // Inspired by ArrayReduction at:

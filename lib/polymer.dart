@@ -14,9 +14,7 @@ library polymer;
 import 'dart:async';
 import 'dart:mirrors';
 
-import 'package:custom_element/custom_element.dart';
 import 'package:mdv/mdv.dart' as mdv;
-import 'package:observe/observe.dart' show Observable;
 import 'package:observe/src/microtask.dart';
 import 'package:path/path.dart' as path;
 import 'polymer_element.dart' show registerPolymerElement;
