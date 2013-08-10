@@ -10,7 +10,7 @@ library polymer.safe_html;
 class SafeHtml {
 
   /** Underlying html string. */
-  String _html;
+  final String _html;
 
   // TODO(sigmund): provide a constructor that does html validation
   SafeHtml.unsafe(this._html);
@@ -26,7 +26,7 @@ class SafeHtml {
  * to avoid cross-site scripting (XSS) attacks.
  */
 class SafeUri {
-  String _uri;
+  final String _uri;
 
   // TODO(sigmund): provide a constructor that takes or creates a Uri and
   // validates that it is safe (not a javascript: scheme, for example)

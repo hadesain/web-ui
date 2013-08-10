@@ -32,14 +32,14 @@ class ObservableLocationHash extends ChangeNotifierBase {
    * Pushes a new URL state, similar to the affect of clicking a link.
    * Has no effect if the [value] already equals [window.location.hash].
    */
-  set hash(String value) {
+  void set hash(String value) {
     if (value == hash) return;
 
     window.history.pushState(null, '', value);
     _notifyHashChange(null);
   }
 
-  _notifyHashChange(_) {
+  void _notifyHashChange(_) {
     notifyChange(new PropertyChangeRecord(const Symbol('hash')));
   }
 }

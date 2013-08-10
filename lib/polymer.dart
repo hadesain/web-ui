@@ -53,7 +53,7 @@ const polymerInitMethod = const _InitPolymerAnnotation();
  *
  * The urls in [elementLibraries] can be absolute or relative to [srcUrl].
  */
-initPolymer(List<String> elementLibraries, void userMain(), [String srcUrl]) {
+void initPolymer(List<String> elementLibraries, void userMain(), [String srcUrl]) {
   wrapMicrotask(() {
     // DOM events don't yet go through microtasks, so we catch those here.
     new Timer.periodic(new Duration(milliseconds: 125),
@@ -69,7 +69,7 @@ initPolymer(List<String> elementLibraries, void userMain(), [String srcUrl]) {
 }
 
 /** All libraries in the current isolate. */
-var _libs = currentMirrorSystem().libraries;
+final _libs = currentMirrorSystem().libraries;
 
 /**
  * Reads the library at [uriString] (which can be an absolute URI or a relative
