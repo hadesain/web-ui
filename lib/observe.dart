@@ -105,7 +105,7 @@ class ListPathObserver<E, P> extends ChangeNotifierBase {
     runAsync(_reduce);
   }
 
-  _observeItems(int lengthAdjust) {
+  void _observeItems(int lengthAdjust) {
     if (lengthAdjust > 0) {
       for (int i = 0; i < lengthAdjust; i++) {
         int len = _observers.length;

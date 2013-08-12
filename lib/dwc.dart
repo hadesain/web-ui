@@ -17,7 +17,7 @@ import 'src/messages.dart';
 import 'src/compiler_options.dart';
 import 'src/utils.dart';
 
-FileSystem fileSystem;
+FileSystem _fileSystem;
 
 void main() {
   run(new Options().arguments).then((result) {
@@ -71,11 +71,11 @@ Future<CompilerResult> run(List<String> args, {bool printTime,
   if (options == null) return new Future.value(new CompilerResult());
   if (printTime == null) printTime = options.verbose;
 
-  fileSystem = new ConsoleFileSystem();
+  _fileSystem = new ConsoleFileSystem();
   var messages = new Messages(options: options, shouldPrint: shouldPrint);
 
   return asyncTime('Total time spent on ${options.inputFile}', () {
-    var compiler = new Compiler(fileSystem, options, messages);
+    var compiler = new Compiler(_fileSystem, options, messages);
     var res;
     return compiler.run()
       .then((_) {
@@ -86,18 +86,18 @@ Future<CompilerResult> run(List<String> args, {bool printTime,
         res = new CompilerResult._(success, msgs.toList(),
             compiler.output, compiler.files);
       })
-      .then((_) => symlinkPubPackages(res, options, messages))
-      .then((_) => emitFiles(compiler.output, options.clean))
+      .then((_) => _symlinkPubPackages(res, options, messages))
+      .then((_) => _emitFiles(compiler.output, options.clean))
       .then((_) => res);
   }, printTime: printTime, useColors: options.useColors);
 }
 
-Future emitFiles(List<OutputFile> outputs, bool clean) {
-  outputs.forEach((f) => writeFile(f.path, f.contents, clean));
-  return fileSystem.flush();
+Future _emitFiles(List<OutputFile> outputs, bool clean) {
+  outputs.forEach((f) => _writeFile(f.path, f.contents, clean));
+  return _fileSystem.flush();
 }
 
-void writeFile(String filePath, String contents, bool clean) {
+void _writeFile(String filePath, String contents, bool clean) {
   if (clean) {
     File fileOut = new File(filePath);
     if (fileOut.existsSync()) {
@@ -105,7 +105,7 @@ void writeFile(String filePath, String contents, bool clean) {
     }
   } else {
     _createIfNeeded(path.dirname(filePath));
-    fileSystem.writeString(filePath, contents);
+    _fileSystem.writeString(filePath, contents);
   }
 }
 
@@ -123,7 +123,7 @@ void _createIfNeeded(String outdir) {
  * returned future completes when the symlink was created (or immediately if it
  * already exists).
  */
-Future symlinkPubPackages(CompilerResult result, CompilerOptions options,
+Future _symlinkPubPackages(CompilerResult result, CompilerOptions options,
     Messages messages) {
   if (options.outputDir == null || result.bootstrapFile == null
       || options.packageRoot != null) {
