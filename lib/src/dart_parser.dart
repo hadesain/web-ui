@@ -12,7 +12,6 @@ import 'package:analyzer_experimental/src/generated/error.dart';
 import 'package:analyzer_experimental/src/generated/parser.dart';
 import 'package:analyzer_experimental/src/generated/scanner.dart';
 import 'package:source_maps/span.dart' show SourceFile, SourceFileSegment, Location;
-import 'messages.dart';
 import 'utils.dart' show escapeDartString;
 
 /** Information extracted from a source Dart file. */

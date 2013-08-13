@@ -115,17 +115,17 @@ final _bootJS = new RegExp(r'.*/polymer/boot.js', caseSensitive: false);
 /** Trim down the html for the main html page. */
 void transformMainHtml(Document document, FileInfo fileInfo,
     PathMapper pathMapper, bool hasCss, bool rewriteUrls,
-    Messages messages, GlobalInfo global) {
+    Messages messages, GlobalInfo global, String bootstrapOutName) {
   var filePath = fileInfo.inputUrl.resolvedPath;
 
-  bool dartLoaderFound = false;
+  var dartLoaderTag = null;
   bool shadowDomFound = false;
   for (var tag in document.queryAll('script')) {
     var src = tag.attributes['src'];
     if (src != null) {
       var last = src.split('/').last;
       if (last == 'dart.js' || last == 'testing.js') {
-        dartLoaderFound = true;
+        dartLoaderTag = tag;
       } else if (_shadowDomJS.hasMatch(last)) {
         shadowDomFound = true;
       }
@@ -201,7 +201,11 @@ void transformMainHtml(Document document, FileInfo fileInfo,
     document.body.nodes.add(parseFragment('<script type="text/javascript" '
         'src="packages/shadow_dom/shadow_dom.debug.js"></script>\n'));
   }
-  if (!dartLoaderFound) {
+
+  var bootstrapScript = parseFragment(
+        '<script type="application/dart" src="$bootstrapOutName"></script>');
+  if (dartLoaderTag == null) {
+    document.body.nodes.add(bootstrapScript);
     // TODO(jmesserly): turn this warning on.
     //messages.warning('Missing script to load Dart. '
     //    'Please add this line to your HTML file: $dartLoader',
@@ -209,6 +213,10 @@ void transformMainHtml(Document document, FileInfo fileInfo,
     // TODO(sigmund): switch to 'boot.js'
     document.body.nodes.add(parseFragment('<script type="text/javascript" '
         'src="packages/browser/dart.js"></script>\n'));
+  } else if (dartLoaderTag.parent != document.body) {
+    document.body.nodes.add(bootstrapScript);
+  } else {
+    document.body.insertBefore(bootstrapScript, dartLoaderTag);
   }
 
   // Insert the "auto-generated" comment after the doctype, otherwise IE will
