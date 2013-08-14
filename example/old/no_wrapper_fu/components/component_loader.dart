@@ -17,7 +17,6 @@ library component_loader;
 
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:polymer/src/list_map.dart';
 
 /** Should we use prototype rewiring and the new WebComponent interface? */
 bool _usePrototypeRewiring;
@@ -50,7 +49,7 @@ class CustomElementsManager {
    * Maps DOM elements to the user-defiend corresponding dart objects.
    * Not used if _usePrototypeRewiring.
    */
-  ListMap<Element, WebComponent> _customElements;
+  Map<Element, WebComponent> _customElements;
 
   RegistryLookupFunction _lookup;
 
@@ -60,9 +59,7 @@ class CustomElementsManager {
     // TODO(samhop): check for ShadowDOM support
     _customDeclarations = <_CustomDeclaration>{};
     if (!_usePrototypeRewiring) {
-      // We use a ListMap because DOM objects aren't hashable right now.
-      // TODO(samhop): DOM objects (and everything else) should be hashable
-      _customElements = new ListMap<Element, WebComponent>();
+      _customElements = <Element, WebComponent>{};
     }
     initializeInsertedRemovedCallbacks(document);
   }
