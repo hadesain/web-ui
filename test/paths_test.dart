@@ -11,8 +11,6 @@ import 'package:unittest/unittest.dart';
 import 'package:polymer/src/info.dart';
 import 'package:polymer/src/paths.dart';
 import 'package:polymer/src/utils.dart' as utils;
-import 'testing.dart';
-
 
 main() {
   useCompactVMConfiguration();

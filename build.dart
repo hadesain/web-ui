@@ -9,7 +9,8 @@ import 'package:polymer/component_build.dart';
 import 'dart:io';
 
 void main() {
-  build(new Options().arguments, [
+  var args = new Options().arguments.toList()..addAll(['--', '--deploy']);
+  build(args, [
     'example/component/news/web/index.html',
     'example/todomvc/web/index.html']);
 }

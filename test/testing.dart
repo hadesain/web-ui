@@ -71,7 +71,7 @@ Map<String, FileInfo> analyzeFiles(List<SourceFile> files,
 
 Compiler createCompiler(Map files, Messages messages, {bool errors: false,
     bool scopedCss: false}) {
-  List baseOptions = ['--no-colors', '-o', 'out', 'index.html'];
+  List baseOptions = ['--no-colors', '-o', 'out', '--deploy', 'index.html'];
   if (errors) baseOptions.insert(0, '--warnings_as_errors');
   if (scopedCss) baseOptions.insert(0, '--scoped-css');
   var options = CompilerOptions.parse(baseOptions);

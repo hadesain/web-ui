@@ -5,7 +5,6 @@
 /** End-to-end tests for the [Compiler] API. */
 library compiler_test;
 
-import 'package:html5lib/dom.dart';
 import 'package:logging/logging.dart' show Level;
 import 'package:unittest/compact_vm_config.dart';
 import 'package:unittest/unittest.dart';

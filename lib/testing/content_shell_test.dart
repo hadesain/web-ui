@@ -56,7 +56,8 @@ void _testHelper(_TestOptions options) {
   for (var filePath in paths) {
     var filename = path.basename(filePath);
     test('compile $filename', () {
-      var testArgs = ['-o', options.outDir, '--basedir', options.baseDir]
+      var testArgs = ['-o', options.outDir, '--basedir', options.baseDir,
+          '--deploy']
           ..addAll(options.compilerArgs)
           ..add(filePath);
       expect(dwc.run(testArgs, printTime: false).then((res) {

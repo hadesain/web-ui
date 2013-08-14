@@ -53,17 +53,13 @@ function compare {
 if [[ ($TEST_PATTERN == "") ]]; then
   # Note: dartanalyzer needs to be run from the root directory for proper path
   # canonicalization.
-  # TODO(jmesserly): switch to new analyzer once it has good coverage for
-  # unimplemented members.
   pushd $DIR/.. > /dev/null
 
   echo Analyzing compiler for warnings or type errors
-  dartanalyzer --fatal-warnings --fatal-type-errors bin/dwc.dart || \
-    echo -e "Ignoring analyzer errors ([36mdartbug.com/8132[0m)"
+  dartanalyzer --hints --fatal-warnings --fatal-type-errors bin/dwc.dart
 
   echo -e "\nAnalyzing runtime for warnings or type errors"
-  dartanalyzer --fatal-warnings --fatal-type-errors lib/polymer.dart || \
-    echo -e "Ignoring analyzer errors ([36mdartbug.com/8132[0m)"
+  dartanalyzer --hints --fatal-warnings --fatal-type-errors lib/polymer.dart
 
   popd > /dev/null
 fi
@@ -132,8 +128,7 @@ OUT_PATTERN="$DIR/../example/todomvc/test/out/test/*$TEST_PATTERN*_bootstrap.dar
 if [[ `ls $OUT_PATTERN 2>/dev/null` != "" ]]; then
   echo -e "\nAnalyzing generated code for warnings or type errors."
   ls $OUT_PATTERN 2>/dev/null | dartanalyzer --package-root=packages \
-      --fatal-warnings --fatal-type-errors -batch ||
-    echo -e "Ignoring analyzer errors ([36mdartbug.com/9433[0m)"
+      --fatal-warnings --fatal-type-errors -batch
 fi
 
 echo -e "[32mAll tests pass[0m"
