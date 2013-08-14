@@ -92,7 +92,7 @@ class _Analyzer extends TreeVisitor {
       return;
     }
 
-    node = _bindAndReplaceElement(node);
+    _bindCustomElement(node);
 
     var lastInfo = _currentInfo;
     if (node.tagName == 'polymer-element') {
@@ -146,9 +146,10 @@ class _Analyzer extends TreeVisitor {
   }
 
   void _analyzeComponent(ComponentInfo component) {
-    component.extendsComponent = _fileInfo.components[component.extendsTag];
-    if (component.extendsComponent == null &&
-        isCustomTag(component.extendsTag)) {
+    var baseTag = component.extendsTag;
+    component.extendsComponent = baseTag == null ? null
+        : _fileInfo.components[baseTag];
+    if (component.extendsComponent == null && isCustomTag(baseTag)) {
       _messages.warning(
           'custom element with tag name ${component.extendsTag} not found.',
           component.element.sourceSpan);
@@ -159,27 +160,7 @@ class _Analyzer extends TreeVisitor {
     component.findClassDeclaration(_messages);
   }
 
-  Element _bindAndReplaceElement(Element node) {
-    var component = _bindCustomElement(node);
-    if (component != null && node.attributes['is'] == null) {
-      // We need to ensure the correct DOM element is created in the tree.
-      // Until we get document.register and the browser's HTML parser can do
-      // the right thing for us, we switch to the is="tag-name" form.
-
-      var newNode = new Element.tag(component.baseExtendsTag);
-      newNode.attributes['is'] = node.tagName;
-      node.attributes.forEach((k, v) {
-        newNode.attributes[k] = v;
-      });
-      newNode.nodes.addAll(node.nodes);
-      node.replaceWith(newNode);
-      node = newNode;
-    }
-
-    return node;
-  }
-
-  ComponentSummary _bindCustomElement(Element node) {
+  void _bindCustomElement(Element node) {
     // <fancy-button>
     var component = _fileInfo.components[node.tagName];
     if (component == null) {
@@ -199,11 +180,38 @@ class _Analyzer extends TreeVisitor {
             node.sourceSpan);
       }
     }
-    if (component != null && !component.hasConflict) {
-      _currentInfo.usedComponents[component] = true;
-      return component;
+
+    if (component != null) {
+      if (!component.hasConflict) {
+        _currentInfo.usedComponents[component] = true;
+      }
+
+      var baseTag = component.baseExtendsTag;
+      var nodeTag = node.tagName;
+      var hasIsAttribute = node.attributes.containsKey('is');
+
+      if (baseTag != null && !hasIsAttribute) {
+        _messages.warning(
+            'custom element "${component.tagName}" extends from "$baseTag", but'
+            ' this tag will not include the default properties of "$baseTag". '
+            'To fix this, either write this tag as <$baseTag '
+            'is="${component.tagName}"> or remove the "extends" attribute from '
+            'the custom element declaration.', node.sourceSpan);
+      } else if (hasIsAttribute) {
+        if (baseTag == null) {
+          _messages.warning(
+              'custom element "${component.tagName}" doesn\'t declare any type '
+              'extensions. To fix this, either rewrite this tag as '
+              '<${component.tagName}> or add \'extends="$nodeTag"\' to '
+              'the custom element declaration.', node.sourceSpan);
+        } else if (baseTag != nodeTag) {
+          _messages.warning(
+              'custom element "${component.tagName}" extends from "$baseTag". '
+              'Did you mean to write <$baseTag is="${component.tagName}">?',
+              node.sourceSpan);
+        }
+      }
     }
-    return null;
   }
 
   void _processPseudoAttribute(Node node, List<String> values) {
@@ -429,14 +437,6 @@ class _ElementLoader extends TreeVisitor {
           'attribute like \'name="your-tag-name"\'.',
           node.sourceSpan);
       return;
-    }
-
-    if (extendsTag == null) {
-      // From the spec:
-      // http://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/custom/index.html#extensions-to-document-interface
-      // If PROTOTYPE is null, let PROTOTYPE be the interface prototype object
-      // for the HTMLSpanElement interface.
-      extendsTag = 'span';
     }
 
     var component = new ComponentInfo(node, _fileInfo, tagName, extendsTag);

@@ -73,7 +73,7 @@
           var testA = query('#a');
           expect(testA.xtag.clicks, isEmpty);
           testA.click();
-          expect(testA.xtag.clicks, ['host click on: span (id a)']);
+          expect(testA.xtag.clicks, ['host click on: test-a (id a)']);
         }));
       });
 
@@ -88,7 +88,7 @@
           expect(testB.xtag.clicks, []);
           var b2 = testB.shadowRoot.query('#b-2');
           b2.click();
-          expect(testB.xtag.clicks, ['local click under span (id b) on b-2']);
+          expect(testB.xtag.clicks, ['local click under test-b (id b) on b-2']);
         }));
       });
     }

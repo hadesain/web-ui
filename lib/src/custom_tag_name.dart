@@ -9,7 +9,7 @@ library polymer.src.custom_tag_name;
  * <https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/custom/index.html#dfn-custom-element-name>
  */
 bool isCustomTag(String name) {
-  if (!name.contains('-')) return false;
+  if (name == null || !name.contains('-')) return false;
 
   // These names have meaning in SVG or MathML, so they aren't allowed as custom
   // tags.

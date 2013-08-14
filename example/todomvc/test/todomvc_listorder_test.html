@@ -34,7 +34,7 @@ main() {
   appModel.todos.add(new Todo('two (checked)')..done = true);
   appModel.todos.add(new Todo('three (unchecked)'));
 
-  var root = query('span[is=todo-app]').xtag.shadowRoot;
+  var root = query('todo-app').xtag.shadowRoot;
 
   windowLocation.hash = '#/';
   performMicrotaskCheckpoint();

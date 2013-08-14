@@ -136,7 +136,7 @@ ShadowRoot because it crosses the shadow boundary.
     </style>
     <div class="todo-item">
       <input class="toggle" type="checkbox" checked="{{todo.done}}">
-      <span is="editable-label" id="label" value="{{todo.task}}"></span>
+      <editable-label id="label" value="{{todo.task}}"></editable-label>
       <button class="destroy" on-click="removeTodo"></button>
     </div>
   </template>
@@ -208,7 +208,7 @@ ShadowRoot because it crosses the shadow boundary.
   
 </polymer-element>
 
-  <span is="todo-app"><shadow-root>
+  <todo-app><shadow-root>
   <section id="todoapp">
     <header id="header">
       <h1 class="title">todos</h1>
@@ -334,12 +334,12 @@ ShadowRoot because it crosses the shadow boundary.
     </style>
     <div class="todo-item">
       <input class="toggle" type="checkbox">
-      <span is="editable-label" id="label" value="{{todo.task}}"><shadow-root>
+      <editable-label id="label" value="{{todo.task}}"><shadow-root>
     <template bind="" if="{{!editing}}"></template>
       <label class="edit-label" on-double-click="edit">hola</label>
     
     <template bind="" if="{{editing}}"></template>
-  </shadow-root></span>
+  </shadow-root></editable-label>
       <button class="destroy" on-click="removeTodo"></button>
     </div>
   </shadow-root></li>
@@ -369,7 +369,7 @@ ShadowRoot because it crosses the shadow boundary.
     </p>
     <p>Part of <a href="http://todomvc.com">TodoMVC</a>.</p>
   </footer>
-</shadow-root></span>
+</shadow-root></todo-app>
   
 
 
