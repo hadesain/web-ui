@@ -83,25 +83,4 @@ main() {
       expect(toHyphenedName('aBC'), 'a-b-c');
     });
   });
-
-  test('trimOrCompact', () {
-    expect(trimOrCompact('[ b ]'), '[ b ]');
-    expect(trimOrCompact('    [ x ]'), ' [ x ]');
-    expect(trimOrCompact(' \n [ x ]'), '[ x ]');
-    expect(trimOrCompact(' \n [ x ] '), '[ x ] ');
-    expect(trimOrCompact(' \n [ x ]    '), '[ x ] ');
-    expect(trimOrCompact(' \n [ x ]  \t  '), '[ x ] ');
-    expect(trimOrCompact(' \n [ x ]  \r  '), '[ x ] ');
-    expect(trimOrCompact(' \n [ x ]  \n  '), '[ x ]');
-    expect(trimOrCompact('  [ x ] \n '), ' [ x ]');
-    expect(trimOrCompact('  [ x ]  '), ' [ x ] ');
-    expect(trimOrCompact(' [ x ] '), ' [ x ] ');
-    expect(trimOrCompact('  \t\t   [ x ] \t\t   '), ' [ x ] ');
-    expect(trimOrCompact('  \t\t \n  [ x ] \n \t\t   '), '[ x ]');
-    expect(trimOrCompact('     '), ' ');
-    expect(trimOrCompact('   \t  '), ' ');
-    expect(trimOrCompact('   \n  '), '');
-    expect(trimOrCompact('   \r  '), ' '); // \r is ignored
-    expect(trimOrCompact(''), '');
-  });
 }

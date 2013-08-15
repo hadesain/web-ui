@@ -164,66 +164,6 @@ String escapeDartString(String text, {bool single: true, bool triple: false}) {
   return result == null ? text : result.toString();
 }
 
-const int _LF = 10;
-bool _isWhitespace(int charCode) {
-  switch (charCode) {
-    case 9:  // '\t'
-    case _LF: // '\n'
-    case 12: // '\f'
-    case 13: // '\r'
-    case 32: // ' '
-      return true;
-  }
-  return false;
-}
-
-
-/**
- * Trims or compacts the leading/trailing white spaces of [text]. If the leading
- * spaces contain no line breaks, then all spaces are merged into a single
- * space. Similarly, for trailing spaces. These are examples of what this
- * function would return on a given input:
- *
- *       trimOrCompact('  x  ')          => ' x '
- *       trimOrCompact('\n\n  x  \n')    => 'x'
- *       trimOrCompact('\n\n  x       ') => 'x '
- *       trimOrCompact('\n\n  ')         => ''
- *       trimOrCompact('      ')         => ' '
- *       trimOrCompact(' \nx ')          => ' x '
- *       trimOrCompact('  x\n ')         => ' x'
- */
-String trimOrCompact(String text) {
-  int first = 0;
-  int len = text.length;
-  int last = len - 1;
-  bool hasLineBreak = false;
-
-  while (first < len) {
-    var ch = text.codeUnitAt(first);
-    if (!_isWhitespace(ch)) break;
-    if (ch == _LF) hasLineBreak = true;
-    first++;
-  }
-
-  // If we just have spaces, return either an empty string or a single space
-  if (first > last) return hasLineBreak || text.isEmpty ? '' : ' ';
-
-  // Include a space in the output if there was a line break.
-  if (first > 0 && !hasLineBreak) first--;
-
-  hasLineBreak = false;
-  while (last > 0) {
-    var ch = text.codeUnitAt(last);
-    if (!_isWhitespace(ch)) break;
-    if (ch == _LF) hasLineBreak = true;
-    last--;
-  }
-
-  if (last < len - 1 && !hasLineBreak) last++;
-  if (first == 0 && last == len - 1) return text;
-  return text.substring(first, last + 1);
-}
-
 /** Iterates through an infinite sequence, starting from zero. */
 class IntIterator implements Iterator<int> {
   int _next = -1;
@@ -233,38 +173,5 @@ class IntIterator implements Iterator<int> {
   bool moveNext() {
     _next++;
     return true;
-  }
-}
-
-
-/**
- * Asserts that the condition is true, if not throws an [InternalError].
- * Note: unlike "assert" we want these errors to be always on so we get bug
- * reports.
- */
-void compilerAssert(bool condition, [String message]) {
-  if (!condition) throw new InternalError(message);
-}
-
-// TODO(jmesserly): this is a start, but what we might want to instead: catch
-// all errors at the top level and log to message (including stack). That way if
-// we have a noSuchMethod error or something it will show up the same way as
-// this does, including the bug report link.
-/** Error thrown if there is a bug in the compiler itself. */
-class InternalError extends Error {
-  final String message;
-
-  InternalError([this.message]);
-
-  String toString() {
-    var additionalMessage = '';
-    if (message != null) {
-      additionalMessage = '\nInternal message: $message';
-    }
-    return "We're sorry, you've just found a compiler bug. "
-      'You can report it at:\n'
-      'https://github.com/dart-lang/web-ui/issues/new\n'
-      'Thanks in advance for the bug report! It will help us improve Web UI.'
-      '$additionalMessage';
   }
 }
