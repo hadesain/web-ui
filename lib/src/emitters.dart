@@ -195,11 +195,14 @@ void transformMainHtml(Document document, FileInfo fileInfo,
     document.body.nodes.insert(0, fragment);
   }
 
-
   if (!shadowDomFound) {
     // TODO(jmesserly): we probably shouldn't add this automatically.
     document.body.nodes.add(parseFragment('<script type="text/javascript" '
         'src="packages/shadow_dom/shadow_dom.debug.js"></script>\n'));
+
+    // JS interop code required for Polymer CSS shimming.
+    document.body.nodes.add(parseFragment('<script type="text/javascript" '
+        'src="packages/browser/interop.js"></script>\n'));
   }
 
   var bootstrapScript = parseFragment(

@@ -10,6 +10,7 @@ import 'dart:mirrors';
 
 import 'package:custom_element/custom_element.dart';
 import 'package:fancy_syntax/syntax.dart' show FancySyntax;
+import 'package:js/js.dart' as js;
 import 'package:mdv/mdv.dart' show NodeBinding;
 import 'package:observe/observe.dart';
 import 'package:observe/src/microtask.dart';
@@ -155,6 +156,9 @@ class PolymerElement extends CustomElement with _EventsMixin {
 
       // Create the contents of the element's ShadowRoot, and add them.
       root.nodes.add(instanceTemplate(templateNode));
+
+      var extendsName = declaration.attributes['extends'];
+      _shimCss(root, localName, extendsName);
     }
   }
 
@@ -164,6 +168,30 @@ class PolymerElement extends CustomElement with _EventsMixin {
       return new _PolymerBinding(this, name, model, path, propObserver);
     }
     return super.createBinding(name, model, path);
+  }
+
+  /**
+   * Using Polymer's platform/src/ShadowCSS.js passing the style tag's content.
+   */
+  void _shimCss(ShadowRoot root, String localName, String extendsName) {
+    var platform = js.context.Platform;
+    if (platform == null) return;
+    var shadowCss = platform.ShadowCSS;
+    if (shadowCss == null) return;
+
+    // TODO(terry): Remove calls to shimShadowDOMStyling2 and replace with
+    //              shimShadowDOMStyling when we support unwrapping dart:html
+    //              Element to a JS DOM node.
+    var shimShadowDOMStyling2 = shadowCss.shimShadowDOMStyling2;
+    if (shimShadowDOMStyling2 == null) return;
+    var style = root.query('style');
+    if (style == null) return;
+    var scopedCSS = shimShadowDOMStyling2(style.text, localName);
+
+    // TODO(terry): Remove when shimShadowDOMStyling is called we don't need to
+    //              replace original CSS with scoped CSS shimShadowDOMStyling
+    //              does that.
+    style.text = scopedCSS;
   }
 }
 

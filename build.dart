@@ -12,5 +12,6 @@ void main() {
   var args = new Options().arguments.toList()..addAll(['--', '--deploy']);
   build(args, [
     'example/component/news/web/index.html',
-    'example/todomvc/web/index.html']);
+    'example/todomvc/web/index.html',
+    'example/scoped_style/index.html']);
 }
