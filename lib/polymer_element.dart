@@ -174,7 +174,10 @@ class PolymerElement extends CustomElement with _EventsMixin {
    * Using Polymer's platform/src/ShadowCSS.js passing the style tag's content.
    */
   void _shimCss(ShadowRoot root, String localName, String extendsName) {
-    var platform = js.context.Platform;
+    // TODO(terry): Remove warning, cast js.context to dynamic because of bug
+    //              https://code.google.com/p/dart/issues/detail?id=6111. The
+    //              js interop package will be patching this until bug is fixed.
+    var platform = (js.context as dynamic).Platform;
     if (platform == null) return;
     var shadowCss = platform.ShadowCSS;
     if (shadowCss == null) return;
