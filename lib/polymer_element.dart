@@ -177,7 +177,10 @@ class PolymerElement extends CustomElement with _EventsMixin {
     // TODO(terry): Remove warning, cast js.context to dynamic because of bug
     //              https://code.google.com/p/dart/issues/detail?id=6111. The
     //              js interop package will be patching this until bug is fixed.
-    var platform = (js.context as dynamic).Platform;
+    var platform;
+    try {
+      platform = (js.context as dynamic).Platform;
+    } on NoSuchMethodError catch (e) { }
     if (platform == null) return;
     var shadowCss = platform.ShadowCSS;
     if (shadowCss == null) return;
