@@ -1,5 +1,5 @@
 name: polymer
-version: 0.5.4
+version: 0.5.5
 author: Web UI Authors <web-ui-dev@dartlang.org>
 description: >
   Polymer.dart is a new type of library for the web, built on top of Web
@@ -7,7 +7,7 @@ description: >
   browsers.
 homepage: https://github.com/dart-lang/web-ui
 environment:
-  sdk: '>=0.6.17'
+  sdk: '>=0.6.19'
 dependencies:
   analyzer_experimental: '>=0.6.13'
   args: '>=0.6.13'
