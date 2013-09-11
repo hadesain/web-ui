@@ -25,5 +25,5 @@ class TodoRow extends PolymerElement with ObservableMixin {
     bindCssClass(item, 'editing', label, 'editing');
   }
 
-  void removeTodo() => appModel.todos.remove(todo);
+  void removeTodo() { appModel.todos.remove(todo); }
 }
