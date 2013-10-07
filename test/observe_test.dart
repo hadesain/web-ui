@@ -9,7 +9,7 @@ import 'dart:collection' show LinkedHashMap;
 import 'package:unittest/compact_vm_config.dart';
 import 'package:unittest/unittest.dart';
 import 'package:web_ui/observe.dart';
-import 'package:web_ui/observe/observable.dart' show hasObservers;
+import 'package:web_ui/observe/observable.dart' show hasObservers, observeReads;
 import 'package:web_ui/src/utils_observe.dart' show setImmediate;
 
 main() {
