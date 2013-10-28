@@ -5,12 +5,12 @@
 /** Tests for some of the utility helper functions used by the compiler. */
 library observe_test;
 
+import 'dart:async';
 import 'dart:collection' show LinkedHashMap;
 import 'package:unittest/compact_vm_config.dart';
 import 'package:unittest/unittest.dart';
 import 'package:web_ui/observe.dart';
 import 'package:web_ui/observe/observable.dart' show hasObservers, observeReads;
-import 'package:web_ui/src/utils_observe.dart' show setImmediate;
 
 main() {
   useCompactVMConfiguration();
@@ -132,7 +132,7 @@ main() {
 
         // This will not affect the other observer, so it still gets the event.
         unobserve();
-        setImmediate(() => t.value = 777);
+        runAsync(() => t.value = 777);
       }));
       int count = 0;
       observe(() => t.value + 1000, expectAsync1((n) {

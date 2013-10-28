@@ -103,7 +103,7 @@ class MockFileSystem extends FileSystem {
       return new Future.value(file);
     } else {
       return new Future.error(
-          new FileException('MockFileSystem: $path not found'));
+          new FileSystemException('MockFileSystem: $path not found'));
     }
   }
 

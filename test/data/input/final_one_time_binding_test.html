@@ -17,19 +17,20 @@
   <div id="four">{{value | final}}</div>
   <script type="application/dart">
     import 'dart:html';
+    import 'dart:async';
     import 'package:web_ui/watcher.dart';
     import 'package:unittest/unittest.dart';
     String value = 'foo';
     main() {
       dispatch();
-      window.setImmediate(() {
+      Timer.run(() {
         expect(query('#one').classes, unorderedEquals(['foo']));
         expect(query('#two').classes, unorderedEquals(['foo']));
         expect(query('#three').text, 'foo');
         expect(query('#four').text, 'foo');
         value = 'bar';
         dispatch();
-        window.setImmediate(() {
+        Timer.run(() {
           expect(query('#one').classes, unorderedEquals(['bar']));
           expect(query('#two').classes, unorderedEquals(['foo']));
           expect(query('#three').text, 'bar');

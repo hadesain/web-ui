@@ -4,8 +4,6 @@ layer at (0,0) size 800x600
 layer at (0,0) size 800x34
   RenderBlock {HTML} at (0,0) size 800x34
     RenderBody {BODY} at (8,8) size 784x18
-      RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (0,0) size 0x0
       RenderInline {SPAN} at (0,0) size 160x18
         RenderText {#text} at (0,0) size 160x18
           text run at (0,0) width 160: "yay! test passes"

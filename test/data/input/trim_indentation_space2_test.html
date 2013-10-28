@@ -40,6 +40,7 @@ BSD-style license that can be found in the LICENSE file.
   </template>
   </div>
   <script type="application/dart">
+    import 'dart:async';
     import 'dart:html';
     import 'package:unittest/unittest.dart';
     var list1 = ['a', 'b', 'c'];
@@ -47,7 +48,7 @@ BSD-style license that can be found in the LICENSE file.
     var list3 = ['-', '-'];
 
     main() {
-      window.setImmediate(() {
+      Timer.run(() {
         var t1 = query('#t1').text;
         var t2 = query('#t2').text;
         var t3 = query('#t3').text;

@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: #<ChangeNotification from  to PASS>
+CONSOLE MESSAGE: line 34: #<ChangeNotification from  to PASS>
 Content-Type: text/plain
 layer at (0,0) size 800x600
   RenderView at (0,0) size 800x600

@@ -10,7 +10,6 @@ library run_impl;
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 import 'dart:math' show min;
 import 'dart:utf' show encodeUtf8;
 import 'package:pathos/path.dart' as path;

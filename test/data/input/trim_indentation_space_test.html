@@ -93,12 +93,13 @@ BSD-style license that can be found in the LICENSE file.
   <div id="c" is="x-c" style="background-color:#0f0"></div>
   <div id="d" is="x-d" style="background-color:#00f"></div>
   <script type="application/dart">
+    import 'dart:async';
     import 'dart:html';
     import 'package:unittest/unittest.dart';
     String value = 'x';
 
     main() {
-      window.setImmediate(() {
+      Timer.run(() {
         var a = query('#a');
         var b = query('#b');
         var c = query('#c');

@@ -20,6 +20,7 @@ BSD-style license that can be found in the LICENSE file.
     </tr>
   </tbody></table>
   <script type="application/dart">
+  import 'dart:async';
   import 'dart:html';
   import 'package:unittest/unittest.dart';
   import 'package:web_ui/observe.dart';
@@ -32,7 +33,7 @@ BSD-style license that can be found in the LICENSE file.
   ]);
 
   main() {
-    window.setImmediate(() {
+    Timer.run(() {
       expect(document.query("#test").innerHtml, equalsIgnoringWhitespace(
           '<tr> <td>1</td> <td>2</td> <td>3</td> </tr> '
           '<tr> <td>a</td> <td>b</td> <td>c</td> </tr> '
