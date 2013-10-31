@@ -11,11 +11,10 @@ library test.perf.update_json;
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:json' as json;
+import 'dart:convert';
 import 'dart:math' as math;
 
 main() {
-  var args = new Options().arguments;
   if (args.length < 2) {
     print('update_json.dart: A simple script that updates a target json file '
           'with the new values from another json file. ');
@@ -29,8 +28,8 @@ main() {
   var file2 = new File(path2).readAsStringSync();
 
   var results = [];
-  var map1 = json.parse(file1);
-  var map2 = json.parse(file2);
+  var map1 = JSON.decode(file1);
+  var map2 = JSON.decode(file2);
 
   for (var key in map1.keys) {
     if (map1[key] != null) {
@@ -39,7 +38,7 @@ main() {
   }
 
   print('updating $path2...');
-  _writeFile(path2, json.stringify(map2));
+  _writeFile(path2, JSON.encode(map2));
 }
 
 Future _writeFile(String path, String text) {

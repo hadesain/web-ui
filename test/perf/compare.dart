@@ -10,11 +10,10 @@
 library test.perf.compare;
 
 import 'dart:io';
-import 'dart:json' as json;
+import 'dart:convert' show JSON;
 import 'dart:math' as math;
 
-main() {
-  var args = new Options().arguments;
+main(args) {
   if (args.length < 2) {
     print('usage: compare.dart results1.json results2.json [filter]');
     exit(1);
@@ -27,8 +26,8 @@ main() {
   var filter = args.length > 2 ? new RegExp(args[2]) : null;
 
   var results = [];
-  var map1 = json.parse(file1);
-  var map2 = json.parse(file2);
+  var map1 = JSON.decode(file1);
+  var map2 = JSON.decode(file2);
 
   for (var key in map1.keys) {
     if (map2.containsKey(key)) {
@@ -106,7 +105,7 @@ class ResultPair implements Comparable {
 
   String toString() {
     var buff = new StringBuffer();
-    buff.add(name);
+    buff.write(name);
     _ensureColumn(buff, 30);
     _addNumber(buff, score1, 45);
     _addNumber(buff, score2, 60);
@@ -127,7 +126,7 @@ class ResultPair implements Comparable {
 
 _printLine(String col0, String col1, String col2, String col3) {
   var buff = new StringBuffer();
-  buff.add(col0);
+  buff.write(col0);
   _ensureColumn(buff, 30);
   _padRight(buff, col1, 45);
   _padRight(buff, col2, 60);
@@ -137,7 +136,7 @@ _printLine(String col0, String col1, String col2, String col3) {
 
 _ensureColumn(StringBuffer buff, int ensure) {
   while (buff.length < ensure) {
-    buff.add(' ');
+    buff.write(' ');
   }
 }
 
@@ -150,10 +149,10 @@ _addNumber(StringBuffer buff, num value, int ensure, {bool color: false}) {
   }
 
   while (buff.length + str.length < ensure) {
-    buff.add(' ');
+    buff.write(' ');
   }
   if (color) _addColor(buff, value);
-  buff.add(str);
+  buff.write(str);
   if (color) _removeColor(buff, value);
 }
 
@@ -169,19 +168,19 @@ _addColor(StringBuffer buff, num value) {
   } else if (value <= -7) {
     color = '[31;1m';
   }
-  buff.add(color);
+  buff.write(color);
 }
 
 _removeColor(StringBuffer buff, num value) {
   if (value == null || value.abs() < 2) return;
-  buff.add('[0m');
+  buff.write('[0m');
 }
 
 _padRight(StringBuffer buff, String str, int ensure) {
   while (buff.length + str.length < ensure) {
-    buff.add(' ');
+    buff.write(' ');
   }
-  buff.add(str);
+  buff.write(str);
 }
 
 _geomean(List<num> numbers) {

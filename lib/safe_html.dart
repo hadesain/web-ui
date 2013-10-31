@@ -6,8 +6,6 @@
 // dart:html?
 library safe_html;
 
-import 'package:meta/meta.dart';
-
 /** Declares a string that is a well-formed HTML fragment. */
 // TODO(sigmund): delete this type now that Element.html is safe by default.
 class SafeHtml {

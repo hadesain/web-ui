@@ -24,10 +24,8 @@ export 'safe_html.dart';
 export 'templating.dart';
 export 'watcher.dart';
 
-import 'dart:async';
 import 'dart:html';
 import 'package:custom_element/custom_element.dart' show CustomElement;
-import 'package:meta/meta.dart';
 
 /**
  * The base class for all Dart web components. In addition to the [Element]

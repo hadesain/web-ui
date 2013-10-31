@@ -46,7 +46,6 @@
  */
 library watcher;
 
-import 'dart:async';
 import 'dart:collection' hide LinkedList, LinkedListEntry;
 import 'observe.dart';
 import 'src/linked_list.dart';

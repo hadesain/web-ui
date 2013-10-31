@@ -132,7 +132,7 @@ main() {
 
         // This will not affect the other observer, so it still gets the event.
         unobserve();
-        runAsync(() => t.value = 777);
+        scheduleMicrotask(() => t.value = 777);
       }));
       int count = 0;
       observe(() => t.value + 1000, expectAsync1((n) {

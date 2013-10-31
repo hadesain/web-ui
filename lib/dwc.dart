@@ -19,8 +19,8 @@ import 'src/utils.dart';
 
 FileSystem fileSystem;
 
-void main() {
-  run(new Options().arguments).then((result) {
+void main(args) {
+  run(args).then((result) {
     exit(result.success ? 0 : 1);
   });
 }
@@ -155,7 +155,7 @@ Future symlinkPubPackages(CompilerResult result, CompilerOptions options,
   // [fullPathSync] will canonicalize the path, resolving any symlinks.
   // TODO(sigmund): once it's possible in dart:io, we just want to use a full
   // path, but not necessarily resolve symlinks.
-  var target = new File(targetPath).fullPathSync().toString();
+  var target = new File(targetPath).absolute.resolveSymbolicLinksSync();
   return createSymlink(target, linkPath, messages: messages);
 }
 

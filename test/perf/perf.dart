@@ -10,24 +10,22 @@ library test.perf.perf;
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:json' as json;
-import 'dart:utf' show encodeUtf8;
-import 'dart:isolate';
+import 'dart:convert';
 
 import 'package:unittest/unittest.dart';
 import 'package:unittest/compact_vm_config.dart';
 import 'package:web_ui/dwc.dart' as dwc;
+import 'package:path/path.dart' as path;
 
 
-main() {
-  var args = new Options().arguments;
+main(args) {
   var pattern = new RegExp(args.length > 0 ? args[0] : '.');
 
   useCompactVMConfiguration();
 
-  var lister = new Directory.fromPath(new Path('input')).list();
-  var cwd = new Path(new Directory.current().path);
-  var inputDir = cwd.append('input');
+  var lister = new Directory('input').list();
+  var cwd = Directory.current.path;
+  var inputDir = path.join(cwd, 'input');
   var results = {};
   lister.onFile = (path) {
     if (!path.endsWith('_test.html') || !pattern.hasMatch(path)) return;

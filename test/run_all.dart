@@ -8,14 +8,8 @@
  */
 library run_impl;
 
-import 'dart:async';
-import 'dart:io';
-import 'dart:math' show min;
-import 'dart:utf' show encodeUtf8;
-import 'package:pathos/path.dart' as path;
 import 'package:unittest/compact_vm_config.dart';
 import 'package:unittest/unittest.dart';
-import 'package:web_ui/dwc.dart' as dwc;
 import 'package:web_ui/testing/render_test.dart';
 
 import 'analyzer_test.dart' as analyzer_test;
@@ -32,8 +26,7 @@ import 'refactor_test.dart' as refactor_test;
 import 'utils_test.dart' as utils_test;
 import 'watcher_test.dart' as watcher_test;
 
-main() {
-  var args = new Options().arguments;
+main(args) {
   var pattern = new RegExp(args.length > 0 ? args[0] : '.');
 
   useCompactVMConfiguration();

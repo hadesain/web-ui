@@ -6,12 +6,12 @@ library web_ui.src.utils;
 
 import 'dart:async';
 
-import 'package:pathos/path.dart' show Builder;
+import 'package:path/path.dart' show Builder;
 
 
 /**
- * An instance of the pathos library builder. We could just use the default
- * builder in pathos, but we add this indirection to make it possible to run
+ * An instance of the path library builder. We could just use the default
+ * builder in path, but we add this indirection to make it possible to run
  * unittest for windows paths.
  */
 Builder path = new Builder();
@@ -144,10 +144,10 @@ class FutureGroup {
         _pending = _FINISHED;
         _completer.complete(results);
       }
-    }, onError: (e) {
+    }, onError: (e, trace) {
       if (_failedTask != null) return;
       _failedTask = task;
-      _completer.completeError(e, getAttachedStackTrace(e));
+      _completer.completeError(e, trace);
     });
   }
 
@@ -287,7 +287,7 @@ void compilerAssert(bool condition, [String message]) {
 // we have a noSuchMethod error or something it will show up the same way as
 // this does, including the bug report link.
 /** Error thrown if there is a bug in the compiler itself. */
-class InternalError implements Error {
+class InternalError extends Error {
   final message;
 
   InternalError([this.message]);

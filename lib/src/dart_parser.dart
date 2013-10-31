@@ -7,16 +7,12 @@
  */
 library dart_parser;
 
-import 'dart:utf';
-import 'dart:math' as math;
 import 'package:analyzer_experimental/src/generated/ast.dart';
 import 'package:analyzer_experimental/src/generated/error.dart';
 import 'package:analyzer_experimental/src/generated/parser.dart';
 import 'package:analyzer_experimental/src/generated/scanner.dart';
 import 'package:source_maps/span.dart' show SourceFile, SourceFileSegment, Location;
-import 'info.dart';
 import 'messages.dart';
-import 'refactor.dart' show $CR, $LF;
 import 'utils.dart';
 
 /** Information extracted from a source Dart file. */
@@ -110,7 +106,7 @@ DartCodeInfo parseDartCode(String path, String code, Messages messages,
       // Normalize the library URI.
       var uriNode = directive.uri;
       if (uriNode is! SimpleStringLiteral) {
-        String uri = uriNode.accept(new ConstantEvaluator(null));
+        String uri = uriNode.accept(new ConstantEvaluator());
         directive.uri = createStringLiteral(uri);
       }
       directives.add(directive);
@@ -142,20 +138,20 @@ CompilationUnit parseCompilationUnit(String code, {String path,
   // once analyzer is fixed.
   // TODO(sigmund): once we enable this, we need to fix compiler.dart to clear
   // out the output of the compiler if we see compilation errors.
-  if (false) {
-    var file = new SourceFile.text(path, code);
-    for (var e in errorListener.errors) {
-      var span = file.span(e.offset, e.offset + e.length);
-
-      var severity = e.errorCode.errorSeverity;
-      if (severity == ErrorSeverity.ERROR) {
-        messages.error(e.message, span);
-      } else {
-        assert(severity == ErrorSeverity.WARNING);
-        messages.warning(e.message, span);
-      }
-    }
-  }
+  // if (false) {
+  //  var file = new SourceFile.text(path, code);
+  //  for (var e in errorListener.errors) {
+  //    var span = file.span(e.offset, e.offset + e.length);
+  //
+  //    var severity = e.errorCode.errorSeverity;
+  //    if (severity == ErrorSeverity.ERROR) {
+  //      messages.error(e.message, span);
+  //    } else {
+  //      assert(severity == ErrorSeverity.WARNING);
+  //      messages.warning(e.message, span);
+  //    }
+  //  }
+  // }
 
   return unit;
 }

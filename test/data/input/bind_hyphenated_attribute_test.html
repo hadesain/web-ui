@@ -14,6 +14,8 @@
   <div data-hi="{{topLevelVar}}"></div>
   <script type="application/dart">
     import 'dart:html';
+    import 'package:web_ui/web_ui.dart';
+    
     @observable String topLevelVar = "hi";
     main() {
       window.onLoad.listen((e) {

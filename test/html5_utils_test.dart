@@ -11,19 +11,16 @@
 library html_type_test;
 
 import 'dart:io';
-import 'package:html5lib/dom.dart';
-import 'package:pathos/path.dart' as path;
+import 'package:path/path.dart' as path;
 import 'package:unittest/compact_vm_config.dart';
 import 'package:unittest/unittest.dart';
 import 'package:web_ui/src/html5_setters.g.dart';
 import 'package:web_ui/src/html5_utils.dart';
 
-import 'testing.dart';
-
 main() {
   useCompactVMConfiguration();
   var dir = path.join(
-      path.absolute(path.dirname(new Options().script)), 'data', 'out');
+      path.absolute(path.dirname(Platform.script.path)), 'data', 'out');
 
   test('generate type test for tag -> element mapping', () {
     var code = new StringBuffer();

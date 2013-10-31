@@ -14,14 +14,14 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:web_ui/dwc.dart' as dwc;
 
-main() {
+main(arguments) {
   var argParser = new ArgParser();
   argParser.addFlag('help', abbr: 'h', help: 'Displayes this help message',
       defaultsTo: false, negatable: false);
   argParser.addOption('out', abbr: 'o',
       help: 'output directory for the generated code',
       defaultsTo: 'generated');
-  var args = argParser.parse(new Options().arguments);
+  var args = argParser.parse(arguments);
 
   if (args['help']) {
     print('Usage: build_examples.dart [-o outdir] [file1, file2, ...]');
@@ -31,7 +31,7 @@ main() {
 
   var output = args['out'];
   if (args.rest.isEmpty) {
-    var dir = new Directory.current();
+    var dir = Directory.current;
     listFiles(dir,
         (filename) => filename.endsWith('.html') && !filename.startsWith('_'))
         .then((inputs) {

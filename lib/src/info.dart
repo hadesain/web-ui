@@ -11,13 +11,11 @@ library web_ui.src.info;
 import 'dart:collection' show SplayTreeMap, LinkedHashMap;
 
 import 'package:analyzer_experimental/src/generated/ast.dart';
-import 'package:csslib/parser.dart' as css;
 import 'package:csslib/visitor.dart';
 import 'package:html5lib/dom.dart';
 import 'package:source_maps/span.dart' show Span;
 
 import 'dart_parser.dart' show DartCodeInfo;
-import 'files.dart';
 import 'messages.dart';
 import 'summary.dart';
 import 'utils.dart';
@@ -268,7 +266,7 @@ class ComponentInfo extends LibraryInfo implements ComponentSummary {
 /** Base tree visitor for the Analyzer infos. */
 class InfoVisitor {
   visit(info) {
-    if (info == null) return;
+    if (info == null) return null;
     if (info is TemplateInfo) {
       return visitTemplateInfo(info);
     } else if (info is ElementInfo) {

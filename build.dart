@@ -6,10 +6,9 @@
 /** Build logic that lets the Dart editor build examples in the background. */
 library build;
 import 'package:web_ui/component_build.dart';
-import 'dart:io';
 
-void main() {
-  build(new Options().arguments, [
+void main(args) {
+  build(args, [
     'example/component/news/web/index.html',
     'example/explainer/clickcount.html',
     'example/explainer/countcomponent.html',

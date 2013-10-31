@@ -5,4 +5,4 @@
 
 import 'package:web_ui/dwc.dart' as dwc;
 
-void main() => dwc.main();
+void main(args) => dwc.main(args);

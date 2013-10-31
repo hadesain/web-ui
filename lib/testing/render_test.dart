@@ -9,16 +9,15 @@
 library web_ui.testing.render_test;
 
 import 'dart:io';
-import 'dart:math' show min;
-import 'package:pathos/path.dart' as path;
+import 'package:path/path.dart' as path;
 import 'package:unittest/unittest.dart';
 import 'package:web_ui/dwc.dart' as dwc;
 
 void renderTests(String baseDir, String inputDir, String expectedDir,
     String outDir, {List<String> arguments, String script, String pattern,
     bool deleteDir: true}) {
-  if (arguments == null) arguments = new Options().arguments;
-  if (script == null) script = new Options().script;
+  if (arguments == null) arguments = [];
+  if (script == null) script = Platform.script.toString();
 
   var filePattern = new RegExp(pattern != null ? pattern
       : (arguments.length > 0 ? arguments.removeAt(0) : '.'));

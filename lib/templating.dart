@@ -6,9 +6,7 @@
 library templating;
 
 import 'dart:async';
-import 'dart:collection';
 import 'dart:html';
-import 'dart:svg' as svg;
 import 'package:web_ui/safe_html.dart';
 import 'package:web_ui/observe.dart';
 import 'package:web_ui/watcher.dart';

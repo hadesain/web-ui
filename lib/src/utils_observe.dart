@@ -4,7 +4,6 @@
 
 library web_ui.src.utils_observe;
 
-import 'dart:async';
 import 'dart:collection';
 
 // TODO(jmesserly): helpers to combine hash codes. Reuse these from somewhere.
