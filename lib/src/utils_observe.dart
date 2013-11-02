@@ -4,8 +4,6 @@
 
 library web_ui.src.utils_observe;
 
-import 'dart:collection';
-
 // TODO(jmesserly): helpers to combine hash codes. Reuse these from somewhere.
 hash2(x, y) => x.hashCode * 31 + y.hashCode;
 
@@ -45,8 +43,3 @@ class Arrays {
     }
   }
 }
-
-// TODO(jmesserly): bogus type to workaround spurious VM bug with generic base
-// class and mixins.
-abstract class IterableWorkaround extends IterableBase<dynamic> {}
-abstract class ListMixinWorkaround extends ListMixin<dynamic> {}

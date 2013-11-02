@@ -7,7 +7,6 @@ library web_ui.observe.set;
 import 'dart:collection';
 import 'observable.dart';
 import 'map.dart' show MapFactory;
-import 'package:web_ui/src/utils_observe.dart' show IterableWorkaround;
 
 /**
  * Represents an observable set of model values. If any items are added,
@@ -17,8 +16,7 @@ import 'package:web_ui/src/utils_observe.dart' show IterableWorkaround;
 // TODO(jmesserly): ideally this could be based ObservableMap, or Dart
 // would have a built in Set<->Map adapter as suggested in
 // https://code.google.com/p/dart/issues/detail?id=5603
-class ObservableSet<E> extends IterableWorkaround with Observable
-    implements Set<E> {
+class ObservableSet<E> extends IterableBase<E> with Observable {
 
   final Map<E, Object> _map;
 

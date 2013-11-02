@@ -8,9 +8,7 @@ var htmlElementFields = const {
     'hostname': 'hostname',
     'href': 'href',
     'hreflang': 'hreflang',
-    'name': 'name',
     'pathname': 'pathname',
-    'ping': 'ping',
     'port': 'port',
     'protocol': 'protocol',
     'rel': 'rel',
@@ -22,7 +20,6 @@ var htmlElementFields = const {
     'alt': 'alt',
     'coords': 'coords',
     'href': 'href',
-    'ping': 'ping',
     'shape': 'shape',
     'target': 'target',
   },
@@ -68,7 +65,6 @@ var htmlElementFields = const {
     'pseudo': 'pseudo',
   },
   'EmbedElement': const {
-    'align': 'align',
     'height': 'height',
     'name': 'name',
     'src': 'src',
@@ -100,11 +96,9 @@ var htmlElementFields = const {
   },
   'ImageElement': const {
     'alt': 'alt',
-    'border': 'border',
     'crossorigin': 'crossOrigin',
     'height': 'height',
     'ismap': 'isMap',
-    'lowsrc': 'lowsrc',
     'src': 'src',
     'usemap': 'useMap',
     'width': 'width',
@@ -144,7 +138,6 @@ var htmlElementFields = const {
     'src': 'src',
     'step': 'step',
     'type': 'type',
-    'usemap': 'useMap',
     'value': 'value',
     'valueasdate': 'valueAsDate',
     'valueasnumber': 'valueAsNumber',
@@ -161,7 +154,6 @@ var htmlElementFields = const {
     'name': 'name',
   },
   'LIElement': const {
-    'type': 'type',
     'value': 'value',
   },
   'LabelElement': const {
@@ -219,7 +211,6 @@ var htmlElementFields = const {
     'type': 'type',
   },
   'ObjectElement': const {
-    'code': 'code',
     'data': 'data',
     'height': 'height',
     'name': 'name',
@@ -248,7 +239,6 @@ var htmlElementFields = const {
     'value': 'value',
   },
   'PreElement': const {
-    'wrap': 'wrap',
   },
   'ProgressElement': const {
     'max': 'max',
@@ -262,8 +252,6 @@ var htmlElementFields = const {
     'charset': 'charset',
     'crossorigin': 'crossOrigin',
     'defer': 'defer',
-    'event': 'event',
-    'for': 'htmlFor',
     'src': 'src',
     'type': 'type',
   },
@@ -298,7 +286,6 @@ var htmlElementFields = const {
     'span': 'span',
   },
   'TableElement': const {
-    'border': 'border',
     'caption': 'caption',
     'tfoot': 'tFoot',
     'thead': 'tHead',
