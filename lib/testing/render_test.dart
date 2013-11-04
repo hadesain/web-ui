@@ -17,7 +17,7 @@ void renderTests(String baseDir, String inputDir, String expectedDir,
     String outDir, {List<String> arguments, String script, String pattern,
     bool deleteDir: true}) {
   if (arguments == null) arguments = [];
-  if (script == null) script = Platform.script.toString();
+  if (script == null) script = Platform.script.path;
 
   var filePattern = new RegExp(pattern != null ? pattern
       : (arguments.length > 0 ? arguments.removeAt(0) : '.'));
