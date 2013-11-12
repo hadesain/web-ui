@@ -1,8 +1,8 @@
 name: web_ui
-version: 0.4.27
+version: 0.4.27+1
 author: Web UI Authors <web-ui-dev@dartlang.org>
-description: An easy way to build web apps in Dart.
-homepage: https://github.com/dart-lang/web-ui
+description: (deprecated) new versions are in the Polymer.dart package
+homepage: https://pub.dartlang.org/packages/polymer
 dependencies:
   args: '>=0.4.5'
   analyzer_experimental: '>=0.5.12'

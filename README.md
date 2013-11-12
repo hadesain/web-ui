@@ -1,5 +1,16 @@
-Web UI
+Web UI 0.4 (deprecated, newer versions in [Polymer.dart](https://pub.dartlang.org/packages/polymer))
 ===========
+
+**PLEASE NOTE**: web_ui was renamed, and versions >= 0.5 can be found in the [Polymer.dart package](https://pub.dartlang.org/packages/polymer) instead.
+There have been a number of breaking changes since 0.4, you can read about [how to migrate here](https://www.dartlang.org/polymer-dart/#upgrading-from-web-ui).
+Please feel free to [reach out to us](https://www.dartlang.org/polymer-dart/#support) with migration questions.
+
+Documentation [about Web UI 0.4](https://www.dartlang.org/articles/web-ui/) is
+still available for those that are building production applications on top of
+this package.
+
+Introduction
+-----------
 
 Web UI lets you build web apps as if you had a browser from the future. You can
 use the cool new web technologies like [Web Components][wc],
