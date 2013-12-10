@@ -8,5 +8,3 @@ layer at (0,0) size 800x34
         RenderText {#text} at (0,0) size 160x18
           text run at (0,0) width 160: "yay! test passes"
       RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (0,0) size 0x0
-      RenderText {#text} at (0,0) size 0x0

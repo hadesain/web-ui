@@ -86,18 +86,18 @@ class Compiler {
       _resetCssFile = options.resetCssFile;
       if (path.isRelative(_resetCssFile)) {
         // If CSS reset file path is relative from our current path.
-        _resetCssFile = path.resolve(_resetCssFile);
+        _resetCssFile = path.absolute(_resetCssFile);
       }
     }
 
     // Normalize paths - all should be relative or absolute paths.
     if (path.isAbsolute(_mainPath) || path.isAbsolute(baseDir) ||
         path.isAbsolute(outputDir) || path.isAbsolute(packageRoot)) {
-      if (path.isRelative(_mainPath)) _mainPath = path.resolve(_mainPath);
-      if (path.isRelative(baseDir)) baseDir = path.resolve(baseDir);
-      if (path.isRelative(outputDir)) outputDir = path.resolve(outputDir);
+      if (path.isRelative(_mainPath)) _mainPath = path.absolute(_mainPath);
+      if (path.isRelative(baseDir)) baseDir = path.absolute(baseDir);
+      if (path.isRelative(outputDir)) outputDir = path.absolute(outputDir);
       if (path.isRelative(packageRoot)) {
-        packageRoot = path.resolve(packageRoot);
+        packageRoot = path.absolute(packageRoot);
       }
     }
     _pathMapper = new PathMapper(

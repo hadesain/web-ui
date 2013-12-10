@@ -18,7 +18,6 @@ layer at (0,0) size 800x208
           RenderText {#text} at (0,1) size 40x18
             text run at (0,1) width 40: "PASS"
         RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
       RenderBlock {H4} at (0,152.80) size 784x18
         RenderText {#text} at (0,0) size 320x18
           text run at (0,0) width 320: "You should see two \"PASS\" above."

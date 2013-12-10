@@ -80,7 +80,7 @@ main() {
 
       test('windows paths', () {
         try {
-          utils.path = new path.Builder(style: path.Style.windows);
+          utils.path = path.windows;
           var pathMapper = _newPathMapper('a', 'a', false);
           var file1 = _mockFile('a\\b.dart', pathMapper);
           var file2 = _mockFile('a\\c\\d.dart', pathMapper);
@@ -94,7 +94,7 @@ main() {
           expect(pathMapper.importUrlFor(file3, file2), '../c/_d.dart.dart');
           expect(pathMapper.importUrlFor(file3, file1), '../_b.dart.dart');
         } finally {
-          utils.path = new path.Builder();
+          utils.path = new path.Context();
         }
       });
     });
@@ -228,7 +228,7 @@ main() {
 
       test('windows paths', () {
         try {
-          utils.path = new path.Builder(style: path.Style.windows);
+          utils.path = path.windows;
           var pathMapper = _newPathMapper('a', 'out', true);
           var file1 = _mockFile('a\\b.dart', pathMapper);
           var file2 = _mockFile('a\\c\\d.dart', pathMapper);
@@ -242,7 +242,7 @@ main() {
           expect(pathMapper.importUrlFor(file3, file2), '../c/_d.dart.dart');
           expect(pathMapper.importUrlFor(file3, file1), '../_b.dart.dart');
         } finally {
-          utils.path = new path.Builder();
+          utils.path = new path.Context();
         }
       });
     });

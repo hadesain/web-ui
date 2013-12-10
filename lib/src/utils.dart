@@ -6,7 +6,7 @@ library web_ui.src.utils;
 
 import 'dart:async';
 
-import 'package:path/path.dart' show Builder;
+import 'package:path/path.dart' show Context;
 
 
 /**
@@ -14,7 +14,7 @@ import 'package:path/path.dart' show Builder;
  * builder in path, but we add this indirection to make it possible to run
  * unittest for windows paths.
  */
-Builder path = new Builder();
+Context path = new Context();
 
 /** Convert a OS specific path into a url. */
 String pathToUrl(String relPath) =>

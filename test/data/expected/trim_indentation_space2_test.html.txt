@@ -21,7 +21,6 @@ layer at (0,0) size 800x196
         RenderText {#text} at (40,0) size 10x18
           text run at (40,0) width 10: "c"
         RenderText {#text} at (0,0) size 0x0
-        RenderText {#text} at (0,0) size 0x0
       RenderBlock {DIV} at (0,36) size 784x18
         RenderText {#text} at (0,0) size 110x18
           text run at (0,0) width 110: "expect: abc"
@@ -32,7 +31,6 @@ layer at (0,0) size 800x196
           text run at (10,0) width 10: "b"
         RenderText {#text} at (20,0) size 10x18
           text run at (20,0) width 10: "c"
-        RenderText {#text} at (0,0) size 0x0
       RenderBlock {DIV} at (0,72) size 784x18
         RenderText {#text} at (0,0) size 70x18
           text run at (0,0) width 70: "expect:"
@@ -170,5 +168,4 @@ layer at (0,0) size 800x196
           text run at (50,18) width 20: ") "
         RenderText {#text} at (70,18) size 10x18
           text run at (70,18) width 10: "]"
-        RenderText {#text} at (0,0) size 0x0
         RenderText {#text} at (0,0) size 0x0

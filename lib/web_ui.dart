@@ -234,7 +234,7 @@ abstract class WebComponent extends CustomElement {
    */
   List<Node> _distributeNodes(Element tree, List<Node> pool) {
     // Repeat for each active insertion point in TREE, in tree order:
-    for (var insertionPoint in tree.queryAll('content')) {
+    for (var insertionPoint in tree.querySelectorAll('content')) {
       if (!_isActive(insertionPoint)) continue;
       // Let POINT be the current insertion point.
 
